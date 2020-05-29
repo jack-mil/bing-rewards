@@ -1,0 +1,2 @@
+PyAutoGUI==0.9.50
+requests==2.23.0
