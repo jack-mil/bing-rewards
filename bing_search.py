@@ -1,5 +1,7 @@
 from os import path, remove
-import sys, getopt
+import sys
+import getopt
+import platform
 import random
 import time
 import webbrowser
@@ -14,62 +16,84 @@ import requests
 #   "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"
 # }
 
+count = 30
+sleep_time = 2
+
+url = 'https://www.bing.com/search?q='
+
+# word_site = "https://raw.githubusercontent.com/jack-mil/bing_search/master/keywords.txt?token=AOZQVABAHBKOKE4X5LVPEY262TU7O"
+word_site = "keywords.txt"
+
 def Diff(li1, li2):
-    """ Computes the difference of two lists """
+    """ 
+    Computes the difference of two lists
+    """
     return list(set(li1) - set(li2))
 
-count = 30
-new = False
 
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'hnc:', ['new', 'count='])
+def check_python_version():
+    """
+    Ensure the correct version of Python is being used.
+    """
+    minimum_version = ('3', '6')
+    if platform.python_version_tuple() < minimum_version:
+        message = 'Only Python %s.%s and above is supported.' % minimum_version
+        raise Exception(message)
 
-    for opt, arg in opts:
-        if opt == '-h':
-            print('<HELP TEXT>')
-            sys.exit()
-        elif opt in ('-n', '--new'):
-            new = True
-        elif opt in ('-c', '--count'):
-            count = int(arg)
-except (ValueError, getopt.GetoptError):
-    print('Ex: python3 bing_search.py --new --count 10')
-    sys.exit(2)
 
-try:
-    url = 'https://www.bing.com/'
+def main(argv):
+    new = False
 
-    word_site = "https://www.myhelpfulguides.com/keywords.txt"
+    try:
+        opts, args = getopt.getopt(argv, 'hnc:', ['new', 'count='])
 
-    response = requests.get(word_site)
-    words = response.text.splitlines()
+        for opt, arg in opts:
+            if opt == '-h':
+                print('<HELP TEXT>')
+                sys.exit()
+            elif opt in ('-n', '--new'):
+                new = True
+            elif opt in ('-c', '--count'):
+                count = int(arg)
+    except (ValueError, getopt.GetoptError):
+        print('Ex: python3 bing_search.py --new --count 10')
+        sys.exit(2)
 
-    if not path.exists('tempfile'):
-        with open('tempfile', 'x'):
-            pass
+    try:
 
-    if new:
-        webbrowser.open_new('www.bing.com')
+        response = requests.get(word_site)
+        words = response.text.splitlines()
 
-    for i in range(count):
-        with open('tempfile', 'r') as f:
-            used = f.read().splitlines()
+        if not path.exists('tempfile'):
+            with open('tempfile', 'x'):
+                pass
 
-        new = Diff(words, used)
-        query = random.choice(new)
-        address = f"http://www.bing.com/search?q={quote_plus(query)}"
+        if new:
+            webbrowser.open_new('www.bing.com')
 
-        with open('tempfile', 'a') as f:
-            f.write(query + "\n")
+        for i in range(count):
+            with open('tempfile', 'r') as f:
+                used = f.read().splitlines()
 
-        sleep_time = 2
-        time.sleep(sleep_time)
-        pyautogui.hotkey('alt', 'd')
-        time.sleep(0.01)
-        pyautogui.typewrite(address)
-        pyautogui.typewrite('\n', interval=0.1)
+            new = Diff(words, used)
+            query = random.choice(new)
+            address = url + quote_plus(query)
 
-        print(
-            f"Search {i+1}: {query}")
-finally:
-    remove('tempfile')
+            with open('tempfile', 'a') as f:
+                f.write(query + "\n")
+
+            time.sleep(sleep_time)
+            pyautogui.hotkey('alt', 'd')
+            time.sleep(0.01)
+            pyautogui.typewrite(address)
+            pyautogui.typewrite('\n', interval=0.1)
+
+            print(
+                f"Search {i+1}: {query}")
+    finally:
+        remove('tempfile')
+
+
+if __name__ == "__main__":
+    check_python_version()
+    main(sys.argv[1:])
