@@ -1,4 +1,4 @@
-from os import path, remove
+from os import path, remove, system
 import sys
 import getopt
 import platform
@@ -9,13 +9,20 @@ from urllib.parse import quote_plus
 import pyautogui
 # import requests
 
-DEFUALT_COUNT = 30
+mobile_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"
+desktop_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37"
+
+DEFAULT_COUNT = 30
+
 sleep_time = 2
 
 url = 'https://www.bing.com/search?q='
 
 word_file = 'keywords.txt'
 temp_file = 'tempfile'
+
+def win_command(url, agent):
+    return f"start chrome.exe {url} --new-window --user-agent=\"{agent}\""
 
 def Diff(li1, li2):
     """
@@ -37,11 +44,12 @@ def check_python_version():
 def main(argv):
     new = False
     dryrun = False
-    count = DEFUALT_COUNT
+    mobile = False
+    count = DEFAULT_COUNT
 
     # Arg Parse
     try:
-        opts, _ = getopt.getopt(argv, 'hnc:', ['new', 'count=', 'dry-run'])
+        opts, _ = getopt.getopt(argv, 'hnmc:', ['new', 'count=', 'dry-run', 'mobile'])
 
         for opt, arg in opts:
             if opt == '-h':
@@ -51,6 +59,8 @@ def main(argv):
                 new = True
             elif opt in ('-c', '--count'):
                 count = int(arg)
+            elif opt in ('-m','--mobile'):
+                mobile = True
             elif opt == '--dry-run':
                 dryrun = True
     except (ValueError, getopt.GetoptError):
@@ -67,7 +77,9 @@ def main(argv):
                 pass
 
         if new:
-            webbrowser.open_new('www.bing.com')
+            agent = mobile_agent if mobile else desktop_agent
+            system(win_command('www.bing.com', agent))
+            # webbrowser.open_new('www.bing.com')
 
         for i in range(count):
             with open(temp_file, 'r') as f:
