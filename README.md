@@ -31,8 +31,8 @@ Alternatively, open your preferred browser before running the script with the `-
 ## **All options**
 | Flag              | Option                                                        |
 |-------------------|---------------------------------------------------------------|
-| `-h`, `--help`    | Display help and exit
+| `-h`, `--help`    | Display help and exit                                         |
 | `-n`, `--new`     | Open in a new window instead of whatever is currently focused |
-| `-c`, `--count=N` | Perform N searches total                                      |
+| `-c`, `--count=N` | Perform N searches total (default 30)                         |
 | `-m`, `--mobile`  | Use a mobile user agent, to appear on a phone                 |
 | `--dry-run`       | Do everything but type the search query                       |
