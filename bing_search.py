@@ -1,3 +1,6 @@
+# Author: Jackson Miller
+# https://github.com/jack-mil/bing-search
+
 from os import path, remove, system
 import sys
 import getopt
