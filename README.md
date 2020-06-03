@@ -1,5 +1,6 @@
 # bing_search
-- [ ] **Warning, this project is incomplete and a WIP; bugs likely**
+:exclamation: **Warning, this project is incomplete and a WIP; bugs likely.**  
+Please submit an issue or pull-request if you have an idea for a feature 
 ### A script to automate daily Bing rewards points
 
 ## **Features**
@@ -8,7 +9,8 @@
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
-* Timings could be tweaked to speed up the automation  
+* Sets user agent to appear as Edge Browser on Mobile or Desktop in Chrome!
+* Timings can be tweaked to speed up the automation  
 
 ## **Usage**
 ***
@@ -22,7 +24,7 @@
 
 *` > python bing_search --new --mobile --count=10`*
 
-
+Executes a system command to launch Chrome with special flags. If it fails on your OS, manually modify the command used to launch Chrome in the script.   
 ## **Requirements:**
 ***
 At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
@@ -30,19 +32,29 @@ At least Python 3.6. Be careful if you also have Python 2 installed on your syst
 Uses the PyAutoGUI package to automatically type search queries into bing.   
 WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses.
 
-> `> pip install pyautogui`  
+*`> pip install pyautogui`*
 
-`chrome.exe` must be discoverable on the system PATH  
-Alternatively, open your preferred browser before running the script with the `-n, --new` argument
+`chrome` must be discoverable on the system PATH  
+Alternatively, open your preferred browser before running the script without the `-n, --new` argument. Custom user agent will not be set in this case.
 
-You must also make sure to have chrome set to log into your Microsoft account automatically. 
-The tool will still work without this, but you won't earn rewards points
+You must also have logged into www.bing.com with your Microsoft account at least once. 
+The tool will still search without doing this, but you won't earn rewards points
 
 ## **All options**
 | Flag              | Option                                                        |
 |-------------------|---------------------------------------------------------------|
 | `-h`, `--help`    | Display help and exit                                         |
-| `-n`, `--new`     | Open in a new window instead of whatever is currently focused (useful to guarantee focus for PyAutoGUI) |
+| `-n`, `--new`     | Open in a new window instead of whatever is currently focused (*this is the preferred method*) |
 | `-c`, `--count=N` | Perform N searches total (default 30)                         |
 | `-m`, `--mobile`  | Use a mobile user agent, to appear on a phone                 |
 | `--dry-run`       | Do everything but type the search query                       |
+
+## User agents
+***
+If interested, the following user agents are passed to chrome using the `--user-agent` argument. These are clearly defined at the top of `bing_search.py`.  
+
+Edge Browser on Windows 10 desktop:  
+> Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37
+
+Mobile Edge Browser on Windows 10 phone:  
+> Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041 
