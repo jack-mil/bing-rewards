@@ -29,8 +29,8 @@ Executes a system command to launch Chrome with special flags. If it fails on yo
 ***
 At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
 
-Uses the PyAutoGUI package to automatically type search queries into bing.   
-WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses.
+Uses the [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
+WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background. This feature is being researched.
 
 *`> pip install pyautogui`*
 
