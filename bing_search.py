@@ -12,8 +12,8 @@ from urllib.parse import quote_plus
 import pyautogui
 # import requests
 
-mobile_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"
-desktop_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37"
+mobile_agent = 'Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041'
+desktop_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'
 
 DEFAULT_COUNT = 30
 
@@ -25,7 +25,7 @@ word_file = 'keywords.txt'
 temp_file = 'tempfile'
 
 def win_command(url, agent):
-    return f"start chrome.exe {url} --new-window --user-agent=\"{agent}\""
+    return f"start chrome {url} --new-window --user-agent=\"{agent}\""
 
 def Diff(li1, li2):
     """
