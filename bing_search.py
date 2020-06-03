@@ -24,8 +24,19 @@ url = 'https://www.bing.com/search?q='
 word_file = 'keywords.txt'
 temp_file = 'tempfile'
 
-def win_command(url, agent):
-    return f"start chrome {url} --new-window --user-agent=\"{agent}\""
+def chrome_command(url, agent):
+    from platform import system
+    sys_type = system()
+    if sys_type == 'Windows':
+        prefix = 'start '
+    elif sys_type in ('Darwin', 'Linux'):
+        prefix = ''
+    else:
+        print('ERROR: OS undetected. Please manually add the correct command to run chrome for your platform\n \
+            On line 35 in function \"chrome_command\"')
+        sys.exit()
+
+    return f"{prefix}chrome {url} --new-window --user-agent=\"{agent}\""
 
 def Diff(li1, li2):
     """
@@ -81,7 +92,7 @@ def main(argv):
 
         if new:
             agent = mobile_agent if mobile else desktop_agent
-            system(win_command('www.bing.com', agent))
+            system(chrome_command('www.bing.com', agent))
             # webbrowser.open_new('www.bing.com')
 
         for i in range(count):
