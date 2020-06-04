@@ -34,7 +34,7 @@ desktop_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 DEFAULT_COUNT = 30
 
 # Time to allow Chrome to load in seconds
-LOAD_DELAY = 3
+LOAD_DELAY = 2
 # Time between searches in seconds
 SEARCH_DELAY = 2
 
@@ -102,7 +102,7 @@ def parse_args():
         '-m', '--mobile',
         help='Use a mobile user agent (appear as phone browser)',
         action='store_true',
-        default='False')
+        default=False)
     p.add_argument(
         '--dryrun',
         help='Do everything but search',

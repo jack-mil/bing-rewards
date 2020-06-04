@@ -9,7 +9,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
-* Sets user agent to appear as Edge Browser on Mobile or Desktop in Chrome!
+* Spoofs user agent to appear as Edge Browser on Mobile or Desktop in Chrome!
 * Timings can be tweaked to speed up the automation  
 
 ## **Usage**
@@ -24,7 +24,9 @@ Please submit an issue or pull-request if you have an idea for a feature
 
 *` > python bing_search --new --mobile --count=10`*
 
-Executes a system command to launch Chrome with special flags. If it fails on your OS, manually modify the command used to launch Chrome in the script.   
+Executes a system command to launch Chrome with special flags. If it fails on your OS, manually modify the command used to launch Chrome in the script.
+
+Note: Due to how Chrome processes work, you must close all chrome windows to reset the user agent. (e.g. when switching from desktop to mobile mode)
 ## **Requirements:**
 ***
 At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
