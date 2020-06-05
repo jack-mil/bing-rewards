@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Bing Search
 
 Automatically perform MS Bing searches to earn rewards points
