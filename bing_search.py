@@ -5,31 +5,36 @@ Automatically perform MS Bing searches to earn rewards points
 
 Usage:
 
-    `bing_search.py`  
-    `bing_search.py -nmc30`  
-    `bing_search.py --new --count=50 --mobile --dryrun`  
+    `bing_search.py`
+    `bing_search.py -nmc30`
+    `bing_search.py --new --count=50 --mobile --dryrun`
 
-try 
-> `python bing_search.py --help`  
+try
+> `python bing_search.py --help`
 for more info
 
-* By: Jackson Miller 
- 
-* Repository and issues: https://github.com/jack-mil/bing-search  
+* By: Jackson Miller
+
+* Repository and issues: https://github.com/jack-mil/bing-search
 """
 from os import path, remove, system
 import platform
 import sys
 import random
 import time
-import webbrowser
+import argparse as argp
 from urllib.parse import quote_plus
 import pyautogui
 
 # Edge Browser user agents
 # Makes Google Chrome look like MS Edge to Bing
-mobile_agent = 'Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041'
-desktop_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'
+mobile_agent = ('Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041')
+
+desktop_agent = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                 'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37')
 
 # Number of searches to make
 DEFAULT_COUNT = 30
@@ -56,14 +61,15 @@ def chrome_command(url, agent):
     elif sys_type in ('Darwin', 'Linux'):
         prefix = ''
     else:
-        message = 'ERROR: OS undetected. Please manually add the correct command to run chrome for your platform\n\
-            On line 35 in function \"chrome_command\"'
+        message = ('ERROR: OS undetected. Please manually add the '
+                   'correct command to run chrome for your platform\n'
+                   'On line 35 in function \"chrome_command\"')
         raise OSError(message)
 
     return f"{prefix}chrome {url} --new-window --user-agent=\"{agent}\""
 
 
-def Diff(li1, li2):
+def diff(li1, li2):
     """
     Computes the difference of two lists
     """
@@ -84,7 +90,6 @@ def parse_args():
     """
     Parse all command line arguments and return Namespace
     """
-    import argparse as argp
 
     desc = 'Automatically perform Bing searches for Rewards Points!'
     p = argp.ArgumentParser(
@@ -125,7 +130,7 @@ def main(args):
 
         if args.new:
             agent = mobile_agent if args.mobile else desktop_agent
-            # Execute system command. E.g. 'start chrome URL --user-agent AGENT 
+            # Execute system command. E.g. 'start chrome URL --user-agent AGENT
             system(chrome_command('www.bing.com', agent))
             # Delay a bit to allow Chrome to load
             time.sleep(LOAD_DELAY)
@@ -134,7 +139,7 @@ def main(args):
             with open(temp_file, 'r') as f:
                 used = f.read().splitlines()
 
-            new = Diff(words, used)
+            new = diff(words, used)
             query = random.choice(new)
             address = URL + quote_plus(query)
 
@@ -166,3 +171,7 @@ if __name__ == "__main__":
     check_python_version()
     args = parse_args()
     main(args)
+else:
+    print('bing_search is intended to be run as a command line application.\n'
+          'try "python3 bing_search.py --help" for more info.')
+    sys.exit()
