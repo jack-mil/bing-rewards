@@ -14,19 +14,22 @@ Please submit an issue or pull-request if you have an idea for a feature
 
 ## **Usage**
 ***
-> Run 30 searches in desktop mode in a new Chrome window
+`python bing_search.py [-h] [--nowindow] [-c COUNT] [-n] [-d | -m | -a]`
+##
+Ex:  
+Complete mobile and desktop daily points
 
-*`> python bing_search -n`*   
+*`$ python bing_search`*   
 
-> Run 10 searches with mobile user-agent in a new window
+Run 10 searches with mobile user-agent in a new window
 
-*`> python bing_search -n -m -c10`*  
+*`$ python bing_search -m -c10`*  
 
-*` > python bing_search --new --mobile --count=10`*
+*`$ python bing_search --mobile --count=10`*
 
 Executes a system command to launch Chrome with special flags. If it fails on your OS, manually modify the command used to launch Chrome in the script.
 
-Note: Due to how Chrome processes work, you must close all chrome windows to reset the user agent. (e.g. when switching from desktop to mobile mode)
+Will  now automatically create and close the Chrome processes as needed.
 ## **Requirements:**
 ***
 At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
@@ -34,10 +37,10 @@ At least Python 3.6. Be careful if you also have Python 2 installed on your syst
 Uses the [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
 WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background. This feature is being researched.
 
-*`> pip install pyautogui`*
+*`$ pip install pyautogui`*
 
 `chrome` must be discoverable on the system PATH  
-Alternatively, open your preferred browser before running the script without the `-n, --new` argument. Custom user agent will not be set in this case.
+Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case.
 
 You must also have logged into www.bing.com with your Microsoft account at least once. 
 The tool will still search without doing this, but you won't earn rewards points
@@ -46,10 +49,12 @@ The tool will still search without doing this, but you won't earn rewards points
 | Flag              | Option                                                        |
 |-------------------|---------------------------------------------------------------|
 | `-h`, `--help`    | Display help and exit                                         |
-| `-n`, `--new`     | Open in a new window instead of whatever is currently focused (*this is the preferred method*) |
-| `-c`, `--count=N` | Perform N searches total (default 30)                         |
+| `-c`, `--count=N` | Perform N searches total (default per search type)                         |
+| `-a`, `--all`  |(default) Do both types of searches, to complete daily (34 Desktop; 40 Mobile)               |
+| `-d`, `--desktop`  | Use a desktop user agent                |
 | `-m`, `--mobile`  | Use a mobile user agent, to appear on a phone                 |
-| `--dry-run`       | Do everything but type the search query                       |
+| `-n`, `--dryrun`       | Do everything but type the search query                       |
+| `--nowindow`     | Don't open a new Chrome window, just type the keys|
 
 ## User agents
 ***
