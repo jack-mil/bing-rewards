@@ -5,7 +5,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 
 ## **Features**
 ***
-* Script basically auto-types searches, so must be run in a GUI environment. Great for AFK grinding once a day for those points
+* Script auto types searches into www.bing.com, so must be run in a GUI environment. Great for AFK grinding once a day for those points
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
@@ -51,6 +51,9 @@ The tool will still search without doing this, but you won't earn rewards points
 | `-m`, `--mobile`  | Use a mobile user agent, to appear on a phone                 |
 | `--dry-run`       | Do everything but type the search query                       |
 
+## **TODO**
+- Rework how `chrome` processes are created, hopefully with `subprocess.Popen`. Has had issues with Windows
+- Add `--all` option to complete mobile and desktop searches in one go
 ## User agents
 ***
 If interested, the following user agents are passed to chrome using the `--user-agent` argument. These are clearly defined at the top of `bing_search.py`.  
