@@ -17,13 +17,15 @@ for more info
 
 * Repository and issues: https://github.com/jack-mil/bing-search
 """
-from os import path, remove, system
-import platform
-import sys
-import random
-import time
 import argparse as argp
+import platform
+import random
+import subprocess
+import sys
+import time
+from os import path, remove, system
 from urllib.parse import quote_plus
+
 import pyautogui
 
 # Edge Browser user agents
@@ -37,43 +39,67 @@ desktop_agent = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                  'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37')
 
 # Number of searches to make
-DEFAULT_COUNT = 30
+DESKTOP_COUNT = 34
+MOBILE_COUNT = 40
 
 # Time to allow Chrome to load in seconds
-LOAD_DELAY = 2
+LOAD_DELAY = 1.5
 # Time between searches in seconds
 SEARCH_DELAY = 2
 
+# Bing Search base url
 URL = 'https://www.bing.com/search?q='
 
 # Internal files
 word_file = 'keywords.txt'
 temp_file = 'tempfile'
 
-
-def chrome_command(url, agent):
-    """
-    Generate OS specific command to open Google Chrome with user-agent `agent` at `url`
-    """
-    sys_type = platform.system()
-    if sys_type == 'Windows':
-        prefix = 'start '
-    elif sys_type in ('Darwin', 'Linux'):
-        prefix = ''
-    else:
-        message = ('ERROR: OS undetected. Please manually add the '
-                   'correct command to run chrome for your platform\n'
-                   'On line 35 in function \"chrome_command\"')
-        raise OSError(message)
-
-    return f"{prefix}chrome {url} --new-window --user-agent=\"{agent}\""
+# Set of used keywords
+used = set()
 
 
-def diff(li1, li2):
+def parse_args():
     """
-    Computes the difference of two lists
+    Parse all command line arguments and return Namespace
     """
-    return list(set(li1) - set(li2))
+
+    desc = 'Automatically perform Bing searches for Rewards Points!'
+    p = argp.ArgumentParser(
+        description=desc)
+    p.add_argument(
+        '--nowindow',
+        help='don\'t open a new Chrome window (just press keys)',
+        action='store_true',
+        default=False)
+    p.add_argument(
+        '-c', '--count',
+        help=f'the number of searches to perform (desktop: {DESKTOP_COUNT})',
+        type=int)
+    p.add_argument(
+        '-n', '--dryrun',
+        help='do everything but search',
+        action='store_true',
+        default=False)
+
+    # Mutually exclusive options. Only one can be present
+    group = p.add_mutually_exclusive_group()
+    group.add_argument(
+        '-d', '--desktop',
+        help='use a desktop Edge user agent',
+        action='store_true',
+        default=False)
+    group.add_argument(
+        '-m', '--mobile',
+        help='use a mobile user agent (appear as phone browser)',
+        action='store_true',
+        default=False)
+    group.add_argument(
+        '-a', '--all',
+        help='do both mobile and desktop searches, enough to complete daily points (default)',
+        action='store_true',
+        default=True)
+
+    return p.parse_args()
 
 
 def check_python_version():
@@ -86,84 +112,90 @@ def check_python_version():
         raise Exception(message)
 
 
-def parse_args():
+def chrome_cmd(agent):
     """
-    Parse all command line arguments and return Namespace
+    Generate command to open Google Chrome with user-agent `agent`
     """
+    return ['chrome', '--new-window', f'--user-agent=\"{agent}\"']
 
-    desc = 'Automatically perform Bing searches for Rewards Points!'
-    p = argp.ArgumentParser(
-        description=desc, formatter_class=argp.ArgumentDefaultsHelpFormatter)
-    p.add_argument(
-        '-n', '--new',
-        help='Open in a new Chrome window (grabs focus). Uses Edge Browser\'s user agent',
-        action='store_true',
-        default=False)
-    p.add_argument(
-        '-c', '--count',
-        help='The number of searches to perform',
-        default=DEFAULT_COUNT,
-        type=int)
-    p.add_argument(
-        '-m', '--mobile',
-        help='Use a mobile user agent (appear as phone browser)',
-        action='store_true',
-        default=False)
-    p.add_argument(
-        '--dryrun',
-        help='Do everything but search',
-        action='store_true',
-        default=False)
 
-    return p.parse_args()
+def diff(li1, li2):
+    """
+    Computes the difference of two lists
+    """
+    return list(set(li1) - set(li2))
+
+
+def search(count, words, agent, args):
+    try:
+        # Open Chrome as a subprocess
+        # Only if a new window should be opened
+        if not args.nowindow:
+            chrome = subprocess.Popen(chrome_cmd(agent))
+    except FileNotFoundError as e:
+        print(e)
+        print("Unexpected error:", sys.exc_info()[0])
+        print('ERROR: Chrome could not be found on system PATH\n'
+                'Make sure it is installed and added to PATH')
+        sys.exit(1)
+
+    # Wait for Chrome to load
+    time.sleep(LOAD_DELAY)
+
+    for i in range(count):
+        # Get new random search query
+        new = diff(words, used)
+        query = random.choice(new)
+
+        # Concatenate url with correct characters
+        search_url = URL + quote_plus(query)
+
+        # Use PyAutoHotkey to trigger keyboard events and auto search
+        if not args.dryrun:
+            # Alt + D to focus the address bar in Chrome
+            pyautogui.hotkey('alt', 'd')
+            time.sleep(0.01)
+
+            # Type the url into the address bar
+            pyautogui.typewrite(search_url)
+            pyautogui.typewrite('\n', interval=0.1)
+
+        used.add(query)
+        time.sleep(SEARCH_DELAY)
+        print(f"Search {i+1}: {query}")
+
+    if not args.nowindow:
+        # Close the Chrome window
+        chrome.terminate()
 
 
 def main(args):
     try:
-        with open(word_file, 'r') as f:
-            words = f.read().splitlines()
-            print(f'Using database of {len(words)} potential searches')
-
-        if not path.exists(temp_file):
-            with open(temp_file, 'x'):
-                pass
-
-        if args.new:
-            agent = mobile_agent if args.mobile else desktop_agent
-            # Execute system command. E.g. 'start chrome URL --user-agent AGENT
-            system(chrome_command('www.bing.com', agent))
-            # Delay a bit to allow Chrome to load
-            time.sleep(LOAD_DELAY)
-
-        for i in range(args.count):
-            with open(temp_file, 'r') as f:
-                used = f.read().splitlines()
-
-            new = diff(words, used)
-            query = random.choice(new)
-            address = URL + quote_plus(query)
-
-            with open(temp_file, 'a') as f:
-                f.write(query + "\n")
-
-            # Use PyAutoHotkey to trigger keyboard events and auto search
-            if not args.dryrun:
-                time.sleep(SEARCH_DELAY)
-                pyautogui.hotkey('alt', 'd')
-                time.sleep(0.01)
-                pyautogui.typewrite(address)
-                pyautogui.typewrite('\n', interval=0.1)
-
-            print(f"Search {i+1}: {query}")
-        print(f'Done! Earned potentially {5*args.count} MS rewards points\n')
-
+        # Read search keywords from file
+        f = open(word_file, 'r')
     except FileNotFoundError:
-        print(f'File {path.realpath("word_file")} not found')
+        print(f'File {path.realpath(word_file)} not found')
+        sys.exit(1)
+    else:
+        # Store all words in a list
+        words = f.read().splitlines()
+        print(f'Using database of {len(words)} potential searches')
+        f.close()
 
-    finally:
-        # Clean up
-        if path.exists(temp_file):
-            remove(temp_file)
+    if args.desktop or args.mobile:
+        args.all = False
+
+    if args.desktop or args.all:
+        count = args.count if args.count else DESKTOP_COUNT
+        print(f'Doing {count} desktop searches')
+        search(count, words, desktop_agent, args)
+        print(f'Desktop Search complete! {5*count} MS rewards points\n')
+
+    if args.mobile or args.all:
+        count = args.count if args.count else MOBILE_COUNT
+        print(f'Doing {count} mobile searches')
+        search(count, words, mobile_agent, args)
+        print(f'Mobile Search complete! {5*count} MS rewards points\n')
 
 
 # Main execution
