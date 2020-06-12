@@ -62,42 +62,36 @@ def parse_args():
     """
     Parse all command line arguments and return Namespace
     """
+    desc = ('Automatically perform Bing searches for Rewards Points!\n'
+            f'Does {DESKTOP_COUNT} desktop searches \n'
+            f'followed by {MOBILE_COUNT} mobile searches by default')
+    p = argp.ArgumentParser(description=desc)
 
-    desc = 'Automatically perform Bing searches for Rewards Points!'
-    p = argp.ArgumentParser(
-        description=desc)
     p.add_argument(
         '--nowindow',
         help='don\'t open a new Chrome window (just press keys)',
         action='store_true',
         default=False)
     p.add_argument(
-        '-c', '--count',
-        help=f'the number of searches to perform (desktop: {DESKTOP_COUNT})',
-        type=int)
-    p.add_argument(
         '-n', '--dryrun',
         help='do everything but search',
         action='store_true',
         default=False)
+    p.add_argument(
+        '-c', '--count',
+        help=f'override the number of searches to perform',
+        type=int)
 
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
     group.add_argument(
         '-d', '--desktop',
-        help='use a desktop Edge user agent',
-        action='store_true',
-        default=False)
+        help='do only desktop searches',
+        action='store_true')
     group.add_argument(
         '-m', '--mobile',
-        help='use a mobile user agent (appear as phone browser)',
-        action='store_true',
-        default=False)
-    group.add_argument(
-        '-a', '--all',
-        help='do both mobile and desktop searches, enough to complete daily points (default)',
-        action='store_true',
-        default=True)
+        help='do only mobile searches (appear as phone browser)',
+        action='store_true')
 
     return p.parse_args()
 
@@ -127,6 +121,11 @@ def diff(li1, li2):
 
 
 def search(count, words, agent, args):
+    """
+    Opens a Chrome window with specified `agent` string, completes `count`
+    searches from list `words`,
+    finally terminating Chrome process on completion
+    """
     try:
         # Open Chrome as a subprocess
         # Only if a new window should be opened
@@ -136,7 +135,7 @@ def search(count, words, agent, args):
         print(e)
         print("Unexpected error:", sys.exc_info()[0])
         print('ERROR: Chrome could not be found on system PATH\n'
-                'Make sure it is installed and added to PATH')
+              'Make sure it is installed and added to PATH')
         sys.exit(1)
 
     # Wait for Chrome to load
@@ -170,6 +169,11 @@ def search(count, words, agent, args):
 
 
 def main(args):
+    """
+    Main program execution. Reads keywords from a file,
+    interprets command line arguments,
+    and executes search function
+    """
     try:
         # Read search keywords from file
         f = open(word_file, 'r')
@@ -177,28 +181,38 @@ def main(args):
         print(f'File {path.realpath(word_file)} not found')
         sys.exit(1)
     else:
-        # Store all words in a list
+        # Store all words in a list if successful
         words = f.read().splitlines()
         print(f'Using database of {len(words)} potential searches')
         f.close()
 
-    if args.desktop or args.mobile:
-        args.all = False
-
-    if args.desktop or args.all:
+    def desktop():
+        # Complete search with desktop settings
         count = args.count if args.count else DESKTOP_COUNT
         print(f'Doing {count} desktop searches')
+
         search(count, words, desktop_agent, args)
         print(f'Desktop Search complete! {5*count} MS rewards points\n')
 
-    if args.mobile or args.all:
+    def mobile():
+        # Complete search with mobile settings
         count = args.count if args.count else MOBILE_COUNT
         print(f'Doing {count} mobile searches')
+
         search(count, words, mobile_agent, args)
         print(f'Mobile Search complete! {5*count} MS rewards points\n')
 
+    # If neither mode is specified, complete both modes
+    if args.desktop:
+        desktop()
+    elif args.mobile:
+        mobile()
+    else:
+        desktop()
+        mobile()
 
-# Main execution
+
+# Execute only if run as a command line script
 if __name__ == "__main__":
     check_python_version()
     args = parse_args()
