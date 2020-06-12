@@ -3,59 +3,67 @@
 Please submit an issue or pull-request if you have an idea for a feature 
 ### A script to automate daily Bing rewards points
 
-## **Features**
-***
-* Script auto types searches into www.bing.com, so must be run in a GUI environment. Great for AFK grinding once a day for those points
+## **Features:**
+
+* Spoofs user agent to appear as Edge Browser on Mobile or Desktop in Chrome!
+* Script auto-types searches, so must be run in a GUI environment. Great for AFK grinding once a day for those points
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
-* Spoofs user agent to appear as Edge Browser on Mobile or Desktop in Chrome!
-* Timings can be tweaked to speed up the automation  
-
-## **Usage**
 ***
-> Run 30 searches in desktop mode in a new Chrome window
 
-*`> python bing_search -n`*   
 
-> Run 10 searches with mobile user-agent in a new window
+## **Usage:**
 
-*`> python bing_search -n -m -c10`*  
+`python bing_search.py [-h] [--nowindow] [-c COUNT] [-n] [-d | -m]`
+##
+Ex:  
+Complete mobile and desktop daily points
 
-*` > python bing_search --new --mobile --count=10`*
+*`$ python bing_search`*   
+
+Run 10 searches with mobile user-agent in a new window
+
+*`$ python bing_search -m -c10`*  
+
+*`$ python bing_search --mobile --count=10`*
 
 Executes a system command to launch Chrome with special flags. If it fails on your OS, manually modify the command used to launch Chrome in the script.
 
-Note: Due to how Chrome processes work, you must close all chrome windows to reset the user agent. (e.g. when switching from desktop to mobile mode)
+Will  now automatically create and close the Chrome processes as needed.
+
+
 ## **Requirements:**
-***
+
 At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
 
 Uses the [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
 WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background. This feature is being researched.
 
-*`> pip install pyautogui`*
+*`$ pip install pyautogui`*
 
 `chrome` must be discoverable on the system PATH  
-Alternatively, open your preferred browser before running the script without the `-n, --new` argument. Custom user agent will not be set in this case.
+Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case.
 
 You must also have logged into www.bing.com with your Microsoft account at least once. 
 The tool will still search without doing this, but you won't earn rewards points
 
-## **All options**
-| Flag              | Option                                                        |
-|-------------------|---------------------------------------------------------------|
-| `-h`, `--help`    | Display help and exit                                         |
-| `-n`, `--new`     | Open in a new window instead of whatever is currently focused (*this is the preferred method*) |
-| `-c`, `--count=N` | Perform N searches total (default 30)                         |
-| `-m`, `--mobile`  | Use a mobile user agent, to appear on a phone                 |
-| `--dry-run`       | Do everything but type the search query                       |
 
-## **TODO**
-- Rework how `chrome` processes are created, hopefully with `subprocess.Popen`. Has had issues with Windows
-- Add `--all` option to complete mobile and desktop searches in one go
-## User agents
-***
+## **All options:**
+
+Running with no options will complete mobile and desktop daily search quota. The following options are available to change the default behavior.
+| Flag              | Option                           |
+|-------------------|---------------------------------|
+| `-h`, `--help`    | Display help and exit           |
+| `-c`, `--count=N` | Override the number of searches to complete |
+| `-d`, `--desktop`  | Only use desktop user agent                |
+| `-m`, `--mobile`  | Only use a mobile user agent              |
+| `-n`, `--dryrun`  | Do everything but type the search query       |
+| `--nowindow`     | Don't open a new Chrome window, just type the keys|
+
+
+## User agents:
+
 If interested, the following user agents are passed to chrome using the `--user-agent` argument. These are clearly defined at the top of `bing_search.py`.  
 
 Edge Browser on Windows 10 desktop:  
@@ -63,3 +71,4 @@ Edge Browser on Windows 10 desktop:
 
 Mobile Edge Browser on Windows 10 phone:  
 > Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041 
+***
