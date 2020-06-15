@@ -1,52 +1,56 @@
-# bing_search
-:exclamation: **Warning, this project is incomplete and a WIP; bugs likely.**  
-Please submit an issue or pull-request if you have an idea for a feature 
+# bing-search
 ### A script to automate daily Bing rewards points
+Please submit an issue or pull-request if you have an idea for a feature 
 
 ## **Features:**
 
-* Spoofs user agent to appear as Edge Browser on Mobile or Desktop in Chrome!
+* Spoofs user agent to appear as Mobile or Desktop Edge Browser using Chrome!
 * Script auto-types searches, so must be run in a GUI environment. Great for AFK grinding once a day for those points
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
+* Only one external dependance (PyAutoGUI) 
 ***
 
+## **Download:**
+
+Download the [zip file](https://github.com/jack-mil/bing-search/archive/master.zip) and extract it somewhere, or using git:  
+`$ git clone https://github.com/jack-mil/bing-search.git && cd bing-search`
 
 ## **Usage:**
 
-`python bing_search.py [-h] [--nowindow] [-c COUNT] [-n] [-d | -m]`
-##
+#### `python bing_search.py [-h] [--nowindow] [-c COUNT] [-n] [-d | -m]`
+
 Ex:  
 Complete mobile and desktop daily points
 
-*`$ python bing_search`*   
+`$ python bing_search`
 
 Run 10 searches with mobile user-agent in a new window
 
-*`$ python bing_search -m -c10`*  
+`$ python bing_search -m -c10`
 
-*`$ python bing_search --mobile --count=10`*
+`$ python bing_search --mobile --count=10`
 
-Executes a system command to launch Chrome with special flags. If it fails on your OS, manually modify the command used to launch Chrome in the script.
+Launches Chrome as a subprocess with special flags. Only tested on Windows 10, however it should work on other platforms
 
 Will  now automatically create and close the Chrome processes as needed.
 
 
 ## **Requirements:**
 
-At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
+- At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
 
-Uses the [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
-WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background. This feature is being researched.
+- [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
+WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background.  
+Install PyAutoGUI with `pip`  
+`$ pip install -r requirements.txt`  OR  
+`$ pip install pyautogui`  
 
-*`$ pip install pyautogui`*
+- `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).  
+Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case (not recommended). 
 
-`chrome` must be discoverable on the system PATH  
-Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case.
-
-You must also have logged into www.bing.com with your Microsoft account at least once. 
-The tool will still search without doing this, but you won't earn rewards points
+- To earn points from searching, you must also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies. 
 
 
 ## **All options:**
@@ -64,7 +68,7 @@ Running with no options will complete mobile and desktop daily search quota. The
 
 ## User agents:
 
-If interested, the following user agents are passed to chrome using the `--user-agent` argument. These are clearly defined at the top of `bing_search.py`.  
+If interested, the following user agents are passed to Chrome using the `--user-agent` argument. These are clearly defined at the top of `bing_search.py`.  
 
 Edge Browser on Windows 10 desktop:  
 > Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37
