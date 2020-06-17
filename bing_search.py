@@ -25,7 +25,7 @@ import random
 import subprocess
 import sys
 import time
-from os import path, remove, system
+from os import path
 from urllib.parse import quote_plus
 
 import pyautogui
@@ -54,7 +54,6 @@ URL = 'https://www.bing.com/search?q='
 
 # Internal files
 word_file = 'keywords.txt'
-temp_file = 'tempfile'
 
 # Set of used keywords
 used = set()
