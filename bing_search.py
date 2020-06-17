@@ -114,13 +114,6 @@ def chrome_cmd(agent):
     return ['chrome', '--new-window', f'--user-agent=\"{agent}\"']
 
 
-def diff(li1, li2):
-    """
-    Computes the difference of two lists
-    """
-    return list(set(li1) - set(li2))
-
-
 def search(count, words, agent, args):
     """
     Opens a Chrome window with specified `agent` string, completes `count`
@@ -143,11 +136,19 @@ def search(count, words, agent, args):
     time.sleep(LOAD_DELAY)
 
     for i in range(count):
-        # Get new random search query
-        new = diff(words, used)
-        query = random.choice(new)
+        # Get a random query from set of words
+        query = random.choice(list(words))
 
-        # Concatenate url with correct characters
+        # Keep track of used searches, and remove from original set
+        used.add(query)
+        words.remove(query)
+
+        # If we have run out of new words (unlikely), reset the sets
+        if not words:
+            words = used.copy()
+            used.clear()
+
+        # Concatenate url with correct url escape characters
         search_url = URL + quote_plus(query)
 
         # Use PyAutoHotkey to trigger keyboard events and auto search
@@ -160,9 +161,8 @@ def search(count, words, agent, args):
             pyautogui.typewrite(search_url)
             pyautogui.typewrite('\n', interval=0.1)
 
-        used.add(query)
-        time.sleep(SEARCH_DELAY)
         print(f"Search {i+1}: {query}")
+        time.sleep(SEARCH_DELAY)
 
     if not args.nowindow:
         # Close the Chrome window
@@ -171,7 +171,7 @@ def search(count, words, agent, args):
 
 def main(args):
     """
-    Main program execution. Reads keywords from a file,
+    Main program execution. Loads keywords from a file,
     interprets command line arguments,
     and executes search function
     """
@@ -183,7 +183,7 @@ def main(args):
         sys.exit(1)
     else:
         # Store all words in a list if successful
-        words = f.read().splitlines()
+        words = set(f.read().splitlines())
         print(f'Using database of {len(words)} potential searches')
         f.close()
 
@@ -220,5 +220,5 @@ if __name__ == "__main__":
     main(args)
 else:
     print('bing_search is intended to be run as a command line application.\n'
-          'try "python3 bing_search.py --help" for more info.')
+          'try `python3 bing_search.py --help` for more info.')
     sys.exit()
