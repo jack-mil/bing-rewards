@@ -5,13 +5,15 @@ Automatically perform MS Bing searches to earn rewards points
 
 Usage:
 
-    `bing_search.py`
-    `bing_search.py -nmc30`
-    `bing_search.py --new --count=50 --mobile --dryrun`
+    $ bing_search.py
+    $ bing_search.py -nmc30
+    $ bing_search.py --new --count=50 --mobile --dryrun
 
 try
-> `python bing_search.py --help`
+    $ python bing_search.py --help
+
 for more info
+
 
 * By: Jackson Miller
 
