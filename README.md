@@ -15,7 +15,23 @@ Please submit an issue or pull-request if you have an idea for a feature
 ## **Download:**
 
 Download the [zip file](https://github.com/jack-mil/bing-search/archive/master.zip) and extract it somewhere, or using git:  
-`$ git clone https://github.com/jack-mil/bing-search.git && cd bing-search`
+`$ git clone https://github.com/jack-mil/bing-search.git && cd bing-search`  
+
+
+## **Requirements:**
+
+- At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
+
+- [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
+WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background.  
+Install PyAutoGUI with `pip`  
+`$ python -m pip install -r requirements.txt`  OR  
+`$ python -m pip install pyautogui`  
+
+- `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).  
+Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case (not recommended). 
+
+- To earn points from searching, you must also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies. 
 
 ## **Usage:**
 
@@ -35,22 +51,6 @@ Run 10 searches with mobile user-agent in a new window
 Launches Chrome as a subprocess with special flags. Only tested on Windows 10, however it should work on other platforms
 
 Will  now automatically create and close the Chrome processes as needed.
-
-
-## **Requirements:**
-
-- At least Python 3.6. Be careful if you also have Python 2 installed on your system (most Linux distros can invoke `python3`)  
-
-- [PyAutoGUI](https://github.com/asweigart/pyautogui) package to automatically type Bing search URLS.   
-WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background.  
-Install PyAutoGUI with `pip`  
-`$ pip install -r requirements.txt`  OR  
-`$ pip install pyautogui`  
-
-- `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).  
-Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case (not recommended). 
-
-- To earn points from searching, you must also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies. 
 
 
 ## **All options:**
