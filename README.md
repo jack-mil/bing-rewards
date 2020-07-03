@@ -15,7 +15,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 ## **Download:**
 
 Download the [zip file](https://github.com/jack-mil/bing-search/archive/master.zip) and extract it somewhere, or using git:  
-`$ git clone https://github.com/jack-mil/bing-search.git && cd bing-search`  
+`$ git clone --depth=1 https://github.com/jack-mil/bing-search.git && cd bing-search`  
 
 
 ## **Requirements:**
