@@ -15,7 +15,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 ## **Download:**
 
 Download the [zip file](https://github.com/jack-mil/bing-search/archive/master.zip) and extract it somewhere, or using git:  
-`$ git clone https://github.com/jack-mil/bing-search.git && cd bing-search`  
+`$ git clone --depth=1 https://github.com/jack-mil/bing-search.git && cd bing-search`  
 
 
 ## **Requirements:**
@@ -29,7 +29,10 @@ Install PyAutoGUI with `pip`
 `$ python -m pip install pyautogui`  
 
 - `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).  
-Alternatively, open your preferred browser and run with `--nowindow` argument. Custom user agent will not be set in this case (not recommended). 
+If you use a different chromium based browser that supports setting user agents via the `--user-agent` option, you can change the command to run in [`bing_search.py` *`chrome_cmd()`*](https://github.com/jack-mil/bing-search/blob/6aa71887f22388ecb88dc54c634c12fa7ebff171/bing_search.py#L110)  
+```py
+return ['brave', '--new-window', f'--user-agent=\"{agent}\"']
+```
 
 - To earn points from searching, you must also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies. 
 
