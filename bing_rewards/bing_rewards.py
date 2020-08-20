@@ -21,6 +21,7 @@ for more info
 """
 
 import argparse as argp
+import pkgutil
 import platform
 import random
 import subprocess
@@ -56,6 +57,8 @@ URL = 'https://www.bing.com/search?q='
 
 # Internal files
 word_file = 'keywords.txt'
+search_texts = pkgutil.get_data(__name__, 'keywords.txt').decode()
+pkg_resources
 
 # Set of used keywords
 used = set()
@@ -125,7 +128,7 @@ def search(count, words, agent, args):
     try:
         # Open Chrome as a subprocess
         # Only if a new window should be opened
-        if not args.nowindow:
+        if not args.nowindow and not args.dryrun:
             chrome = subprocess.Popen(chrome_cmd(agent))
     except FileNotFoundError as e:
         print(e)
@@ -171,23 +174,28 @@ def search(count, words, agent, args):
         chrome.terminate()
 
 
-def main(args):
+def main():
     """
     Main program execution. Loads keywords from a file,
     interprets command line arguments,
     and executes search function
     """
-    try:
-        # Read search keywords from file
-        f = open(word_file, 'r')
-    except FileNotFoundError:
-        print(f'File {path.realpath(word_file)} not found')
-        sys.exit(1)
-    else:
+
+    check_python_version()
+    args = parse_args()
+
+    # try:
+    #     # Read search keywords from file
+    #     f = open(word_file, 'r')
+    # except FileNotFoundError:
+    #     print(f'File {path.realpath(word_file)} not found')
+    #     sys.exit(1)
+    # else:
         # Store all words in a list if successful
-        words = set(f.read().splitlines())
-        print(f'Using database of {len(words)} potential searches')
-        f.close()
+        # words = set(f.read().splitlines())
+    words = set(search_texts.splitlines())
+        # print(f'Using database of {len(words)} potential searches')
+        # f.close()
 
     def desktop():
         # Complete search with desktop settings
@@ -219,10 +227,8 @@ def main(args):
 
 # Execute only if run as a command line script
 if __name__ == "__main__":
-    check_python_version()
-    args = parse_args()
-    main(args)
-else:
-    print('bing_search is intended to be run as a command line application.\n'
-          'try `python3 bing_search.py --help` for more info.')
-    sys.exit()
+    main()
+# else:
+#     print('bing_search is intended to be run as a command line application.\n'
+#           'try `python bing_rewards.py --help` for more info.')
+#     sys.exit()

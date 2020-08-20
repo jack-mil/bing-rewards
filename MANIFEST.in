@@ -1,0 +1,5 @@
+recursive-include bing_rewards *
+
+include README.md
+include LICENSE
+include requirements.txt
