@@ -19,12 +19,14 @@ for more info
 
 * Repository and issues: https://github.com/jack-mil/bing-search
 """
+
 import argparse as argp
 import platform
 import random
 import subprocess
 import sys
 import time
+import webbrowser
 from os import path
 from urllib.parse import quote_plus
 
@@ -211,6 +213,8 @@ def main(args):
     else:
         desktop()
         mobile()
+        # Open rewards dashboard
+        webbrowser.open_new('https://account.microsoft.com/rewards')
 
 
 # Execute only if run as a command line script
