@@ -79,3 +79,10 @@ Edge Browser on Windows 10 desktop:
 Mobile Edge Browser on Windows 10 phone:  
 > Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041 
 ***
+
+## Words:
+The [keywords](https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
+https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/.
+
+This script provided the original inspiration but has since been complelty rewritten and expanded.
+The original author was contacted for the original source of keywords, but declined to respond
