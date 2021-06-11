@@ -53,7 +53,7 @@ Run 10 searches with mobile user-agent in a new window
 
 Launches Chrome as a subprocess with special flags. Only tested on Windows 10, however it should work on other platforms
 
-Will  now automatically create and close the Chrome processes as needed.
+⚠️Known Issue: No other instance of chrome.exe can be open when the script runs. Chrome prevents different user agents in each window. The script will run, but Chrome will not appear as Edge
 
 
 ## **All options:**
