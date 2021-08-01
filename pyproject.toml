@@ -1,0 +1,7 @@
+[tool.black]
+exclude = '/(\.eggs|\.git|\.hg|\.mypy_cache|\.venv.*|_build|buck-out|build|dist)/'
+line-length = 88
+
+[tool.isort]
+profile = "black"
+skip_glob = '.venv*'

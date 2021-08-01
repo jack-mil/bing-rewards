@@ -1,0 +1,38 @@
+# This workflow runs on every push or pull_request to the repo
+# Currently only runs linting (black, flake8, istort)
+
+name: CI Checks
+
+on: 
+  push:
+    branches: [master, develop]
+  pull_request:
+    types: [ opened, edited, reopened, review_requested ]
+    branches: [master, develop]
+
+jobs:
+  lint:
+    name: Run Linting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - uses: actions/cache@v2
+      with:
+        key: v0-${{ runner.os }}-pip-lint-${{ hashFiles('setup.py') }}
+        path: ~/.cache/pip
+        restore-keys: |
+          v0-${{ runner.os }}-pip-lint-
+          v0-${{ runner.os }}-pip-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[lint]
+    - name: Run black
+      run: black --check --verbose .
+    - name: Run flake8
+      run: flake8 --statistics
+    - name: Run isort
+      run: isort -cv .
