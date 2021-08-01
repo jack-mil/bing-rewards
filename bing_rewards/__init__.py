@@ -27,7 +27,7 @@ import sys
 import time
 import webbrowser
 from pathlib import Path
-from typing import Generator
+from typing import Generator, List
 from urllib.parse import quote_plus
 
 import pyautogui
@@ -62,6 +62,13 @@ URL = "https://www.bing.com/search?q="
 KEYWORDS = Path(Path(__file__).parent, "data", "keywords.txt")
 
 
+def check_path(path: str) -> Path:
+    exe = Path(path)
+    if exe.is_file and exe.exists:
+        return exe
+    raise FileNotFoundError(path)
+
+
 def parse_args():
     """
     Parse all command line arguments and return Namespace
@@ -83,6 +90,11 @@ def parse_args():
         "--dryrun",
         help="Do everything but search",
         action="store_true",
+    )
+    p.add_argument(
+        "--exe",
+        help="The full path of the Chrome compatible browser executable (Brave or Chrome tested)",
+        type=check_path,
     )
     p.add_argument(
         "-c",
@@ -119,11 +131,15 @@ def check_python_version():
     ), "Only Python {}.{} and above is supported.".format(*minimum_version)
 
 
-def browser_cmd(agent):
+def browser_cmd(exe: Path, agent: str) -> List[str]:
     """
     Generate command to open Google Chrome with user-agent `agent`
     """
-    return ["chrome", "--new-window", f'--user-agent="{agent}"']
+    if exe is not None:
+        browser = str(exe)
+    else:
+        browser = "chrome"
+    return [browser, "--new-window", f'--user-agent="{agent}"']
 
 
 def get_words_gen() -> str:
@@ -151,12 +167,13 @@ def search(count, words_gen: Generator, agent, args):
         # Open Chrome as a subprocess
         # Only if a new window should be opened
         if not args.no_window and not args.dryrun:
-            chrome = subprocess.Popen(browser_cmd(agent))
+            chrome = subprocess.Popen(browser_cmd(args.exe, agent))
     except FileNotFoundError as e:
         print("Unexpected error:", e)
         print(
             "ERROR: Chrome could not be found on system PATH\n"
-            "Make sure it is installed and added to PATH"
+            "Make sure it is installed and added to PATH,"
+            "or use the --exe flag to give an absolute path"
         )
         sys.exit(1)
 
