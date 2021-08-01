@@ -22,7 +22,7 @@ extras = {
     "lint": [
         "black",
         "flake8",
-        "flake8-bugbear"
+        "flake8-bugbear",
         "isort",
     ],
 }
