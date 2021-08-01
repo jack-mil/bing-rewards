@@ -18,7 +18,7 @@ def get_version() -> str:
 
 
 extras = {
-    "dev": [],
+    "dev": ["twine"],
     "lint": [
         "black",
         "flake8",
@@ -36,6 +36,7 @@ setup(
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     license="MIT",
+    url="https://github.com/jack-mil/bing-rewards",
     project_urls={
         "Issue Tracker": "https://github.com/jack-mil/bing-rewards/issues",
         "Source Code": "https://github.com/jack-mil/bing-rewards",
