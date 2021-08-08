@@ -26,6 +26,7 @@ import subprocess
 import sys
 import time
 import webbrowser
+from io import SEEK_END, SEEK_SET
 from pathlib import Path
 from typing import Generator, List
 from urllib.parse import quote_plus
@@ -143,18 +144,17 @@ def browser_cmd(exe: Path, agent: str) -> List[str]:
 
 
 def get_words_gen() -> str:
-    with KEYWORDS.open(mode="r", encoding="utf8") as fh:
-        words_set = set(fh.readlines())
-    used = set()
     while True:
-        choice = random.choice(list(words_set))
-        used.add(choice)
-        words_set.remove(choice)
-        if len(words_set) <= 0:
-            # Reset list if possibly ran out (extremely unlikely)
-            words_set = used.copy()
-            used.clear()
-        yield choice
+        # Wrapped in an infinite loop to support circular reading of the file
+        with KEYWORDS.open(mode="r", encoding="utf8") as fh:
+            fh.seek(0, SEEK_END)
+            size = fh.tell()  # Get the filesize of the Keywords file
+            fh.seek(
+                random.randint(0, (size * 3 // 4)), SEEK_SET
+            )  # Start at a random position in the stream
+            for line in fh:
+                # Use the built in file handler generator
+                yield line.strip()
 
 
 def search(count, words_gen: Generator, agent, args):
