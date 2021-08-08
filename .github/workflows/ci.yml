@@ -1,14 +1,17 @@
-# This workflow runs on every push or pull_request to the repo
-# Currently only runs linting (black, flake8, istort)
+# This workflow runs CI Tasks on a repo with Git Flow-like structure
 
-name: CI Checks
+name: CI
 
-on: 
+on:
   push:
     branches: [master, develop]
+    paths:
+      - 'bing_rewards/**.py'
   pull_request:
-    types: [ opened, edited, reopened, review_requested ]
     branches: [master, develop]
+    types: [ opened, synchronize ]
+    paths:
+    - 'bing_rewards/**.py'
 
 jobs:
   lint:
@@ -29,10 +32,107 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade .[lint]
+        pip install --upgrade -e .[lint]
     - name: Run black
       run: black --check --verbose .
     - name: Run flake8
       run: flake8 --statistics
     - name: Run isort
       run: isort -cv .
+
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - uses: actions/cache@v2
+      with:
+        key: v0-${{ runner.os }}-pip-build-${{ hashFiles('setup.py') }}
+        path: ~/.cache/pip
+        restore-keys: |
+          v0-${{ runner.os }}-pip-build-
+          v0-${{ runner.os }}-pip-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade setuptools wheel
+    - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+      run: python .ci/prep_version.py VERSION --develop --inplace
+    - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      run: python .ci/prep_version.py VERSION --master --inplace
+    - if: ${{ github.event_name == 'pull_request' && github.base_ref == 'develop' }}
+      run: python .ci/prep_version.py VERSION --dev-pr --inplace
+    - if: ${{ github.event_name == 'pull_request' && github.base_ref == 'master' }}
+      run: python .ci/prep_version.py VERSION --staging --inplace
+    - name: Build Package
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Save Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path:
+          dist/*
+
+  release:
+    name: Publish Release
+    needs: [lint, build]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - uses: actions/cache@v2
+      with:
+        key: v0-${{ runner.os }}-pip-release-${{ hashFiles('setup.py') }}
+        path: ~/.cache/pip
+        restore-keys: |
+          v0-${{ runner.os }}-pip-release-
+          v0-${{ runner.os }}-pip-
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: dist/
+    - name: Release on PyPi
+      continue-on-error: true
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade twine
+        twine upload dist/*
+    - name: Setup Git Config
+      run: |
+        git config user.name "Github Actions"
+        git config user.email "<noreply@github.com>"
+    - name: Get Tag Version
+      run: |
+        echo "version=v$(cat VERSION)" >> $GITHUB_ENV
+    - name: Create Github Release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "${{ env.version }}"
+        prerelease: false
+        draft: true
+        files: |
+          dist/*
+    - name: Bump Dev Version
+      run: |
+        git checkout develop
+        git merge origin/master --no-ff
+        python .ci/bump_version.py VERSION --minor --inplace
+        git add VERSION
+        git commit -m "[skip ci] Bump version to $(cat VERSION)"
+        git push origin develop
