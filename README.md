@@ -22,6 +22,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
 * Only one external dependance (PyAutoGUI)
+* Fine tune delay and set browser executable with config at $XDG_CONFIG_HOME or %APPDATA% on Windows
 ***
 
 ## **Install with Pip!**
