@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Bing Search
 
@@ -15,37 +14,45 @@ Try:
     bing-search --help
 for more info
 
+A config file is generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
+where precise delay modifications can be made
+Delay timings are in seconds
+
 * By: jack-mil
 
 * Repository and issues: https://github.com/jack-mil/bing-search
 """
 
 import argparse as argp
+import json
+import os
 import random
 import subprocess
 import sys
 import time
 import webbrowser
 from io import SEEK_END, SEEK_SET
+from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Generator, List
+from typing import Dict, Generator, List
 from urllib.parse import quote_plus
 
 import pyautogui
 
 # Edge Browser user agents
 # Makes Google Chrome look like MS Edge to Bing
-mobile_agent = (
+MOBILE_AGENT = (
     "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041"
 )
 
-desktop_agent = (
+DESKTOP_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37"
 )
+
 
 # Number of searches to make
 DESKTOP_COUNT = 34
@@ -61,6 +68,17 @@ URL = "https://www.bing.com/search?q="
 
 # Reference Keywords from package files
 KEYWORDS = Path(Path(__file__).parent, "data", "keywords.txt")
+
+SETTINGS = {
+    "desktop-count": DESKTOP_COUNT,
+    "mobile-count": MOBILE_COUNT,
+    "load-delay": LOAD_DELAY,
+    "search-delay": SEARCH_DELAY,
+    "search-url": URL,
+    "desktop-agent": DESKTOP_AGENT,
+    "mobile-agent": MOBILE_AGENT,
+    "browser-path": "",
+}
 
 
 def check_path(path: str) -> Path:
@@ -122,6 +140,35 @@ def parse_args():
     return p.parse_args()
 
 
+def parse_config(default_config: Dict) -> Dict:
+    config_home = Path(
+        os.environ.get("APPDATA")
+        or os.environ.get("XDG_CONFIG_HOME")
+        or Path(os.environ["HOME"], ".config"),
+        "bing-rewards",
+    )
+
+    config_file = config_home / "config.json"
+
+    try:
+        # Read config from json dictionary
+        with config_file.open() as f:
+            return json.load(f)
+
+    except FileNotFoundError:
+        # Make directories and default config if it doesn't exist
+        print(f"Autogenerating config at {str(config_file)}")
+        os.makedirs(config_home, exist_ok=True)
+
+        with config_file.open("x") as f:
+            json.dump(default_config, f, indent=4)
+            return default_config
+    except JSONDecodeError as e:
+        print(e)
+        print("Error parsing JSON config. Please check your modifications.")
+        sys.exit(1)
+
+
 def check_python_version():
     """
     Ensure the correct version of Python is being used.
@@ -157,7 +204,7 @@ def get_words_gen() -> str:
                 yield line.strip()
 
 
-def search(count, words_gen: Generator, agent, args):
+def search(count, words_gen: Generator, agent, args, config):
     """
     Opens a Chrome window with specified `agent` string, completes `count`
     searches from list `words`,
@@ -167,7 +214,9 @@ def search(count, words_gen: Generator, agent, args):
         # Open Chrome as a subprocess
         # Only if a new window should be opened
         if not args.no_window and not args.dryrun:
-            chrome = subprocess.Popen(browser_cmd(args.exe, agent))
+            chrome = subprocess.Popen(
+                browser_cmd(args.exe or config.get("browser-path") or None, agent)
+            )
     except FileNotFoundError as e:
         print("Unexpected error:", e)
         print(
@@ -178,7 +227,7 @@ def search(count, words_gen: Generator, agent, args):
         sys.exit(1)
 
     # Wait for Chrome to load
-    time.sleep(LOAD_DELAY)
+    time.sleep(config.get("load-delay", LOAD_DELAY))
 
     for i in range(count):
         # Get a random query from set of words
@@ -198,7 +247,7 @@ def search(count, words_gen: Generator, agent, args):
             pyautogui.typewrite("\n", interval=0.1)
 
         print(f"Search {i+1}: {query}")
-        time.sleep(SEARCH_DELAY)
+        time.sleep(config.get("search-delay", SEARCH_DELAY))
 
     if not args.no_window and not args.dryrun:
         # Close the Chrome window
@@ -213,28 +262,33 @@ def main():
     """
 
     check_python_version()
+    config = parse_config(SETTINGS)
     args = parse_args()
+
     if args.dryrun:
-        global SEARCH_DELAY, LOAD_DELAY
-        SEARCH_DELAY = 0
-        LOAD_DELAY = 0
+        config["search-delay"] = 0
+        config["load-delay"] = 0
 
     words_gen = get_words_gen()
 
     def desktop():
         # Complete search with desktop settings
-        count = args.count if args.count else DESKTOP_COUNT
+        count = args.count or config.get("desktop-count") or DESKTOP_COUNT
         print(f"Doing {count} desktop searches")
 
-        search(count, words_gen, desktop_agent, args)
+        search(
+            count, words_gen, config.get("desktop-agent") or DESKTOP_AGENT, args, config
+        )
         print(f"Desktop Search complete! {5*count} MS rewards points\n")
 
     def mobile():
         # Complete search with mobile settings
-        count = args.count if args.count else MOBILE_COUNT
+        count = args.count or config.get("mobile-count") or MOBILE_COUNT
         print(f"Doing {count} mobile searches")
 
-        search(count, words_gen, mobile_agent, args)
+        search(
+            count, words_gen, config.get("mobile-agent") or MOBILE_AGENT, args, config
+        )
         print(f"Mobile Search complete! {5*count} MS rewards points\n")
 
     # If neither mode is specified, complete both modes
