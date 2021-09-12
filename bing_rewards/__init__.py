@@ -37,6 +37,9 @@ from pathlib import Path
 from typing import Dict, Generator, List
 from urllib.parse import quote_plus
 
+if os.name == "posix":
+    import signal
+
 import pyautogui
 
 # Edge Browser user agents
@@ -214,9 +217,18 @@ def search(count, words_gen: Generator, agent, args, config):
         # Open Chrome as a subprocess
         # Only if a new window should be opened
         if not args.no_window and not args.dryrun:
-            chrome = subprocess.Popen(
-                browser_cmd(args.exe or config.get("browser-path") or None, agent)
-            )
+            if os.name == "posix":
+                chrome = subprocess.Popen(
+                    browser_cmd(args.exe or config.get("browser-path") or None, agent),
+                    stderr=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    preexec_fn=os.setsid,
+                )
+            else:
+                chrome = subprocess.Popen(
+                    browser_cmd(args.exe or config.get("browser-path") or None, agent),
+                )
+            print(chrome.pid)
     except FileNotFoundError as e:
         print("Unexpected error:", e)
         print(
@@ -251,7 +263,10 @@ def search(count, words_gen: Generator, agent, args, config):
 
     if not args.no_window and not args.dryrun:
         # Close the Chrome window
-        chrome.terminate()
+        if os.name == "posix":
+            os.killpg(chrome.pid, signal.SIGTERM)
+        else:
+            chrome.kill()
 
 
 def main():
