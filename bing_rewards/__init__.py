@@ -115,7 +115,7 @@ def parse_args():
     )
     p.add_argument(
         "--exe",
-        help="The full path of the Chrome compatible browser executable (Brave or Chrome tested)",
+        help="The full path of the Chrome compatible browser executable",
         type=check_path,
     )
     p.add_argument(
@@ -123,6 +123,12 @@ def parse_args():
         "--count",
         help="Override the number of searches to perform",
         type=int,
+    )
+    p.add_argument(
+        "-X",
+        "--no-exit",
+        help="Don't close the browser window after searching",
+        action="store_true",
     )
 
     # Mutually exclusive options. Only one can be present
@@ -260,6 +266,10 @@ def search(count, words_gen: Generator, agent, args, config):
 
         print(f"Search {i+1}: {query}")
         time.sleep(config.get("search-delay", SEARCH_DELAY))
+
+    # Skip killing the window if exit flag set
+    if args.no_exit:
+        return
 
     if not args.no_window and not args.dryrun:
         # Close the Chrome window
