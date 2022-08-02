@@ -1,6 +1,6 @@
 """
 Bing Search
-
+v1.4.0
 Automatically perform Bing searches for Rewards Points!
 Executing 'bing-rewards' with no arguments does {DESKTOP_COUNT} desktop searches
 followed by {MOBILE_COUNT} mobile searches by default
