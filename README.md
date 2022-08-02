@@ -75,6 +75,7 @@ Running with no options will complete mobile and desktop daily search quota. The
 | `-d`, `--desktop` | Only use desktop user agent                                                         |
 | `-m`, `--mobile`  | Only use a mobile user agent                                                        |
 | `-n`, `--dryrun`  | Do everything but type the search query                                             |
+| `-X`, `--no-exit` | Do not close the browser after completing a search                                  |
 | `--exe EXE`       | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
 | `--nowindow`      | Don't open a new Chrome window, just type the keys                                  |
 
