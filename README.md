@@ -13,10 +13,11 @@
 ### A script to automate daily Bing rewards points
 Please submit an issue or pull-request if you have an idea for a feature
 
+#### :exclamation: NOTE: The user agent spoofing seems to have stopped working when using Microsoft Edge browser. Currently investigating if this is a breaking change on their side (See issue [#13](https://github.com/jack-mil/bing-rewards/issues/13)). For the time being, Brave and Chrome seem to work fine.
 
 ## **Features:**
 
-* Spoofs user agent to appear as Mobile or Desktop Edge Browser using Chrome!
+* Spoofs user agent to appear as Mobile or Desktop Edge Browser using Chrome/Brave!
 * Script auto-types searches, so must be run in a GUI environment. Great for AFK grinding once a day for those points
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
@@ -47,18 +48,18 @@ If you use a different chromium based browser that supports setting user agents 
 
 ## **Usage:**
 
-#### `bing_search [-h] [--no-window] [-n] [--exe EXE] [-c COUNT] [-d | -m]`
+#### `bing-rewards [-h] [--no-window] [-n] [--exe EXE] [-c COUNT] [-d | -m]`
 
 Ex:
 Complete mobile and desktop daily points
 
-`$ bing_search`
+`$ bing-rewards`
 
 Run 10 searches with mobile user-agent in a new window
 
-`$ bing_search -m -c10`
+`$ bing-rewards -m -c10`
 
-`$ bing_search --mobile --count=10`
+`$ bing-rewards --mobile --count=10`
 
 Launches Chrome as a subprocess with special flags. Only tested on Windows 10, however it should work on other platforms
 
@@ -82,7 +83,7 @@ Running with no options will complete mobile and desktop daily search quota. The
 
 ## User agents:
 
-If interested, the following user agents are passed to Chrome using the `--user-agent` argument. These are clearly defined at the top of `bing_search.py`.
+If interested, the following user agents are passed to Chrome using the `--user-agent` argument. These are clearly defined at the top of `bing-rewards.py`.
 
 Edge Browser on Windows 10 desktop:
 > Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37
