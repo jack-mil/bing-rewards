@@ -13,8 +13,7 @@
 ### A script to automate daily Bing rewards points
 Please submit an issue or pull-request if you have an idea for a feature
 
-#### :exclamation: NOTE: Compatibilty with browsers seems hit and miss. I have confirmed intended behavoir using Brave 1.48.158 (Chromium 110.0.5481.77) on Windows 10 Pro. It's worth trying out several Chromium based browsers to see what works best for you (see `--exe` flag or config file)
-#### UPDATE 1.5.0: It appears that the bonus points from using a mobile device is no longer a feature. My rewards page only lists 50 points from searching, and 5 bonus points for the Edge Browser. As such, running with the `--mobile` flag is unnecessary. I have also modifed the default search count and run action to match the recent changes to the rewards system.
+#### :exclamation: NOTE: The user agent spoofing seems to have stopped working when using Microsoft Edge browser. Currently investigating if this is a breaking change on their side (See issue [#13](https://github.com/jack-mil/bing-rewards/issues/13)). For the time being, Brave and Chrome seem to work fine.
 
 ## **Features:**
 
@@ -25,21 +24,15 @@ Please submit an issue or pull-request if you have an idea for a feature
 * All files are local, makes no http(s) requests
 * Only one external dependance (PyAutoGUI)
 * Fine tune delay and set browser executable with config at $XDG_CONFIG_HOME or %APPDATA% on Windows
-* Best Value: gift cards: **1,050 points / $1** (current rate)
 ***
 
-## **Install from PyPI!**
+## **Install with Pip!**
 
 ```bash
 pip install bing-rewards
 ```
 Will make the executable `bing-rewards` available on your PATH.
 Look below or try the `--help` flag to see detailed usage.
-
-**Recommended**: Use a virtual environment or [`pipx`](https://pypa.github.io/pipx/) to avoid poluting your global package path with executable apps. See: [pipx](https://pypa.github.io/pipx/)
-```bash 
-pipx install bing-rewards
-```
 
 ## **Requirements:**
 
@@ -49,7 +42,7 @@ pipx install bing-rewards
 WARNING: This script *will* take control away from the keyboard while running. PyAutoGUI performs key presses. i.e., it does not operate headless or in the background.
 
 - `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).
-If you use a different chromium based browser that supports setting user agents via the `--user-agent` option (tested with Brave), you can use the `--exe` flag with an absolute path to the browser executable to use. Also see the `"browser-path"` key in the config file.
+If you use a different chromium based browser that supports setting user agents via the `--user-agent` option (tested with Brave), you can use the `--exe` flag with an absolute path to the browser executable to use.
 
 - To earn points from searching, you must also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies.
 
