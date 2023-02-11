@@ -14,7 +14,7 @@ def get_long_description() -> str:
 
 
 def get_version() -> str:
-    return Path(CURRENT_DIR, "VERSION").read_text(encoding="utf8")
+    return Path(CURRENT_DIR, "bing_rewards", "VERSION").read_text(encoding="utf8")
 
 
 extras = {
@@ -56,8 +56,8 @@ setup(
     extras_require=extras,
     packages=find_packages(),
     package_data={
-        # If any package contains text files, indlude them
-        "": ["data/*.txt"]
+        # If any package contains text files, include them
+        "": ["data/*.txt", "VERSION"]
     },
     zip_safe=False,
     entry_points={"console_scripts": ["bing-rewards = bing_rewards:main"]},

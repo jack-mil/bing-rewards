@@ -1,6 +1,6 @@
 """
 Bing Search
-v1.4.0
+{VERSION}
 Automatically perform Bing searches for Rewards Points!
 Executing 'bing-rewards' with no arguments does {DESKTOP_COUNT} desktop searches
 followed by {MOBILE_COUNT} mobile searches by default
@@ -84,6 +84,10 @@ SETTINGS = {
 }
 
 
+def get_version() -> str:
+    return Path(Path(__file__).parent, "VERSION").read_text(encoding="utf8")
+
+
 def check_path(path: str) -> Path:
     exe = Path(path)
     if exe.is_file and exe.exists:
@@ -97,7 +101,9 @@ def parse_args():
     """
     p = argp.ArgumentParser(
         description=__doc__.format(
-            DESKTOP_COUNT=DESKTOP_COUNT, MOBILE_COUNT=MOBILE_COUNT
+            DESKTOP_COUNT=DESKTOP_COUNT,
+            MOBILE_COUNT=MOBILE_COUNT,
+            VERSION=get_version(),
         ),
         formatter_class=argp.RawDescriptionHelpFormatter,
     )
