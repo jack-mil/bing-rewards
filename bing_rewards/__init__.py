@@ -58,8 +58,8 @@ DESKTOP_AGENT = (
 
 
 # Number of searches to make
-DESKTOP_COUNT = 34
-MOBILE_COUNT = 40
+DESKTOP_COUNT = 50
+MOBILE_COUNT = 0
 
 # Time to allow Chrome to load in seconds
 LOAD_DELAY = 1.5
@@ -166,7 +166,7 @@ def parse_config(default_config: Dict) -> Dict:
 
     except FileNotFoundError:
         # Make directories and default config if it doesn't exist
-        print(f"Autogenerating config at {str(config_file)}")
+        print(f"Auto-Generating config at {str(config_file)}")
         os.makedirs(config_home, exist_ok=True)
 
         with config_file.open("x") as f:
@@ -188,7 +188,7 @@ def check_python_version():
     ), "Only Python {}.{} and above is supported.".format(*minimum_version)
 
 
-def browser_cmd(exe: Path, agent: str) -> List[str]:
+def browser_cmd(exe: Path | None, agent: str) -> List[str]:
     """
     Generate command to open Google Chrome with user-agent `agent`
     """
@@ -199,7 +199,7 @@ def browser_cmd(exe: Path, agent: str) -> List[str]:
     return [browser, "--new-window", f'--user-agent="{agent}"']
 
 
-def get_words_gen() -> str:
+def get_words_gen() -> Generator:
     while True:
         # Wrapped in an infinite loop to support circular reading of the file
         with KEYWORDS.open(mode="r", encoding="utf8") as fh:
