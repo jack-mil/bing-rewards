@@ -63,16 +63,17 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade setuptools wheel
     - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-      run: python .ci/prep_version.py VERSION --develop --inplace
+      run: python .ci/prep_version.py bing_rewards/VERSION --develop --inplace
     - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      run: python .ci/prep_version.py VERSION --master --inplace
+      run: python .ci/prep_version.py bing_rewards/VERSION --master --inplace
     - if: ${{ github.event_name == 'pull_request' && github.base_ref == 'develop' }}
-      run: python .ci/prep_version.py VERSION --dev-pr --inplace
+      run: python .ci/prep_version.py bing_rewards/VERSION --dev-pr --inplace
     - if: ${{ github.event_name == 'pull_request' && github.base_ref == 'master' }}
-      run: python .ci/prep_version.py VERSION --staging --inplace
+      run: python .ci/prep_version.py bing_rewards/VERSION --staging --inplace
     - name: Build Package
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
+        pip wheel --no-deps -w dist .
     - name: Save Artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -118,7 +119,7 @@ jobs:
         git config user.email "<noreply@github.com>"
     - name: Get Tag Version
       run: |
-        echo "version=v$(cat VERSION)" >> $GITHUB_ENV
+        echo "version=v$(cat bing_rewards/VERSION)" >> $GITHUB_ENV
     - name: Create Github Release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -132,7 +133,7 @@ jobs:
       run: |
         git checkout develop
         git merge origin/master --no-ff
-        python .ci/bump_version.py VERSION --minor --inplace
-        git add VERSION
-        git commit -m "[skip ci] Bump version to $(cat VERSION)"
+        python .ci/bump_version.py bing_rewards/VERSION --minor --inplace
+        git add bing_rewards/VERSION
+        git commit -m "[skip ci] Bump version to $(cat bing_rewards/VERSION)"
         git push origin develop
