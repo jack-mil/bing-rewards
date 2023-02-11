@@ -72,7 +72,8 @@ jobs:
       run: python .ci/prep_version.py VERSION --staging --inplace
     - name: Build Package
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
+        pip wheel --no-deps -w dist .
     - name: Save Artifacts
       uses: actions/upload-artifact@v2
       with:
