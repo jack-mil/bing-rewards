@@ -14,7 +14,6 @@
 Please submit an issue or pull-request if you have an idea for a feature
 
 #### :exclamation: NOTE: Compatibilty with browsers seems hit and miss. I have confirmed intended behavoir using Brave 1.48.158 (Chromium 110.0.5481.77) on Windows 10 Pro. It's worth trying out several Chromium based browsers to see what works best for you (see `--exe` flag or config file)
-#### UPDATE 1.5.0: It appears that the bonus points from using a mobile device is no longer a feature. My rewards page only lists 50 points from searching, and 5 bonus points for the Edge Browser. As such, running with the `--mobile` flag is unnecessary. I have also modifed the default search count and run action to match the recent changes to the rewards system.
 
 ## **Features:**
 
