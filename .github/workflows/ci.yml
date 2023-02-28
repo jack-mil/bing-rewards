@@ -7,11 +7,13 @@ on:
     branches: [master, develop]
     paths:
       - 'bing_rewards/**.py'
-  pull_request:
-    branches: [master, develop]
-    types: [ opened, synchronize ]
-    paths:
-    - 'bing_rewards/**.py'
+  workflow_dispatch:
+    
+  # pull_request:
+  #   branches: [master, develop]
+  #   types: [ opened, synchronize ]
+  #   paths:
+  #   - 'bing_rewards/**.py'
 
 jobs:
   lint:
