@@ -295,8 +295,7 @@ def main():
     check_python_version()
     config = parse_config(SETTINGS)
     args = parse_args()
-    
-    # Ignore the delay times if doing a dryrun
+
     if args.dryrun:
         config["search-delay"] = 0
         config["load-delay"] = 0
