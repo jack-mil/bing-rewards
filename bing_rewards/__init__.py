@@ -58,8 +58,8 @@ DESKTOP_AGENT = (
 
 
 # Number of searches to make
-DESKTOP_COUNT = 50
-MOBILE_COUNT = 0
+DESKTOP_COUNT = 30
+MOBILE_COUNT = 20
 
 # Time to allow Chrome to load in seconds
 LOAD_DELAY = 1.5
