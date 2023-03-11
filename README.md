@@ -82,9 +82,10 @@ Running with no options will complete mobile and desktop daily search quota. The
 | `-d`, `--desktop`       | Only use desktop user agent                                                         |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                        |
 | `-n`, `--dryrun`        | Do everything but type the search query                                             |
+| `-o`, `--openrewards`   | Open the rewards page at the end of the run                                         |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                  |
-| `-ld`, `--load-delay`   | Do not close the browser after completing a search                                  |
-| `-sd`, `--search-delay` | Do not close the browser after completing a search                                  |
+| `-l`, `--loaddelay`     | Override the time given to Chrome to load in seconds                                |
+| `-s`, `--searchdelay`   | Override the time between searches in seconds                                       |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                  |
 
