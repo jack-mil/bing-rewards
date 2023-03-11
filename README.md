@@ -87,9 +87,10 @@ Options supplied at execution time override any config.
 | `-d`, `--desktop`       | Only use desktop user agent                                                         |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                        |
 | `-n`, `--dryrun`        | Do everything but type the search query                                             |
+| `-o`, `--openrewards`   | Open the rewards page at the end of the run                                         |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                  |
-| `--load-delay`          | Time in seconds to wait for browser loading                                         |
-| `--search-delay`        | Time in seconds to wait between searches (for page loading)                         |
+| `-l`, `--loaddelay`     | Override the time given to Chrome to load in seconds                                |
+| `-s`, `--searchdelay`   | Override the time between searches in seconds                                       |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                  |
 
