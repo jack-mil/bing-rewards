@@ -67,7 +67,7 @@ LOAD_DELAY = 1.5
 SEARCH_DELAY = 2
 
 # Bing Search base url
-URL = "https://www.bing.com/search?q="
+URL = 'https://www.bing.com/search?q='
 
 # Reference Keywords from package files
 KEYWORDS = Path(Path(__file__).parent, "data", "keywords.txt")
@@ -135,6 +135,18 @@ def parse_args():
         "--no-exit",
         help="Don't close the browser window after searching",
         action="store_true",
+    )
+    p.add_argument(
+        "-ld",
+        "--load-delay",
+        help="Override the time given to Chrome to load in seconds",
+        type="int",
+    )
+    p.add_argument(
+        "-sd",
+        "--search-delay",
+        help="Override the time between searches in seconds",
+        type="int",
     )
 
     # Mutually exclusive options. Only one can be present
