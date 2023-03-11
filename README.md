@@ -80,16 +80,18 @@ Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Lin
 Running with no options will complete mobile and desktop daily search quota.
 The following options are available to change the default behavior.
 Options supplied at execution time override any config.
-| Flag              | Option                                                                              |
-| ----------------- | ----------------------------------------------------------------------------------- |
-| `-h`, `--help`    | Display help and exit                                                               |
-| `-c`, `--count=N` | Override the number of searches to complete                                         |
-| `-d`, `--desktop` | Only use desktop user agent                                                         |
-| `-m`, `--mobile`  | Only use a mobile user agent                                                        |
-| `-n`, `--dryrun`  | Do everything but type the search query                                             |
-| `-X`, `--no-exit` | Do not close the browser after completing a search                                  |
-| `--exe EXE`       | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
-| `--nowindow`      | Don't open a new Chrome window, just type the keys                                  |
+| Flag                    | Option                                                                              |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| `-h`, `--help`          | Display help and exit                                                               |
+| `-c`, `--count=N`       | Override the number of searches to complete                                         |
+| `-d`, `--desktop`       | Only use desktop user agent                                                         |
+| `-m`, `--mobile`        | Only use a mobile user agent                                                        |
+| `-n`, `--dryrun`        | Do everything but type the search query                                             |
+| `-X`, `--no-exit`       | Do not close the browser after completing a search                                  |
+| `--load-delay`          | Time in seconds to wait for browser loading                                         |
+| `--search-delay`        | Time in seconds to wait between searches (for page loading)                         |
+| `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
+| `--nowindow`            | Don't open a new Chrome window, just type the keys                                  |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
 where precise delay modifications can be made. 
