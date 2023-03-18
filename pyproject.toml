@@ -1,3 +1,37 @@
+[tool.poetry]
+name = "bing-rewards"
+version = "1.5.1"
+description = "Perform automated Bing Rewards searches"
+authors = ["jack-mil"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/jack-mil/bing-rewards"
+repository = "https://github.com/jack-mil/bing-rewards"
+keywords = ["automation", "bing", "search", "pyautogui", "points", "xbox"]
+classifiers = [
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+	"License :: OSI Approved :: MIT License",
+	"Operating System :: OS Independent",
+	"Topic :: Utilities"]
+packages = [{include = "bing_rewards"}]
+include = ["data/*.txt", "VERSION"]
+
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/jack-mil/bing-rewards/issues"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pyautogui = "^0.9.53"
+
+[tool.poetry.scripts]
+bing-rewards = "bing_rewards:run"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 exclude = '/(\.eggs|\.git|\.hg|\.mypy_cache|\.venv.*|_build|buck-out|build|dist)/'
 line-length = 88
