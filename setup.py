@@ -52,7 +52,7 @@ setup(
         "Topic :: Utilities",
     ],
     python_requires=">=3.6",
-    install_requires=["PyAutoGUI"],
+    install_requires=["pynput"],
     extras_require=extras,
     packages=find_packages(),
     package_data={

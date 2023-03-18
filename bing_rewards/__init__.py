@@ -40,7 +40,8 @@ from urllib.parse import quote_plus
 if os.name == "posix":
     import signal
 
-import pyautogui
+from pynput.keyboard import Key, Controller
+keyboard = Controller()
 
 # Edge Browser user agents
 # Makes Google Chrome look like MS Edge to Bing
@@ -263,12 +264,17 @@ def search(count, words_gen: Generator, agent, args, config):
         # Use PyAutoHotkey to trigger keyboard events and auto search
         if not args.dryrun:
             # Alt + D to focus the address bar in Chrome
-            pyautogui.hotkey("alt", "d")
-            time.sleep(0.01)
+            # pyautogui.hotkey("alt", "d")
+            keyboard.press(Key.alt)
+            keyboard.press("d")
+            keyboard.release("d")
+            keyboard.release(Key.alt)
+            time.sleep(0.05)
 
             # Type the url into the address bar
-            pyautogui.typewrite(search_url)
-            pyautogui.typewrite("\n", interval=0.1)
+            # pyautogui.typewrite(search_url)
+            keyboard.type(search_url+"\n")
+            # pyautogui.typewrite("\n", interval=0.1)
 
         print(f"Search {i+1}: {query}")
         time.sleep(config.get("search-delay", SEARCH_DELAY))
