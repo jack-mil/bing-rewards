@@ -29,6 +29,7 @@ import os
 import random
 import subprocess
 import sys
+import threading
 import time
 import webbrowser
 from io import SEEK_END, SEEK_SET
@@ -40,8 +41,10 @@ from urllib.parse import quote_plus
 if os.name == "posix":
     import signal
 
-from pynput.keyboard import Key, Controller
-keyboard = Controller()
+from pynput import keyboard
+from pynput.keyboard import Key
+
+key_controller = keyboard.Controller()
 
 # Edge Browser user agents
 # Makes Google Chrome look like MS Edge to Bing
@@ -241,7 +244,7 @@ def search(count, words_gen: Generator, agent, args, config):
                 chrome = subprocess.Popen(
                     browser_cmd(args.exe or config.get("browser-path") or None, agent),
                 )
-            print(chrome.pid)
+            print(f"Opening browser with pid {chrome.pid}")
     except FileNotFoundError as e:
         print("Unexpected error:", e)
         print(
@@ -260,21 +263,18 @@ def search(count, words_gen: Generator, agent, args, config):
 
         # Concatenate url with correct url escape characters
         search_url = URL + quote_plus(query)
-
-        # Use PyAutoHotkey to trigger keyboard events and auto search
+        # Use pynput to trigger keyboard events and type search querys
         if not args.dryrun:
-            # Alt + D to focus the address bar in Chrome
-            # pyautogui.hotkey("alt", "d")
-            keyboard.press(Key.alt)
-            keyboard.press("d")
-            keyboard.release("d")
-            keyboard.release(Key.alt)
-            time.sleep(0.05)
+            # Alt + D to focus the address bar in most browsers
+            key_controller.press(Key.alt)
+            key_controller.press("d")
+            key_controller.release("d")
+            key_controller.release(Key.alt)
+            time.sleep(0.08)
 
             # Type the url into the address bar
-            # pyautogui.typewrite(search_url)
-            keyboard.type(search_url+"\n")
-            # pyautogui.typewrite("\n", interval=0.1)
+            # This is very fast and hopefully reliable
+            key_controller.type(search_url + "\n")
 
         print(f"Search {i+1}: {query}")
         time.sleep(config.get("search-delay", SEARCH_DELAY))
@@ -295,16 +295,18 @@ def main():
     """
     Main program execution. Loads keywords from a file,
     interprets command line arguments,
-    and executes search function
+    and executes search function in separate thread.
+    Setup listener callback for ESC key.
     """
 
     check_python_version()
     config = parse_config(SETTINGS)
     args = parse_args()
 
-    if args.dryrun:
-        config["search-delay"] = 0
-        config["load-delay"] = 0
+    # Removed. Dry run now respects set delay times
+    # if args.dryrun:
+    #     config["search-delay"] = 0
+    #     config["load-delay"] = 0
 
     words_gen = get_words_gen()
 
@@ -328,17 +330,41 @@ def main():
         )
         print(f"Mobile Search complete! {5*count} MS rewards points\n")
 
-    # If neither mode is specified, complete both modes
+    def both():
+        desktop()
+        mobile()
+
+    # Execute main method in a separate thread
     if args.desktop:
-        desktop()
+        target = desktop
     elif args.mobile:
-        mobile()
+        target = mobile
     else:
-        desktop()
-        mobile()
-        # Open rewards dashboard
-        if not args.dryrun:
-            webbrowser.open_new("https://account.microsoft.com/rewards")
+        # If neither mode is specified, complete both modes
+        target = both
+
+    # Start the searching in separate thread
+    search_thread = threading.Thread(target=target, daemon=True)
+    search_thread.start()
+
+    print("Press ESC to quit searching")
+
+    try:
+        # Listen for keyboard events and exit if ESC pressed
+        with keyboard.Events() as events:
+            # Only listen while search thread is alive
+            while search_thread.is_alive():
+                event = events.get(timeout=0.5)  # block for 0.5 seconds
+                # Exit if ESC key pressed
+                if event and event.key == Key.esc:
+                    print("ESC pressed, terminating")
+                    break
+    except KeyboardInterrupt:
+        print("CTRL-C pressed, terminating")
+
+    # Open rewards dashboard
+    if args.desktop and args.mobile and not args.dryrun:
+        webbrowser.open_new("https://account.microsoft.com/rewards")
 
 
 # Execute only if run as a command line script
