@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  push:
+    branches: [master, develop]
+    paths:
+      - 'bing_rewards/**.py'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Run Linting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        cache: "poetry"
+
+    - name: Install dependencies
+      run: poetry install --only dev
+
+    - name: Run black
+      run: black --check --verbose .
+
+    - name: Run flake8
+      run: flake8 --statistics
+
+    - name: Run isort
+      run: isort -cv .

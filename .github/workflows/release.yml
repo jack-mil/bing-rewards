@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      testing:
+        description: 'Publish to PyPI testing'
+        required: true
+        type: boolean
+
+jobs:
+  release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        depth: 0
+
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+        cache: poetry
+
+    - name: Build project for distribution
+      run: poetry build
+
+    - name: Get Package Version
+      id: check-version
+      run: |
+        VERSION=$(poetry version --short)
+        echo "version=v$VERSION" >> $GITHUB_ENV
+        [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || echo prerelease=true >> $GITHUB_OUTPUT
+
+    - name: Setup Git Config
+      run: |
+        git config user.name "Github Actions"
+        git config user.email "<noreply@github.com>"
+
+    - name: Create Github Release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "${{ env.version }}"
+        prerelease: steps.check-version.outputs.prerelease == 'true'
+        draft: true
+        files: |
+          dist/*
+
+    - name: Publish to Test PyPI
+      if: ${{ inputs.testing }}
+      env:
+        POETRY_TEST_PYPI_TOKEN: ${{ secrets.PYPI_TESTING_API_TOKEN }}
+      run: |
+        poetry config repositories.test-pypi.url = "https://test.pypi.org/legacy/"
+        poetry config test-pypi.token = $POETRY_TEST_PYPI_TOKEN
+        poetry publish
+
+    - name: Publish to PyPI
+      if: ${{ ! inputs.testing && (steps.check-version.outputs.prerelease != 'true') }}
+      env:
+        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        poetry publish
+
+    - name: Bump Dev Version
+      if: ${{ ! inputs.testing }}
+      run: |
+        git checkout develop
+        git merge origin/master --no-ff
+        poetry version minor
+        git add pyproject.toml
+        git commit -m "[skip ci] Bump version to v$(poetry version --short)"
+        git push origin develop
