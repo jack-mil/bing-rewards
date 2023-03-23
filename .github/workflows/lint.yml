@@ -26,10 +26,10 @@ jobs:
       run: poetry install --only dev
 
     - name: Run black
-      run: black --check --verbose .
+      run: poetry run black --check --verbose .
 
     - name: Run flake8
-      run: flake8 --statistics
+      run: poetry run flake8 --statistics
 
     - name: Run isort
-      run: isort -cv .
+      run: poetry run isort -cv .
