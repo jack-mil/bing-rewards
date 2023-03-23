@@ -16,7 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        depth: 0
+        fetch-depth: 0
 
     - name: Install poetry
       run: pipx install poetry
