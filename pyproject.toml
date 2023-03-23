@@ -1,7 +1,64 @@
+[tool.poetry]
+name = "bing-rewards"
+version = "2.0.0a0"
+description = "Perform automated Bing Rewards searches"
+authors = ["jack-mil"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/jack-mil/bing-rewards"
+repository = "https://github.com/jack-mil/bing-rewards"
+keywords = ["automation", "bing", "search", "pyautogui", "points", "xbox"]
+classifiers = [
+	"Programming Language :: Python :: 3 :: Only",
+	"License :: OSI Approved :: MIT License",
+	"Operating System :: OS Independent",
+	"Operating System :: Microsoft :: Windows",
+	"Operating System :: POSIX :: Linux",
+	"Intended Audience :: End Users/Desktop",
+	"Topic :: Utilities"]
+packages = [{include = "bing_rewards"}]
+include = ["data/*.txt", "VERSION"]
+
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/jack-mil/bing-rewards/issues"
+
+[tool.poetry.scripts]
+bing-rewards = "bing_rewards:main"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pynput = "^1"
+
+[tool.poetry.group.dev]
+optional = true
+[tool.poetry.group.dev.dependencies]
+black = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-pyproject = "*"
+isort = "*"
+pre-commit = "*"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
-exclude = '/(\.eggs|\.git|\.hg|\.mypy_cache|\.venv.*|_build|buck-out|build|dist)/'
+exclude = '/(\.eggs|\.git|\.venv.*|_build|buck-out|build|dist)/'
 line-length = 88
 
 [tool.isort]
 profile = "black"
 skip_glob = '.venv*'
+
+[tool.flake8]
+max-line-length = 88
+max-complexity = 12
+select = ["C","E","F","W","B","B950"]
+# E203: whitespace before ':'; ignored due to `black` format
+# E501: Line too long; Disable in preference of Bugbear B509 (can't be too long, give or take)
+# W503: Line break before binary operator; conform to PEP8 as of 2016
+extend-ignore = ["E203", "E501", "W503"]
+exclude = [".git", "__pycache__", "build", "dist", ".venv*"]

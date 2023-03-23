@@ -1,9 +1,0 @@
-[flake8]
-max-line-length = 88
-select = C,E,F,W,B,B950
-# E203: whitespace before ':'; ignored due to `black` format
-# E501: Line too long; Disable in preference of Bugbear B509 (can't be too long, give or take)
-# W503: Line break before binary operator; conform to PEP8 as of 2016
-extend-ignore = E203, E501, W503
-max-complexity = 18
-exclude = .git,__pycache__,build,dist,.venv*
