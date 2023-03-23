@@ -18,11 +18,14 @@ jobs:
       with:
         depth: 0
 
+    - name: Install poetry
+      run: pipx install poetry
+
     - name: Set up Python 3.x
       uses: actions/setup-python@v4
       with:
-        python-version: "3.x"
-        cache: poetry
+        python-version: '3.x'
+        cache: 'poetry'
 
     - name: Build project for distribution
       run: poetry build
