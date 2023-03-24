@@ -10,16 +10,9 @@ Examples:
     $ bing-search -nmc30
     $ bing-search --new --count=50 --mobile --dryrun
 
-Try:
-    bing-search --help
-for more info
-
-A config file is generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
-where precise delay modifications can be made
-Delay timings are in seconds
-
-* By: jack-mil
-* Repository and issues: https://github.com/jack-mil/bing-search
+Config file generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
+where precise delay modifications can be made.
+Delay timings are in seconds.
 """
 
 import argparse as argp
@@ -110,30 +103,10 @@ def parse_args():
             MOBILE_COUNT=MOBILE_COUNT,
             VERSION=get_version(),
         ),
+        epilog="* Repository and issues: https://github.com/jack-mil/bing-search",
         formatter_class=argp.RawDescriptionHelpFormatter,
     )
-
-    p.add_argument(
-        "--no-window",
-        help="Don't open a new Chrome window (just press keys)",
-        action="store_true",
-    )
-    p.add_argument(
-        "-n",
-        "--dryrun",
-        help="Do everything but search",
-        action="store_true",
-    )
-    p.add_argument(
-        "--open-rewards",
-        help="Open the rewards page at the end of the run",
-        action="store_true",
-    )
-    p.add_argument(
-        "--exe",
-        help="The full path of the Chrome compatible browser executable",
-        type=check_path,
-    )
+    p.add_argument("--version", action="version", version=get_version())
     p.add_argument(
         "-c",
         "--count",
@@ -141,22 +114,10 @@ def parse_args():
         type=int,
     )
     p.add_argument(
-        "-X",
-        "--no-exit",
-        help="Don't close the browser window after searching",
-        action="store_true",
+        "--exe",
+        help="The full path of the Chrome compatible browser executable",
+        type=check_path,
     )
-    p.add_argument(
-        "--load-delay",
-        help="Override the time given to Chrome to load in seconds",
-        type=int,
-    )
-    p.add_argument(
-        "--search-delay",
-        help="Override the time between searches in seconds",
-        type=int,
-    )
-
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
     group.add_argument(
@@ -172,6 +133,39 @@ def parse_args():
         action="store_true",
     )
 
+    # Other options
+    p.add_argument(
+        "--load-delay",
+        help="Override the time given to Chrome to load in seconds",
+        type=int,
+    )
+    p.add_argument(
+        "--search-delay",
+        help="Override the time between searches in seconds",
+        type=int,
+    )
+    p.add_argument(
+        "-n",
+        "--dryrun",
+        help="Do everything but search",
+        action="store_true",
+    )
+    p.add_argument(
+        "--open-rewards",
+        help="Open the rewards page at the end of the run",
+        action="store_true",
+    )
+    p.add_argument(
+        "--no-window",
+        help="Don't open a new Chrome window (just press keys)",
+        action="store_true",
+    )
+    p.add_argument(
+        "-X",
+        "--no-exit",
+        help="Don't close the browser window after searching",
+        action="store_true",
+    )
     return p.parse_args()
 
 
