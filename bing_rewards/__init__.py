@@ -125,6 +125,11 @@ def parse_args():
         action="store_true",
     )
     p.add_argument(
+        "--open-rewards",
+        help="Open the rewards page at the end of the run",
+        action="store_true",
+    )
+    p.add_argument(
         "--exe",
         help="The full path of the Chrome compatible browser executable",
         type=check_path,
@@ -140,6 +145,16 @@ def parse_args():
         "--no-exit",
         help="Don't close the browser window after searching",
         action="store_true",
+    )
+    p.add_argument(
+        "--load-delay",
+        help="Override the time given to Chrome to load in seconds",
+        type=int,
+    )
+    p.add_argument(
+        "--search-delay",
+        help="Override the time between searches in seconds",
+        type=int,
     )
 
     # Mutually exclusive options. Only one can be present
@@ -256,7 +271,7 @@ def search(count, words_gen: Generator, agent, args, config):
         sys.exit(1)
 
     # Wait for Chrome to load
-    time.sleep(config.get("load-delay", LOAD_DELAY))
+    time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
 
     for i in range(count):
         # Get a random query from set of words
@@ -278,7 +293,8 @@ def search(count, words_gen: Generator, agent, args, config):
             key_controller.type(search_url + "\n")
 
         print(f"Search {i+1}: {query}")
-        time.sleep(config.get("search-delay", SEARCH_DELAY))
+        # Delay to let page load
+        time.sleep(args.search_delay or config.get("search-delay", SEARCH_DELAY))
 
     # Skip killing the window if exit flag set
     if args.no_exit:
@@ -299,11 +315,9 @@ def main():
     and executes search function in separate thread.
     Setup listener callback for ESC key.
     """
-
     check_python_version()
     config = parse_config(SETTINGS)
     args = parse_args()
-
     # Removed. Dry run now respects set delay times
     # if args.dryrun:
     #     config["search-delay"] = 0
@@ -364,7 +378,7 @@ def main():
         print("CTRL-C pressed, terminating")
 
     # Open rewards dashboard
-    if args.desktop and args.mobile and not args.dryrun:
+    if args.open_rewards and not args.dryrun:
         webbrowser.open_new("https://account.microsoft.com/rewards")
 
 
