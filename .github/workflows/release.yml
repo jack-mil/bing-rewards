@@ -43,11 +43,11 @@ jobs:
         git config user.email "<noreply@github.com>"
 
     - name: Create Github Release
-      uses: "marvinpinto/action-automatic-releases@latest"
+      uses: "marvinpinto/action-automatic-releases@v1"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "${{ env.version }}"
-        prerelease: steps.check-version.outputs.prerelease == 'true'
+        prerelease: ${{ steps.check-version.outputs.prerelease == 'true' }}
         draft: true
         files: |
           dist/*
@@ -75,5 +75,5 @@ jobs:
         git merge origin/master --no-ff
         poetry version minor
         git add pyproject.toml
-        git commit -m "[skip ci] Bump version to v$(poetry version --short)"
+        git commit -m "[skip ci] Bump version to v$(poetry version --short)" --no-verify
         git push origin develop
