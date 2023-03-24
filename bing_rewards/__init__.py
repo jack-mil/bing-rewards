@@ -71,7 +71,7 @@ LOAD_DELAY = 1.5
 SEARCH_DELAY = 2
 
 # Bing Search base url
-URL = 'https://www.bing.com/search?q='
+URL = "https://www.bing.com/search?q="
 
 # Reference Keywords from package files
 KEYWORDS = Path(Path(__file__).parent, "data", "keywords.txt")
@@ -125,8 +125,7 @@ def parse_args():
         action="store_true",
     )
     p.add_argument(
-        "-o",
-        "--openrewards",
+        "--open-rewards",
         help="Open the rewards page at the end of the run",
         action="store_true",
     )
@@ -148,14 +147,12 @@ def parse_args():
         action="store_true",
     )
     p.add_argument(
-        "-l",
-        "--loaddelay",
+        "--load-delay",
         help="Override the time given to Chrome to load in seconds",
         type=int,
     )
     p.add_argument(
-        "-s",
-        "--searchdelay",
+        "--search-delay",
         help="Override the time between searches in seconds",
         type=int,
     )
@@ -274,10 +271,7 @@ def search(count, words_gen: Generator, agent, args, config):
         sys.exit(1)
 
     # Wait for Chrome to load
-    if args.loaddelay:
-        time.sleep(args.loaddelay)
-    else:
-        time.sleep(config.get("load-delay", LOAD_DELAY))
+    time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
 
     for i in range(count):
         # Get a random query from set of words
@@ -299,10 +293,8 @@ def search(count, words_gen: Generator, agent, args, config):
             key_controller.type(search_url + "\n")
 
         print(f"Search {i+1}: {query}")
-        if args.searchdelay:
-            time.sleep(args.searchdelay)
-        else:
-            time.sleep(config.get("search-delay", SEARCH_DELAY))
+        # Delay to let page load
+        time.sleep(args.search_delay or config.get("search-delay", SEARCH_DELAY))
 
     # Skip killing the window if exit flag set
     if args.no_exit:
@@ -323,7 +315,6 @@ def main():
     and executes search function in separate thread.
     Setup listener callback for ESC key.
     """
-
     check_python_version()
     config = parse_config(SETTINGS)
     args = parse_args()
@@ -331,11 +322,7 @@ def main():
     # if args.dryrun:
     #     config["search-delay"] = 0
     #     config["load-delay"] = 0
-    if args.searchdelay:
-        config["search-delay"] = args.searchdelay
-    if args.loaddelay:
-        config["load-delay"] = args.loaddelay
-    
+
     words_gen = get_words_gen()
 
     def desktop():
@@ -391,7 +378,7 @@ def main():
         print("CTRL-C pressed, terminating")
 
     # Open rewards dashboard
-    if args.desktop and args.mobile and not args.dryrun:
+    if args.open_rewards and not args.dryrun:
         webbrowser.open_new("https://account.microsoft.com/rewards")
 
 
