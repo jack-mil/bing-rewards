@@ -5,7 +5,7 @@ Automatically perform Bing searches for Rewards Points!
 Executing 'bing-rewards' with no arguments does {DESKTOP_COUNT} desktop searches
 followed by {MOBILE_COUNT} mobile searches by default
 
-Usage:
+Examples:
 
     $ bing-search -nmc30
     $ bing-search --new --count=50 --mobile --dryrun
@@ -19,7 +19,6 @@ where precise delay modifications can be made
 Delay timings are in seconds
 
 * By: jack-mil
-
 * Repository and issues: https://github.com/jack-mil/bing-search
 """
 
@@ -32,6 +31,7 @@ import sys
 import threading
 import time
 import webbrowser
+from importlib import metadata
 from io import SEEK_END, SEEK_SET
 from json.decoder import JSONDecodeError
 from pathlib import Path
@@ -89,7 +89,8 @@ SETTINGS = {
 
 
 def get_version() -> str:
-    return Path(Path(__file__).parent, "VERSION").read_text(encoding="utf8")
+    return metadata.version("bing-rewards")
+    # return Path(Path(__file__).parent, "VERSION").read_text(encoding="utf8")
 
 
 def check_path(path: str) -> Path:
