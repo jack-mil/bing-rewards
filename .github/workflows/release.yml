@@ -57,9 +57,9 @@ jobs:
       env:
         POETRY_TEST_PYPI_TOKEN: ${{ secrets.PYPI_TESTING_API_TOKEN }}
       run: |
-        poetry config repositories.test-pypi.url = "https://test.pypi.org/legacy/"
-        poetry config test-pypi.token = $POETRY_TEST_PYPI_TOKEN
-        poetry publish
+        poetry config repositories.testpypi "https://test.pypi.org/legacy/"
+        poetry config testpypi.token = $POETRY_TEST_PYPI_TOKEN
+        poetry publish -r testpypi
 
     - name: Publish to PyPI
       if: ${{ ! inputs.testing && (steps.check-version.outputs.prerelease != 'true') }}
