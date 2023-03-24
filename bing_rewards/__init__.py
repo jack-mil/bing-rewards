@@ -37,8 +37,6 @@ if os.name == "posix":
 from pynput import keyboard
 from pynput.keyboard import Key
 
-key_controller = keyboard.Controller()
-
 # Edge Browser user agents
 # Makes Google Chrome look like MS Edge to Bing
 MOBILE_AGENT = (
@@ -170,6 +168,7 @@ def parse_args():
 
 
 def parse_config(default_config: Dict) -> Dict:
+    # Config file in .config or APPDATA on Windows
     config_home = Path(
         os.environ.get("APPDATA")
         or os.environ.get("XDG_CONFIG_HOME")
@@ -266,6 +265,9 @@ def search(count, words_gen: Generator, agent, args, config):
 
     # Wait for Chrome to load
     time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
+
+    # keyboard controller from pynput
+    key_controller = keyboard.Controller()
 
     for i in range(count):
         # Get a random query from set of words
