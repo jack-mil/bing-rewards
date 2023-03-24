@@ -5,22 +5,14 @@ Automatically perform Bing searches for Rewards Points!
 Executing 'bing-rewards' with no arguments does {DESKTOP_COUNT} desktop searches
 followed by {MOBILE_COUNT} mobile searches by default
 
-Usage:
+Examples:
 
     $ bing-search -nmc30
     $ bing-search --new --count=50 --mobile --dryrun
 
-Try:
-    bing-search --help
-for more info
-
-A config file is generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
-where precise delay modifications can be made
-Delay timings are in seconds
-
-* By: jack-mil
-
-* Repository and issues: https://github.com/jack-mil/bing-search
+Config file generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
+where precise delay modifications can be made.
+Delay timings are in seconds.
 """
 
 import argparse as argp
@@ -32,6 +24,7 @@ import sys
 import threading
 import time
 import webbrowser
+from importlib import metadata
 from io import SEEK_END, SEEK_SET
 from json.decoder import JSONDecodeError
 from pathlib import Path
@@ -43,8 +36,6 @@ if os.name == "posix":
 
 from pynput import keyboard
 from pynput.keyboard import Key
-
-key_controller = keyboard.Controller()
 
 # Edge Browser user agents
 # Makes Google Chrome look like MS Edge to Bing
@@ -89,7 +80,8 @@ SETTINGS = {
 
 
 def get_version() -> str:
-    return Path(Path(__file__).parent, "VERSION").read_text(encoding="utf8")
+    return metadata.version("bing-rewards")
+    # return Path(Path(__file__).parent, "VERSION").read_text(encoding="utf8")
 
 
 def check_path(path: str) -> Path:
@@ -109,25 +101,10 @@ def parse_args():
             MOBILE_COUNT=MOBILE_COUNT,
             VERSION=get_version(),
         ),
+        epilog="* Repository and issues: https://github.com/jack-mil/bing-search",
         formatter_class=argp.RawDescriptionHelpFormatter,
     )
-
-    p.add_argument(
-        "--no-window",
-        help="Don't open a new Chrome window (just press keys)",
-        action="store_true",
-    )
-    p.add_argument(
-        "-n",
-        "--dryrun",
-        help="Do everything but search",
-        action="store_true",
-    )
-    p.add_argument(
-        "--exe",
-        help="The full path of the Chrome compatible browser executable",
-        type=check_path,
-    )
+    p.add_argument("--version", action="version", version=get_version())
     p.add_argument(
         "-c",
         "--count",
@@ -135,12 +112,10 @@ def parse_args():
         type=int,
     )
     p.add_argument(
-        "-X",
-        "--no-exit",
-        help="Don't close the browser window after searching",
-        action="store_true",
+        "--exe",
+        help="The full path of the Chrome compatible browser executable",
+        type=check_path,
     )
-
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
     group.add_argument(
@@ -156,10 +131,44 @@ def parse_args():
         action="store_true",
     )
 
+    # Other options
+    p.add_argument(
+        "--load-delay",
+        help="Override the time given to Chrome to load in seconds",
+        type=int,
+    )
+    p.add_argument(
+        "--search-delay",
+        help="Override the time between searches in seconds",
+        type=int,
+    )
+    p.add_argument(
+        "-n",
+        "--dryrun",
+        help="Do everything but search",
+        action="store_true",
+    )
+    p.add_argument(
+        "--open-rewards",
+        help="Open the rewards page at the end of the run",
+        action="store_true",
+    )
+    p.add_argument(
+        "--no-window",
+        help="Don't open a new Chrome window (just press keys)",
+        action="store_true",
+    )
+    p.add_argument(
+        "-X",
+        "--no-exit",
+        help="Don't close the browser window after searching",
+        action="store_true",
+    )
     return p.parse_args()
 
 
 def parse_config(default_config: Dict) -> Dict:
+    # Config file in .config or APPDATA on Windows
     config_home = Path(
         os.environ.get("APPDATA")
         or os.environ.get("XDG_CONFIG_HOME")
@@ -255,7 +264,10 @@ def search(count, words_gen: Generator, agent, args, config):
         sys.exit(1)
 
     # Wait for Chrome to load
-    time.sleep(config.get("load-delay", LOAD_DELAY))
+    time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
+
+    # keyboard controller from pynput
+    key_controller = keyboard.Controller()
 
     for i in range(count):
         # Get a random query from set of words
@@ -277,7 +289,8 @@ def search(count, words_gen: Generator, agent, args, config):
             key_controller.type(search_url + "\n")
 
         print(f"Search {i+1}: {query}")
-        time.sleep(config.get("search-delay", SEARCH_DELAY))
+        # Delay to let page load
+        time.sleep(args.search_delay or config.get("search-delay", SEARCH_DELAY))
 
     # Skip killing the window if exit flag set
     if args.no_exit:
@@ -298,11 +311,9 @@ def main():
     and executes search function in separate thread.
     Setup listener callback for ESC key.
     """
-
     check_python_version()
     config = parse_config(SETTINGS)
     args = parse_args()
-
     # Removed. Dry run now respects set delay times
     # if args.dryrun:
     #     config["search-delay"] = 0
@@ -363,7 +374,7 @@ def main():
         print("CTRL-C pressed, terminating")
 
     # Open rewards dashboard
-    if args.desktop and args.mobile and not args.dryrun:
+    if args.open_rewards and not args.dryrun:
         webbrowser.open_new("https://account.microsoft.com/rewards")
 
 
