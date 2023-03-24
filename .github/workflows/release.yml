@@ -43,7 +43,7 @@ jobs:
         git config user.email "<noreply@github.com>"
 
     - name: Create Github Release
-      uses: "marvinpinto/action-automatic-releases@v1"
+      uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "${{ env.version }}"
@@ -57,9 +57,9 @@ jobs:
       env:
         POETRY_TEST_PYPI_TOKEN: ${{ secrets.PYPI_TESTING_API_TOKEN }}
       run: |
-        poetry config repositories.test-pypi.url = "https://test.pypi.org/legacy/"
-        poetry config test-pypi.token = $POETRY_TEST_PYPI_TOKEN
-        poetry publish
+        poetry config repositories.testpypi "https://test.pypi.org/legacy/"
+        poetry config pypi-token.testpypi $POETRY_TEST_PYPI_TOKEN
+        poetry publish -r testpypi
 
     - name: Publish to PyPI
       if: ${{ ! inputs.testing && (steps.check-version.outputs.prerelease != 'true') }}

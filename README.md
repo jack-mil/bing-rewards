@@ -37,7 +37,7 @@ Will make the executable `bing-rewards` available on your PATH.
 Look below or try the `--help` flag to see detailed usage.
 
 **Recommended**: Use a virtual environment or [`pipx`](https://pypa.github.io/pipx/) to avoid poluting your global package path with executable apps. See: [pipx](https://pypa.github.io/pipx/)
-```bash 
+```bash
 pipx install bing-rewards
 ```
 
@@ -87,15 +87,15 @@ Options supplied at execution time override any config.
 | `-d`, `--desktop`       | Only use desktop user agent                                                         |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                        |
 | `-n`, `--dryrun`        | Do everything but type the search query                                             |
-| `-o`, `--openrewards`   | Open the rewards page at the end of the run                                         |
+| `--open-rewards`   | Open the rewards page at the end of the run                                         |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                  |
-| `-l`, `--loaddelay`     | Override the time given to Chrome to load in seconds                                |
-| `-s`, `--searchdelay`   | Override the time between searches in seconds                                       |
+| `--load-delay`     | Override the time given to Chrome to load in seconds                                |
+| `--search-delay`   | Override the time between searches in seconds                                       |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                  |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
-where precise delay modifications can be made. 
+where precise delay modifications can be made.
 
 Example config `~/.config/bing-rewards/config.json`
 ```json
