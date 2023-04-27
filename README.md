@@ -20,7 +20,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 
 ## **Features**
 
-* Script types searche queries into the address bar, so must be run in a GUI environment.
+* Script types search queries into the address bar, so must be run in a GUI environment.
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
 * All files are local, makes no http(s) requests
@@ -45,7 +45,7 @@ pipx install bing-rewards
 
 ## **Requirements**
 
-- At least Python 3.7
+- At least Python 3.8
 
 - [pynput](https://github.com/moses-palmer/pynput) package is used to control keypresses and type Bing search URLS.
 WARNING: This script *will* take control away from the keyboard while running. **Pynput** performs key presses. i.e., it does not operate headless or in the background.
@@ -53,7 +53,7 @@ WARNING: This script *will* take control away from the keyboard while running. *
 - `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).
 If your chromium based browser has a different name use the `--exe` flag with an absolute path to the browser executable to use (e.g. `--exe=$(which brave-browser)`). Also see the `"browser-path"` key in the [config](#configuration) file.
 
-- To earn points from searching, you must also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies.
+- To earn points from searching, you *must* also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies.
 
 ## **Usage**
 
