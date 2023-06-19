@@ -16,7 +16,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 - [Install](#installation)
 - [Requirements](#requirements)
 - [Usage](#usage)
-- [Config](#config)
+- [Config](#configuration)
 
 ## **Features**
 
@@ -83,14 +83,14 @@ Options supplied at execution time override any config.
 | Flag                    | Option                                                                              |
 | ----------------------- | ----------------------------------------------------------------------------------- |
 | `-h`, `--help`          | Display help and exit                                                               |
-| `-c`, `--count=N`       | Override the number of searches to complete                                         |
+| `-c`, `--count=N`       | Override the number of searches to complete (Desktop: 30, Mobile: 20)               |
 | `-d`, `--desktop`       | Only use desktop user agent                                                         |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                        |
 | `-n`, `--dryrun`        | Do everything but type the search query                                             |
-| `--open-rewards`   | Open the rewards page at the end of the run                                         |
+| `--open-rewards`        | Open the rewards page at the end of the run                                         |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                  |
-| `--load-delay`     | Override the time given to Chrome to load in seconds                                |
-| `--search-delay`   | Override the time between searches in seconds                                       |
+| `--load-delay`          | Override the time given to Chrome to load in seconds (1.5s)                         |
+| `--search-delay`        | Override the time between searches in seconds (2s)                                  |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                  |
 
@@ -100,8 +100,8 @@ where precise delay modifications can be made.
 Example config `~/.config/bing-rewards/config.json`
 ```json
 {
-    "desktop-count": 34,
-    "mobile-count": 40,
+    "desktop-count": 30,
+    "mobile-count": 20,
     "load-delay": 1.5,
     "search-delay": 2,
     "search-url": "https://www.bing.com/search?q=",
