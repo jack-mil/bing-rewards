@@ -164,6 +164,11 @@ def parse_args():
         help="Don't close the browser window after searching",
         action="store_true",
     )
+    p.add_argument(
+        "--profile",
+        help="sets the chrome profile for launch",
+        type=str,
+    )
     return p.parse_args()
 
 
@@ -206,8 +211,7 @@ def check_python_version():
         sys.version_info >= minimum_version
     ), "Only Python {}.{} and above is supported.".format(*minimum_version)
 
-
-def browser_cmd(exe: Path | None, agent: str) -> List[str]:
+def browser_cmd(exe: Path | None, agent: str, profile: str) -> List[str]:
     """
     Generate command to open Google Chrome with user-agent `agent`
     """
@@ -215,8 +219,10 @@ def browser_cmd(exe: Path | None, agent: str) -> List[str]:
         browser = str(exe)
     else:
         browser = "chrome"
-    return [browser, "--new-window", f'--user-agent="{agent}"']
-
+    cmd = [browser, "--new-window", f'--user-agent="{agent}"']
+    if profile:
+        cmd.extend(["--profile-directory=" + profile])
+    return cmd
 
 def get_words_gen() -> Generator:
     while True:
@@ -232,7 +238,7 @@ def get_words_gen() -> Generator:
                 yield line.strip()
 
 
-def search(count, words_gen: Generator, agent, args, config):
+def search(count, words_gen: Generator, agent, args, config, profile):
     """
     Opens a Chrome window with specified `agent` string, completes `count`
     searches from list `words`,
@@ -244,14 +250,14 @@ def search(count, words_gen: Generator, agent, args, config):
         if not args.no_window and not args.dryrun:
             if os.name == "posix":
                 chrome = subprocess.Popen(
-                    browser_cmd(args.exe or config.get("browser-path") or None, agent),
+                    browser_cmd(args.exe or config.get("browser-path") or None, agent, profile),
                     stderr=subprocess.DEVNULL,
                     stdout=subprocess.DEVNULL,
                     preexec_fn=os.setsid,
                 )
             else:
                 chrome = subprocess.Popen(
-                    browser_cmd(args.exe or config.get("browser-path") or None, agent),
+                    browser_cmd(args.exe or config.get("browser-path") or None, agent, profile),
                 )
             print(f"Opening browser with pid {chrome.pid}")
     except FileNotFoundError as e:
@@ -318,7 +324,7 @@ def main():
     # if args.dryrun:
     #     config["search-delay"] = 0
     #     config["load-delay"] = 0
-
+    profile=args.profile
     words_gen = get_words_gen()
 
     def desktop():
@@ -327,7 +333,7 @@ def main():
         print(f"Doing {count} desktop searches")
 
         search(
-            count, words_gen, config.get("desktop-agent") or DESKTOP_AGENT, args, config
+            count, words_gen, config.get("desktop-agent") or DESKTOP_AGENT, args, config, args.profile
         )
         print(f"Desktop Search complete! {5*count} MS rewards points\n")
 
@@ -337,7 +343,7 @@ def main():
         print(f"Doing {count} mobile searches")
 
         search(
-            count, words_gen, config.get("mobile-agent") or MOBILE_AGENT, args, config
+            count, words_gen, config.get("mobile-agent") or MOBILE_AGENT, args, config, args.profile
         )
         print(f"Mobile Search complete! {5*count} MS rewards points\n")
 
