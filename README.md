@@ -97,7 +97,7 @@ Options supplied at execution time override any config.
 | `--search-delay`        | Override the time between searches in seconds                                         |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested)   |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                    |
-| `--profile "Profile N"` | Launches chrome using the specified profile.                                          |
+| `--profile "Profile N"` | Launches chrome using the specified profile. Otherwise use default.                   |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
 where precise delay modifications can be made.
