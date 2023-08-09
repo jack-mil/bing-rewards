@@ -166,7 +166,7 @@ def parse_args():
     )
     p.add_argument(
         "--profile",
-        help="sets the chrome profile for launch",
+        help="Sets the chrome profile for launch",
         type=str,
     )
     p.add_argument(
