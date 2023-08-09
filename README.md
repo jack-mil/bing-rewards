@@ -136,3 +136,24 @@ https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-pytho
 
 This script provided the original inspiration but has since been complelty rewritten and expanded.
 The original author was contacted for the original source of keywords, but declined to respond
+
+## Development
+
+This project uses [Poetry](https://python-poetry.org) for dependency management and packaging.
+
+The easiest way to install python apps is with [pipx](https://pypa.github.io/pipx/)
+
+```
+# Install pipx
+pip install pipx
+# Install poetry
+pipx install poetry
+```
+
+Then, fork the repo, clone and install the dependencies with `poetry install`.
+
+Install the defined pre-commit hooks: `poetry run pre-commit install`
+
+Activate the virtualenv: `poetry shell`
+
+Feel free to open a PR with additional features or fixes
