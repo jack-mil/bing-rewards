@@ -98,6 +98,7 @@ Options supplied at execution time override any config.
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested)   |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                    |
 | `--profile "Profile N"` | Launches chrome using the specified profile. Otherwise use default.                   |
+| `--ime`                 | Triggers Windows IME to switch to English input by pressing "shift"                   |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
 where precise delay modifications can be made.

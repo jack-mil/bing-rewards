@@ -169,6 +169,11 @@ def parse_args():
         help="sets the chrome profile for launch",
         type=str,
     )
+    p.add_argument(
+        "--ime",
+        help="Triggers windows IME to switch to english by pressing SHIFT",
+        action="store_true",
+    )
     return p.parse_args()
 
 
@@ -300,6 +305,11 @@ def search(count, words_gen: Generator, agent, args, config):
             key_controller.press("d")
             key_controller.release("d")
             key_controller.release(Key.alt)
+
+            if args.ime:
+                # Incase users use a Windows IME, change the language to English
+                # Issue #35
+                key_controller.tap(Key.shift)
             time.sleep(0.08)
 
             # Type the url into the address bar
