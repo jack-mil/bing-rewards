@@ -57,7 +57,7 @@ If your chromium based browser has a different name use the `--exe` flag with an
 
 ## **Usage**
 
-#### `bing-rewards [-h] [--no-window] [-n] [--exe EXE] [-c COUNT] [-d | -m]`
+#### `bing-rewards [-h] [--no-window] [-n] [--exe EXE] [-c COUNT] [-d | -m] [--profile "Profile X"]`
 
 Ex:
 Complete mobile and desktop daily points
@@ -70,6 +70,10 @@ Run 10 searches with mobile user-agent in a new window
 
 `$ bing-rewards --mobile --count=10`
 
+Complete mobile and desktop daily points using specified chrome profile "Profile 1"
+
+`$ bing-rewards --profile "Profile 1"`
+
 Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Linux (Ubuntu + Arch), however it should work on Mac OS as well.
 
 ⚠️Known Issue: No other instance of chrome.exe can be open when the script runs. Chrome prevents different user agents in each window. The script will run, but Chrome will not appear as Edge
@@ -80,19 +84,21 @@ Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Lin
 Running with no options will complete mobile and desktop daily search quota.
 The following options are available to change the default behavior.
 Options supplied at execution time override any config.
-| Flag                    | Option                                                                              |
-| ----------------------- | ----------------------------------------------------------------------------------- |
-| `-h`, `--help`          | Display help and exit                                                               |
-| `-c`, `--count=N`       | Override the number of searches to complete (Desktop: 30, Mobile: 20)               |
-| `-d`, `--desktop`       | Only use desktop user agent                                                         |
-| `-m`, `--mobile`        | Only use a mobile user agent                                                        |
-| `-n`, `--dryrun`        | Do everything but type the search query                                             |
-| `--open-rewards`        | Open the rewards page at the end of the run                                         |
-| `-X`, `--no-exit`       | Do not close the browser after completing a search                                  |
-| `--load-delay`          | Override the time given to Chrome to load in seconds (1.5s)                         |
-| `--search-delay`        | Override the time between searches in seconds (2s)                                  |
-| `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested) |
-| `--nowindow`            | Don't open a new Chrome window, just type the keys                                  |
+| Flag                    | Option                                                                                |
+| ----------------------- | --------------------------------------------------------------------------------------|
+| `-h`, `--help`          | Display help and exit                                                                 |
+| `-c`, `--count=N`       | Override the number of searches to complete                                           |
+| `-d`, `--desktop`       | Only use desktop user agent                                                           |
+| `-m`, `--mobile`        | Only use a mobile user agent                                                          |
+| `-n`, `--dryrun`        | Do everything but type the search query                                               |
+| `--open-rewards`        | Open the rewards page at the end of the run                                           |
+| `-X`, `--no-exit`       | Do not close the browser after completing a search                                    |
+| `--load-delay`          | Override the time given to Chrome to load in seconds                                  |
+| `--search-delay`        | Override the time between searches in seconds                                         |
+| `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested)   |
+| `--nowindow`            | Don't open a new Chrome window, just type the keys                                    |
+| `--profile "Profile N"` | Launches chrome using the specified profile. Otherwise use default.                   |
+| `--ime`                 | Triggers Windows IME to switch to English input by pressing "shift"                   |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
 where precise delay modifications can be made.
@@ -130,3 +136,24 @@ https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-pytho
 
 This script provided the original inspiration but has since been complelty rewritten and expanded.
 The original author was contacted for the original source of keywords, but declined to respond
+
+## Development
+
+This project uses [Poetry](https://python-poetry.org) for dependency management and packaging.
+
+The easiest way to install python apps is with [pipx](https://pypa.github.io/pipx/)
+
+```
+# Install pipx
+pip install pipx
+# Install poetry
+pipx install poetry
+```
+
+Then, fork the repo, clone and install the dependencies with `poetry install`.
+
+Install the defined pre-commit hooks: `poetry run pre-commit install`
+
+Activate the virtualenv: `poetry shell`
+
+Feel free to open a PR with additional features or fixes
