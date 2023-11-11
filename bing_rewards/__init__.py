@@ -62,7 +62,7 @@ LOAD_DELAY = 1.5
 SEARCH_DELAY = 2
 
 # Bing Search base url
-URL = "https://www.bing.com/search?q="
+URL = "https://www.bing.com/search?FORM=CHROMN&q="
 
 # Reference Keywords from package files
 KEYWORDS = Path(Path(__file__).parent, "data", "keywords.txt")
