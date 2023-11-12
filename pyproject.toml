@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/jack-mil/bing-rewards"
 repository = "https://github.com/jack-mil/bing-rewards"
-keywords = ["automation", "bing", "search", "pyautogui", "points", "xbox"]
+keywords = ["automation", "bing", "search", "pynput", "points", "xbox"]
 classifiers = [
 	"Programming Language :: Python :: 3 :: Only",
 	"License :: OSI Approved :: MIT License",
@@ -26,7 +26,7 @@ include = ["data/*.txt"]
 bing-rewards = "bing_rewards:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 pynput = "^1"
 
 [tool.poetry.group.dev]

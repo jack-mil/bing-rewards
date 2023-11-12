@@ -218,7 +218,7 @@ def check_python_version():
     """
     Ensure the correct version of Python is being used.
     """
-    minimum_version = (3, 6)
+    minimum_version = (3, 10)
     assert (
         sys.version_info >= minimum_version
     ), "Only Python {}.{} and above is supported.".format(*minimum_version)

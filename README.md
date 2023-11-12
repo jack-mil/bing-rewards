@@ -45,7 +45,7 @@ pipx install bing-rewards
 
 ## **Requirements**
 
-- At least Python 3.8
+- At least Python 3.10
 
 - [pynput](https://github.com/moses-palmer/pynput) package is used to control keypresses and type Bing search URLS.
 WARNING: This script *will* take control away from the keyboard while running. **Pynput** performs key presses. i.e., it does not operate headless or in the background.
