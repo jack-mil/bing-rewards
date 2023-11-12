@@ -78,6 +78,8 @@ Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Lin
 
 ⚠️Known Issue: No other instance of chrome.exe can be open when the script runs. Chrome prevents different user agents in each window. The script will run, but Chrome will not appear as Edge
 
+⚠️Bing has gotten more and more complex with the introduction of the AI tools. Disable as much as you can to make pages load faster. See PR #39 for some modifications you can make to the default search query url parameters that may improve success.
+
 
 ## **Configuration**
 
@@ -101,7 +103,7 @@ Options supplied at execution time override any config.
 | `--ime`                 | Triggers Windows IME to switch to English input by pressing "shift"                   |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
-where precise delay modifications can be made.
+where precise delay modifications can be made. If updates make changes to the default configs, you will have to remove and regenerate the file.
 
 Example config `~/.config/bing-rewards/config.json`
 ```json
@@ -110,7 +112,7 @@ Example config `~/.config/bing-rewards/config.json`
     "mobile-count": 20,
     "load-delay": 1.5,
     "search-delay": 2,
-    "search-url": "https://www.bing.com/search?q=",
+    "search-url": "https://www.bing.com/search?FORM=CHROMN&q=",
     "desktop-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37",
     "mobile-agent": "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041",
     "browser-path": "C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
