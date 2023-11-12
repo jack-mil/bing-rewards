@@ -10,8 +10,8 @@ Examples:
     $ bing-search -nmc30
     $ bing-search --new --count=50 --mobile --dryrun
 
-Config file generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
-where precise delay modifications can be made.
+Config file generated at {CONFIG} where detailed settings can be configured
+Command line arguments always override the config file.
 Delay timings are in seconds.
 """
 
@@ -61,8 +61,8 @@ LOAD_DELAY = 1.5
 # Time between searches in seconds
 SEARCH_DELAY = 2
 
-# Bing Search base url
-URL = "https://www.bing.com/search?q="
+# Bing Search base url, with new form= parameter (code differs per browser?)
+URL = "https://www.bing.com/search?form=QBRE&q="
 
 # Reference Keywords from package files
 KEYWORDS = Path(Path(__file__).parent, "data", "keywords.txt")
@@ -75,7 +75,7 @@ SETTINGS = {
     "search-url": URL,
     "desktop-agent": DESKTOP_AGENT,
     "mobile-agent": MOBILE_AGENT,
-    "browser-path": "",
+    "browser-path": "chrome",
 }
 
 
@@ -100,6 +100,7 @@ def parse_args():
             DESKTOP_COUNT=DESKTOP_COUNT,
             MOBILE_COUNT=MOBILE_COUNT,
             VERSION=get_version(),
+            CONFIG=get_config_file(),
         ),
         epilog="* Repository and issues: https://github.com/jack-mil/bing-search",
         formatter_class=argp.RawDescriptionHelpFormatter,
@@ -177,7 +178,7 @@ def parse_args():
     return p.parse_args()
 
 
-def parse_config(default_config: Dict) -> Dict:
+def get_config_file() -> Path:
     # Config file in .config or APPDATA on Windows
     config_home = Path(
         os.environ.get("APPDATA")
@@ -187,6 +188,11 @@ def parse_config(default_config: Dict) -> Dict:
     )
 
     config_file = config_home / "config.json"
+    return config_file
+
+
+def parse_config(default_config: Dict) -> Dict:
+    config_file = get_config_file()
 
     try:
         # Read config from json dictionary
@@ -196,11 +202,12 @@ def parse_config(default_config: Dict) -> Dict:
     except FileNotFoundError:
         # Make directories and default config if it doesn't exist
         print(f"Auto-Generating config at {str(config_file)}")
-        os.makedirs(config_home, exist_ok=True)
+        os.makedirs(config_file.parent, exist_ok=True)
 
         with config_file.open("x") as f:
             json.dump(default_config, f, indent=4)
             return default_config
+
     except JSONDecodeError as e:
         print(e)
         print("Error parsing JSON config. Please check your modifications.")
@@ -211,7 +218,7 @@ def check_python_version():
     """
     Ensure the correct version of Python is being used.
     """
-    minimum_version = (3, 6)
+    minimum_version = (3, 10)
     assert (
         sys.version_info >= minimum_version
     ), "Only Python {}.{} and above is supported.".format(*minimum_version)
@@ -297,7 +304,7 @@ def search(count, words_gen: Generator, agent, args, config):
         query = next(words_gen)
 
         # Concatenate url with correct url escape characters
-        search_url = URL + quote_plus(query)
+        search_url = (config.get("search-url") or URL) + quote_plus(query)
         # Use pynput to trigger keyboard events and type search querys
         if not args.dryrun:
             # Alt + D to focus the address bar in most browsers
