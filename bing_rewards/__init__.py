@@ -117,6 +117,12 @@ def parse_args():
         help="The full path of the Chrome compatible browser executable",
         type=check_path,
     )
+    p.add_argument(
+        "-b",
+        "--bing",
+        help="Add this flag if your default search engine is Bing",
+        action="store_true"
+    )
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
     group.add_argument(
@@ -303,8 +309,13 @@ def search(count, words_gen: Generator, agent, args, config):
         # Get a random query from set of words
         query = next(words_gen)
 
-        # Concatenate url with correct url escape characters
-        search_url = (config.get("search-url") or URL) + quote_plus(query)
+        # If the --bing flag is set, type the query to the address bar directly
+        if args.bing: 
+            search_url = query
+        else: 
+            # Concatenate url with correct url escape characters
+            search_url = (config.get("search-url") or URL) + quote_plus(query)
+
         # Use pynput to trigger keyboard events and type search querys
         if not args.dryrun:
             # Alt + D to focus the address bar in most browsers
