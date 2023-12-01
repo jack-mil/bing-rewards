@@ -53,13 +53,14 @@ DESKTOP_AGENT = (
 
 
 # Number of searches to make
-DESKTOP_COUNT = 30
-MOBILE_COUNT = 20
+DESKTOP_COUNT = 33
+MOBILE_COUNT = 23
 
 # Time to allow Chrome to load in seconds
 LOAD_DELAY = 1.5
 # Time between searches in seconds
-SEARCH_DELAY = 2
+# Searches does not count if they are done earlier than ~6 seconds
+SEARCH_DELAY = 6
 
 # Bing Search base url, with new form= parameter (code differs per browser?)
 URL = "https://www.bing.com/search?form=QBRE&q="
