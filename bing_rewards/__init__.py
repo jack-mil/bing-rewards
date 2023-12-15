@@ -260,59 +260,63 @@ def search(count, words_gen: Generator, agent, args, config):
     searches from list `words`,
     finally terminating Chrome process on completion
     """
-    try:
-        # Open Chrome as a subprocess
-        # Only if a new window should be opened
-        if not args.no_window and not args.dryrun:
-            if os.name == "posix":
-                chrome = subprocess.Popen(
-                    browser_cmd(
-                        args.exe or config.get("browser-path") or None,
-                        agent,
-                        args.profile,
-                    ),
-                    stderr=subprocess.DEVNULL,
-                    stdout=subprocess.DEVNULL,
-                    preexec_fn=os.setsid,
-                )
-            else:
-                chrome = subprocess.Popen(
-                    browser_cmd(
-                        args.exe or config.get("browser-path") or None,
-                        agent,
-                        args.profile,
-                    ),
-                )
-            print(f"Opening browser with pid {chrome.pid}")
-    except FileNotFoundError as e:
-        print("Unexpected error:", e)
-        print(
-            "ERROR: Chrome could not be found on system PATH\n"
-            "Make sure it is installed and added to PATH,"
-            "or use the --exe flag to give an absolute path"
-        )
-        sys.exit(1)
-
-    # Wait for Chrome to load
-    time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
-
-    # keyboard controller from pynput
-    key_controller = keyboard.Controller()
-
     for i in range(count):
+
+        #Wait more for chrome opening 
+        time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
+
+        try:
+            # Open Chrome as a subprocess
+            # Only if a new window should be opened
+            if not args.no_window and not args.dryrun:
+                if os.name == "posix":
+                    chrome = subprocess.Popen(
+                        browser_cmd(
+                            args.exe or config.get("browser-path") or None,
+                            agent,
+                            args.profile,
+                        ),
+                        stderr=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        preexec_fn=os.setsid,
+                    )
+                else:
+                    chrome = subprocess.Popen(
+                        browser_cmd(
+                            args.exe or config.get("browser-path") or None,
+                            agent,
+                            args.profile,
+                        ),
+                    )
+                print(f"Opening browser with pid {chrome.pid}")
+        except FileNotFoundError as e:
+            print("Unexpected error:", e)
+            print(
+                "ERROR: Chrome could not be found on system PATH\n"
+                "Make sure it is installed and added to PATH,"
+                "or use the --exe flag to give an absolute path"
+            )
+            sys.exit(1)
+
+        # Wait for Chrome to load
+        time.sleep(args.load_delay or config.get("load-delay", LOAD_DELAY))
+
+        # keyboard controller from pynput
+        key_controller = keyboard.Controller()
+
         # Get a random query from set of words
         query = next(words_gen)
 
         # Concatenate url with correct url escape characters
         search_url = (config.get("search-url") or URL) + quote_plus(query)
+
         # Use pynput to trigger keyboard events and type search querys
         if not args.dryrun:
-            # Alt + D to focus the address bar in most browsers
+            # Command + L to focus the address bar in most browsers
             key_controller.press(Key.cmd)
             key_controller.press("l")
             key_controller.release("l")
             key_controller.release(Key.cmd)
-
             if args.ime:
                 # Incase users use a Windows IME, change the language to English
                 # Issue #35
@@ -322,21 +326,21 @@ def search(count, words_gen: Generator, agent, args, config):
             # Type the url into the address bar
             # This is very fast and hopefully reliable
             key_controller.type(search_url + "\n")
-
         print(f"Search {i+1}: {query}")
+
         # Delay to let page load
         time.sleep(args.search_delay or config.get("search-delay", SEARCH_DELAY))
 
-    # Skip killing the window if exit flag set
-    if args.no_exit:
-        return
+        # Skip killing the window if exit flag set
+        if args.no_exit:
+            return
 
-    if not args.no_window and not args.dryrun:
-        # Close the Chrome window
-        if os.name == "posix":
-            os.killpg(chrome.pid, signal.SIGTERM)
-        else:
-            chrome.kill()
+        if not args.no_window and not args.dryrun:
+            # Close the Chrome window
+            if os.name == "posix":
+                os.killpg(chrome.pid, signal.SIGTERM)
+            else:
+                chrome.kill()
 
 
 def main():
@@ -363,7 +367,7 @@ def main():
         search(
             count, words_gen, config.get("desktop-agent") or DESKTOP_AGENT, args, config
         )
-        print(f"Desktop Search complete! {5*count} MS rewards points\n")
+        print(f"Desktop Search complete! {3*count} MS rewards points\n")
 
     def mobile():
         # Complete search with mobile settings
@@ -373,7 +377,7 @@ def main():
         search(
             count, words_gen, config.get("mobile-agent") or MOBILE_AGENT, args, config
         )
-        print(f"Mobile Search complete! {5*count} MS rewards points\n")
+        print(f"Mobile Search complete! {3*count} MS rewards points\n")
 
     def both():
         desktop()
