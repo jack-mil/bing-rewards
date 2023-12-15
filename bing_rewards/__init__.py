@@ -308,10 +308,10 @@ def search(count, words_gen: Generator, agent, args, config):
         # Use pynput to trigger keyboard events and type search querys
         if not args.dryrun:
             # Alt + D to focus the address bar in most browsers
-            key_controller.press(Key.alt)
-            key_controller.press("d")
-            key_controller.release("d")
-            key_controller.release(Key.alt)
+            key_controller.press(Key.cmd)
+            key_controller.press("l")
+            key_controller.release("l")
+            key_controller.release(Key.cmd)
 
             if args.ime:
                 # Incase users use a Windows IME, change the language to English
