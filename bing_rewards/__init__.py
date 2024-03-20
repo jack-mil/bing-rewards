@@ -122,7 +122,7 @@ def parse_args():
         "-b",
         "--bing",
         help="Add this flag if your default search engine is Bing",
-        action="store_true"
+        action="store_true",
     )
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
@@ -311,9 +311,9 @@ def search(count, words_gen: Generator, agent, args, config):
         query = next(words_gen)
 
         # If the --bing flag is set, type the query to the address bar directly
-        if args.bing: 
+        if args.bing:
             search_url = query
-        else: 
+        else:
             # Concatenate url with correct url escape characters
             search_url = (config.get("search-url") or URL) + quote_plus(query)
 
