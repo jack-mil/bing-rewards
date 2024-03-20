@@ -152,7 +152,7 @@ pip install pipx
 pipx install poetry
 ```
 
-Then, fork the repo, clone and install the dependencies with `poetry install`.
+Then, fork the repo, clone and install the dependencies with `poetry install --with=dev`.
 
 Install the defined pre-commit hooks: `poetry run pre-commit install`
 

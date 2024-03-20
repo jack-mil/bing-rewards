@@ -32,7 +32,7 @@ pynput = "^1"
 [tool.poetry.group.dev]
 optional = true
 [tool.poetry.group.dev.dependencies]
-black = "*"
+black = ">=24.3.0"
 flake8 = "*"
 flake8-bugbear = "*"
 flake8-pyproject = "*"
