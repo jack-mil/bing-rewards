@@ -308,7 +308,7 @@ def search(count, words_gen: Generator, agent, args, config):
 
     # Ctrl + E to open address bar with the default search engine
     # Alt + D focuses address bar without using search engine
-    key_combo = (Key.ctrl, "e") if args.bing else (Key.ctrl, "e")    
+    key_combo = (Key.ctrl, "e") if args.bing else (Key.alt, "d")    
 
     for i in range(count):
         # Get a random query from set of words
