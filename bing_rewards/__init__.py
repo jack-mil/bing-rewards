@@ -306,20 +306,16 @@ def search(count, words_gen: Generator, agent, args, config):
     # keyboard controller from pynput
     key_controller = keyboard.Controller()
 
+    # Ctrl + E to open address bar with the default search engine
+    # Alt + D focuses address bar without using search engine
+    key_combo = (Key.ctrl, "e") if args.bing else (Key.ctrl, "e")    
+
     for i in range(count):
         # Get a random query from set of words
         query = next(words_gen)
 
-        # Determine the key combination to use based on the --bing flag
         if args.bing:
-            # Ctrl + E to open address bar wit the default search engine
-            key_combo = (Key.ctrl, "e")
-        else:
-            # Alt + D focuses address bar without using search engine
-            key_combo = (Key.alt, "d")
-
-        # If the --bing flag is set, type the query to the address bar directly
-        if args.bing:
+            # If the --bing flag is set, type the query to the address bar directly
             search_url = query
         else:
             # Concatenate url with correct url escape characters
@@ -327,10 +323,9 @@ def search(count, words_gen: Generator, agent, args, config):
 
         # Use pynput to trigger keyboard events and type search queries
         if not args.dryrun:
-            key_controller.press(key_combo[0])
-            key_controller.press(key_combo[1])
-            key_controller.release(key_combo[1])
-            key_controller.release(key_combo[0])
+            with key_controller.pressed(key_combo[0]):
+                key_controller.press(key_combo[1])
+                key_controller.release(key_combo[1])
 
             if args.ime:
                 # Incase users use a Windows IME, change the language to English
