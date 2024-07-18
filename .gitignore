@@ -1,3 +1,4 @@
+.ruff_cache
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -7,6 +8,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+*.pyz
 .Python
 build/
 develop-eggs/
@@ -130,3 +132,4 @@ dmypy.json
 
 # VS code settings
 .vscode/
+

@@ -1,12 +1,13 @@
-[tool.poetry]
+[project]
 name = "bing-rewards"
-version = "2.4.0"
+dynamic = ["version"]
 description = "Perform automated Bing Rewards searches"
-authors = ["jack-mil <62065280+jack-mil@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/jack-mil/bing-rewards"
-repository = "https://github.com/jack-mil/bing-rewards"
+authors = [
+	{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" },
+]
+
 keywords = ["automation", "bing", "search", "pynput", "points", "xbox"]
 classifiers = [
 	"Programming Language :: Python :: 3 :: Only",
@@ -15,50 +16,45 @@ classifiers = [
 	"Operating System :: Microsoft :: Windows",
 	"Operating System :: POSIX :: Linux",
 	"Intended Audience :: End Users/Desktop",
-	"Topic :: Utilities"]
-packages = [{include = "bing_rewards"}]
-include = ["data/*.txt"]
+	"Topic :: Utilities",
+]
+requires-python = ">= 3.10"
+dependencies = ["pynput~=1.7"]
 
-[tool.poetry.urls]
-"Issue Tracker" = "https://github.com/jack-mil/bing-rewards/issues"
+[project.urls]
+Homepage = "https://github.com/jack-mil/bing-rewards/README.md"
+Repository = "https://github.com/jack-mil/bing-rewards"
+Issues = "https://github.com/jack-mil/bing-rewards/issues"
 
-[tool.poetry.scripts]
-bing-rewards = "bing_rewards:main"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-pynput = "^1"
-
-[tool.poetry.group.dev]
-optional = true
-[tool.poetry.group.dev.dependencies]
-black = ">=24.3.0"
-flake8 = "*"
-flake8-bugbear = "*"
-flake8-pyproject = "*"
-isort = "*"
-pre-commit = "*"
-
-
+[project.optional-dependencies]
+dev = ["ruff", "pre-commit"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.black]
-exclude = '/(\.eggs|\.git|\.venv.*|_build|buck-out|build|dist)/'
-line-length = 88
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "UNKNOWN"
 
-[tool.isort]
-profile = "black"
-skip_glob = '.venv*'
+[tool.hatch.build.targets.sdist]
+exclude = [
+	".github/"
+]
 
-[tool.flake8]
-max-line-length = 88
-max-complexity = 12
-select = ["C","E","F","W","B","B950"]
+[project.scripts]
+bing-rewards = "bing_rewards:main"
+
+
+# Tooling config
+# -------------
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["C", "E", "F", "W", "B"]
 # E203: whitespace before ':'; ignored due to `black` format
 # E501: Line too long; Disable in preference of Bugbear B509 (can't be too long, give or take)
 # W503: Line break before binary operator; conform to PEP8 as of 2016
-extend-ignore = ["E203", "E501", "W503", "E226"]
-exclude = [".git", "__pycache__", "build", "dist", ".venv*"]
+ignore = ["E203", "E501", "E226"]
