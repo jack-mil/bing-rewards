@@ -33,6 +33,9 @@ dev = ["ruff", "pre-commit"]
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
+[tool.hatch.envs.default]
+features = ["dev"]
+
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "UNKNOWN"
@@ -45,10 +48,6 @@ exclude = [
 
 [project.scripts]
 bing-rewards = "bing_rewards:main"
-
-
-# Tooling config
-# -------------
 
 [tool.ruff.format]
 quote-style = "single"
