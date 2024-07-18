@@ -1,20 +1,20 @@
-"""
-Bing Rewards v{VERSION}
+"""Bing Rewards v{VERSION}.
+
 Automatically perform Bing searches for Rewards Points!
 Executing 'bing-rewards' with no arguments does {DESKTOP_COUNT} desktop searches
 followed by {MOBILE_COUNT} mobile searches by default.
 
-Examples:
-
+Examples
+--------
     $ bing-search -nmc30
     $ bing-search --new --count=50 --mobile --dryrun
 
 Config file: {CONFIG}
 CLI arguments always override the config file.
 Delay timings are in seconds.
+
 """
 
-import json
 import os
 import random
 import subprocess
@@ -22,13 +22,13 @@ import sys
 import threading
 import time
 import webbrowser
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from importlib import metadata
+from collections.abc import Generator
+from importlib import resources
 from io import SEEK_END, SEEK_SET
-from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Dict, Generator, List
 from urllib.parse import quote_plus
+
+import bing_rewards.options as options
 
 if os.name == 'posix':
     import signal
@@ -36,195 +36,9 @@ if os.name == 'posix':
 from pynput import keyboard
 from pynput.keyboard import Key
 
-# Edge Browser user agents
-# Makes Google Chrome look like MS Edge to Bing
-MOBILE_AGENT = (
-    'Mozilla/5.0 (Linux; Android 14; Pixel 6 Build/AP2A.240605.024) '
-    'AppleWebKit/537.36 (KHTML, like Gecko) '
-    'Chrome/121.0.0.0 Mobile Safari/537.36 Edge/121.0.2277.138'
-)
 
-DESKTOP_AGENT = (
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-    'AppleWebKit/537.36 (KHTML, like Gecko) '
-    'Chrome/126.0.0.0 Safari/537.36 Edge/126.0.0.0'
-)
-
-
-# Number of searches to make
-DESKTOP_COUNT = 33
-MOBILE_COUNT = 23
-
-# Time to allow Chrome to load in seconds
-LOAD_DELAY = 1.5
-# Time between searches in seconds
-# Searches does not count if they are done earlier than ~6 seconds
-SEARCH_DELAY = 6
-
-# Bing Search base url, with new form= parameter (code differs per browser?)
-URL = 'https://www.bing.com/search?form=QBRE&q='
-
-# Reference Keywords from package files
-KEYWORDS = Path(Path(__file__).parent, 'data', 'keywords.txt')
-
-SETTINGS = {
-    'desktop-count': DESKTOP_COUNT,
-    'mobile-count': MOBILE_COUNT,
-    'load-delay': LOAD_DELAY,
-    'search-delay': SEARCH_DELAY,
-    'search-url': URL,
-    'desktop-agent': DESKTOP_AGENT,
-    'mobile-agent': MOBILE_AGENT,
-    'browser-path': 'chrome',
-}
-
-__version__ = metadata.version('bing-rewards')
-
-
-def check_path(path: str) -> Path:
-    exe = Path(path)
-    if exe.is_file and exe.exists:
-        return exe
-    raise FileNotFoundError(path)
-
-
-def parse_args():
-    """Parse all command line arguments and return Namespace"""
-    p = ArgumentParser(
-        description=__doc__.format(
-            DESKTOP_COUNT=DESKTOP_COUNT,
-            MOBILE_COUNT=MOBILE_COUNT,
-            VERSION=__version__,
-            CONFIG=get_config_file(),
-        ),
-        epilog='* Repository and issues: https://github.com/jack-mil/bing-search',
-        formatter_class=RawDescriptionHelpFormatter,
-    )
-    p.add_argument('--version', action='version', version=f'%(progs)s v{__version__}')
-    p.add_argument(
-        '-c',
-        '--count',
-        help='Override the number of searches to perform',
-        type=int,
-    )
-    p.add_argument(
-        '--exe',
-        help='The full path of the Chrome compatible browser executable',
-        type=check_path,
-    )
-    p.add_argument(
-        '-b',
-        '--bing',
-        help='Add this flag if your default search engine is Bing',
-        action='store_true',
-    )
-    # Mutually exclusive options. Only one can be present
-    group = p.add_mutually_exclusive_group()
-    group.add_argument(
-        '-d',
-        '--desktop',
-        help='Do only desktop searches',
-        action='store_true',
-    )
-    group.add_argument(
-        '-m',
-        '--mobile',
-        help='Do only mobile searches (appear as phone browser)',
-        action='store_true',
-    )
-
-    # Other options
-    p.add_argument(
-        '--load-delay',
-        help='Override the time given to Chrome to load in seconds',
-        type=int,
-    )
-    p.add_argument(
-        '--search-delay',
-        help='Override the time between searches in seconds',
-        type=int,
-    )
-    p.add_argument(
-        '-n',
-        '--dryrun',
-        help='Do everything but search',
-        action='store_true',
-    )
-    p.add_argument(
-        '--open-rewards',
-        help='Open the rewards page at the end of the run',
-        action='store_true',
-    )
-    p.add_argument(
-        '--no-window',
-        help="Don't open a new Chrome window (just press keys)",
-        action='store_true',
-    )
-    p.add_argument(
-        '-X',
-        '--no-exit',
-        help="Don't close the browser window after searching",
-        action='store_true',
-    )
-    p.add_argument(
-        '--profile',
-        help='Sets the chrome profile for launch',
-        type=str,
-    )
-    p.add_argument(
-        '--ime',
-        help='Triggers windows IME to switch to english by pressing SHIFT',
-        action='store_true',
-    )
-    return p.parse_args()
-
-
-def get_config_file() -> Path:
-    # Config file in .config or APPDATA on Windows
-    config_home = Path(
-        os.environ.get('APPDATA')
-        or os.environ.get('XDG_CONFIG_HOME')
-        or Path(os.environ['HOME'], '.config'),
-        'bing-rewards',
-    )
-
-    config_file = config_home / 'config.json'
-    return config_file
-
-
-def parse_config(default_config: Dict) -> Dict:
-    config_file = get_config_file()
-
-    try:
-        # Read config from json dictionary
-        with config_file.open() as f:
-            return json.load(f)
-
-    except FileNotFoundError:
-        # Make directories and default config if it doesn't exist
-        print(f'Auto-Generating config at {str(config_file)}')
-        os.makedirs(config_file.parent, exist_ok=True)
-
-        with config_file.open('x') as f:
-            json.dump(default_config, f, indent=4)
-            return default_config
-
-    except JSONDecodeError as e:
-        print(e)
-        print('Error parsing JSON config. Please check your modifications.')
-        sys.exit(1)
-
-
-def check_python_version():
-    """ Ensure the correct version of Python is being used. """
-    minimum_version = (3, 10)
-    assert (
-        sys.version_info >= minimum_version
-    ), 'Only Python {}.{} and above is supported.'.format(*minimum_version)
-
-
-def browser_cmd(exe: Path | None, agent: str, profile: str | None = None) -> List[str]:
-    """ Generate command to open Google Chrome with user-agent `agent` """
+def browser_cmd(exe: Path | None, agent: str, profile: str | None = None) -> list[str]:
+    """Generate command to open Google Chrome with user-agent `agent`."""
     if exe is not None:
         browser = str(exe)
     else:
@@ -237,49 +51,49 @@ def browser_cmd(exe: Path | None, agent: str, profile: str | None = None) -> Lis
     return cmd
 
 
-def get_words_gen() -> Generator:
+def word_generator() -> Generator[str]:
+    """Infinitely generate terms from the word file.
+
+    Starts reading from a random position in the file.
+    If end of file is reached, close and restart.
+    """
+    word_data = resources.files().joinpath('data', 'keywords.txt')
     while True:
-        # Wrapped in an infinite loop to support circular reading of the file
-        with KEYWORDS.open(mode='r', encoding='utf8') as fh:
+        with (
+            resources.as_file(word_data) as p,
+            p.open(mode='r', encoding='utf-8') as fh,
+        ):
             fh.seek(0, SEEK_END)
             size = fh.tell()  # Get the filesize of the Keywords file
-            fh.seek(
-                random.randint(0, (size * 3 // 4)), SEEK_SET
-            )  # Start at a random position in the stream
+            # Start at a random position in the stream
+            fh.seek(random.randint(0, (size * 3 // 4)), SEEK_SET)
             for line in fh:
                 # Use the built in file handler generator
                 yield line.strip()
 
 
 def search(count, words_gen: Generator, agent, args, config):
-    """
-    Opens a Chrome window with specified `agent` string, completes `count`
-    searches from list `words`,
-    finally terminating Chrome process on completion
+    """Perform the actual searches in a browser.
+
+    Open a Chrome window with specified `agent` string, complete `count`
+    searches from list `words`, finally terminate Chrome process on completion.
     """
     try:
         # Open Chrome as a subprocess
         # Only if a new window should be opened
         if not args.no_window and not args.dryrun:
+            cmd = browser_cmd(
+                args.exe or config.get('browser-path'), agent, args.profile
+            )
             if os.name == 'posix':
                 chrome = subprocess.Popen(
-                    browser_cmd(
-                        args.exe or config.get('browser-path') or None,
-                        agent,
-                        args.profile,
-                    ),
+                    cmd,
                     stderr=subprocess.DEVNULL,
                     stdout=subprocess.DEVNULL,
                     preexec_fn=os.setsid,
                 )
             else:
-                chrome = subprocess.Popen(
-                    browser_cmd(
-                        args.exe or config.get('browser-path') or None,
-                        agent,
-                        args.profile,
-                    ),
-                )
+                chrome = subprocess.Popen(cmd)
             print(f'Opening browser with pid {chrome.pid}')
     except FileNotFoundError as e:
         print('Unexpected error:', e)
@@ -291,7 +105,7 @@ def search(count, words_gen: Generator, agent, args, config):
         sys.exit(1)
 
     # Wait for Chrome to load
-    time.sleep(args.load_delay or config.get('load-delay', LOAD_DELAY))
+    time.sleep(args.load_delay or config.get('load-delay'))
 
     # keyboard controller from pynput
     key_controller = keyboard.Controller()
@@ -309,7 +123,7 @@ def search(count, words_gen: Generator, agent, args, config):
             search_url = query
         else:
             # Concatenate url with correct url escape characters
-            search_url = (config.get('search-url') or URL) + quote_plus(query)
+            search_url = config.get('search-url') + quote_plus(query)
 
         # Use pynput to trigger keyboard events and type search queries
         if not args.dryrun:
@@ -329,7 +143,7 @@ def search(count, words_gen: Generator, agent, args, config):
 
         print(f'Search {i+1}: {query}')
         # Delay to let page load
-        time.sleep(args.search_delay or config.get('search-delay', SEARCH_DELAY))
+        time.sleep(args.search_delay or config.get('search-delay'))
 
     # Skip killing the window if exit flag set
     if args.no_exit:
@@ -344,49 +158,44 @@ def search(count, words_gen: Generator, agent, args, config):
 
 
 def main():
-    """
-    Main program execution. 
-    
+    """Program entrypoint.
+
     Loads keywords from a file, interprets command line arguments
     and executes search function in separate thread.
     Setup listener callback for ESC key.
     """
-    check_python_version()
-    config = parse_config(SETTINGS)
-    args = parse_args()
-    # Removed. Dry run now respects set delay times
-    # if args.dryrun:
-    #     config["search-delay"] = 0
-    #     config["load-delay"] = 0
-    words_gen = get_words_gen()
+    config = options.read_config()
+    args = options.parse_args()
+
+    words_gen = word_generator()
 
     def desktop():
         # Complete search with desktop settings
-        count = args.count or config.get('desktop-count') or DESKTOP_COUNT
+        count = args.count or config.get('desktop-count')
         print(f'Doing {count} desktop searches')
 
         search(
             count,
             words_gen,
-            config.get('desktop-agent') or DESKTOP_AGENT,
+            config.get('desktop-agent'),
             args,
             config,
         )
-        print(f'Desktop Search complete! {5*count} MS rewards points\n')
+        print('Desktop Search complete!\n')
 
     def mobile():
         # Complete search with mobile settings
-        count = args.count or config.get('mobile-count') or MOBILE_COUNT
+        count = args.count or config.get('mobile-count')
         print(f'Doing {count} mobile searches')
 
         search(
             count,
             words_gen,
-            config.get('mobile-agent') or MOBILE_AGENT,
+            config.get('mobile-agent'),
             args,
             config,
         )
-        print(f'Mobile Search complete! {5*count} MS rewards points\n')
+        print('Mobile Search complete!\n')
 
     def both():
         desktop()

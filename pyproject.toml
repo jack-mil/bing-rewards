@@ -18,7 +18,7 @@ classifiers = [
 	"Intended Audience :: End Users/Desktop",
 	"Topic :: Utilities",
 ]
-requires-python = ">= 3.10"
+requires-python = ">=3.10"
 dependencies = ["pynput~=1.7"]
 
 [project.urls]
@@ -53,7 +53,7 @@ bing-rewards = "bing_rewards:main"
 quote-style = "single"
 
 [tool.ruff.lint]
-select = ["C", "E", "F", "W", "B"]
+select = ["C", "E", "F", "W", "B", "UP"]
 # E203: whitespace before ':'; ignored due to `black` format
 # E501: Line too long; Disable in preference of Bugbear B509 (can't be too long, give or take)
 # W503: Line break before binary operator; conform to PEP8 as of 2016
