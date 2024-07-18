@@ -12,24 +12,22 @@ jobs:
     name: Run Linting
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Install poetry
-      run: pipx install poetry
-
-    - uses: actions/setup-python@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
       with:
-        python-version: '3.x'
-        cache: "poetry"
+        fetch-depth: 0
 
-    - name: Install dependencies
-      run: poetry install --only dev
+    - name: Set up Python >= 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '>=3.10'
+        cache: pip
 
-    - name: Run black
-      run: poetry run black --check --verbose .
+    - name: Install ruff
+      run: pip install ruff
 
-    - name: Run flake8
-      run: poetry run flake8 --statistics
+    - name: Run ruff lint
+      run: ruff check --output-format=github .
 
-    - name: Run isort
-      run: poetry run isort -cv .
+    - name: Run ruff format
+      run: ruff format --check .
