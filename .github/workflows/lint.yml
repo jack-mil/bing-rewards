@@ -5,6 +5,10 @@ on:
     branches: [master, develop]
     paths:
       - 'bing_rewards/**.py'
+  pull_request:
+    branches: develop
+    paths:
+      - 'bing_rewards/**.py'
   workflow_dispatch:
 
 jobs:

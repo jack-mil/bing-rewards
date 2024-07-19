@@ -3,7 +3,7 @@ on:
   push:
     branches: [master, develop]
     tags:
-      - "v*.*.*"
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   build:
