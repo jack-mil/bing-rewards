@@ -76,12 +76,6 @@ def parse_args() -> Namespace:
         type=int,
     )
     p.add_argument(
-        '--exe',
-        help='The full path of the Chrome compatible browser executable',
-        type=valid_file,
-        dest='browser_path',
-    )
-    p.add_argument(
         '-b',
         '--bing',
         help='Add this flag if your default search engine is Bing',
@@ -103,6 +97,12 @@ def parse_args() -> Namespace:
     )
 
     # Other options
+    p.add_argument(
+        '--exe',
+        help='The full path of the Chrome compatible browser executable',
+        type=valid_file,
+        dest='browser_path',
+    )
     p.add_argument(
         '--load-delay',
         help='Override the time given to Chrome to load in seconds',

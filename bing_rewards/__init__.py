@@ -107,7 +107,7 @@ def open_browser(cmd: list[str]) -> subprocess.Popen:
         print(f"Running command: '{' '.join(cmd)}'")
         sys.exit(1)
 
-    print(f'Opening browser with pid {chrome.pid}')
+    print(f'Opening browser [{chrome.pid}]')
     return chrome
 
 
