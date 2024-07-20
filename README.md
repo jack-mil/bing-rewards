@@ -2,52 +2,47 @@
 
 <div align="center">
 <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/bing-rewards?style=flat-square&label=Python&logo=python&logoColor=yellow">
-<a href="https://pypi.org/project/bing-rewards/"> <img alt="PyPi" src="https://img.shields.io/pypi/v/bing-rewards?label=PyPI&style=flat-square&logo=pypi&logoColor=yellow"></a>
-<a href="https://pypi.org/project/bing-rewards/"> <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/bing-rewards?style=flat-square&label=Downloads&color=orange"></a>
+<a href="https://pypi.org/p/bing-rewards/"> <img alt="PyPi" src="https://img.shields.io/pypi/v/bing-rewards?label=PyPI&style=flat-square&logo=pypi&logoColor=yellow"></a>
+<a href="https://pypi.org/p/bing-rewards/"> <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/bing-rewards?style=flat-square&label=Downloads&color=orange"></a>
 <br>
 <img alt="PyPI - License" src="https://img.shields.io/pypi/l/bing-rewards?style=flat-square&label=License&color=blueviolet">
-<a href="https://github.com/psf/black"> <img alt="Formatting" src="https://img.shields.io/badge/Code%20Style-Black-000000?style=flat-square"> </a>
-
 </div>
 
 ### A CLI app to perform Bing searches
 Please submit an issue or pull-request if you have an idea for a feature
 
+- [Features](#features)
 - [Install](#installation)
-- [Requirements](#requirements)
 - [Usage](#usage)
-- [Config](#configuration)
+- [Config](#options)
+- [Development](#development--contribution)
 
 ## **Features**
 
-* Script types search queries into the address bar, so must be run in a GUI environment.
+* Enter random search queries into your browser a la Auto Hotkey.
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
-* All files are local, makes no http(s) requests
-* Only one external dependance (pynput)
+* Install as self-contained python application with minimal dependecies (`pynput`)
 * Fine tune delay and set browser executable with [config](#configuration) at `$XDG_CONFIG_HOME` or `%APPDATA%` on Windows
-* Best Value: gift cards: **1,050 points / $1** (current rate)
-***
 
 ## **Installation**
+### With [`pipx`](https://pipx.pypa.io/stable/) or `pip`
 ```bash
-pip install bing-rewards
+pipx install bing-rewards
 ```
 Will make the executable `bing-rewards` available on your PATH.
 Look below or try the `--help` flag to see detailed usage.
 
 **Recommended**: Use a virtual environment or [`pipx`](https://pypa.github.io/pipx/) to avoid poluting your global package path with executable apps. See: [pipx](https://pypa.github.io/pipx/)
-```bash
-pipx install bing-rewards
-```
 
-**NEW IN 2.0:** Now using the `pynput` backend with significantly less dependencies than the old `PyAutoGUI`. Delete any old virtual enviroment and reinstall to clean up old depdendencies.
+### From releases
+Download the latest release wheel and install with pip locally.
 
-## **Requirements**
+## **Dependencies**
 
 - At least Python 3.10
 
-- [pynput](https://github.com/moses-palmer/pynput) package is used to control keypresses and type Bing search URLS.
+- [pynput](https://github.com/moses-palmer/pynput) (installed automatically). Used to control keypresses and type Bing search URLS.
 WARNING: This script *will* take control away from the keyboard while running. **Pynput** performs key presses. i.e., it does not operate headless or in the background.
 
 - `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).
@@ -56,10 +51,6 @@ If your chromium based browser has a different name use the `--exe` flag with an
 - To earn points from searching, you *must* also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies.
 
 ## **Usage**
-
-#### `bing-rewards [-h] [--no-window] [-n] [--exe EXE] [-c COUNT] [-d | -m] [--profile "Profile X"]`
-
-Ex:
 Complete mobile and desktop daily points
 
 `$ bing-rewards`
@@ -81,7 +72,7 @@ Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Lin
 ⚠️Bing has gotten more and more complex with the introduction of the AI tools. Disable as much as you can to make pages load faster. See PR #39 for some modifications you can make to the default search query url parameters that may improve success.
 
 
-## **Configuration**
+## **Options**
 
 Running with no options will complete mobile and desktop daily search quota.
 The following options are available to change the default behavior.
@@ -114,12 +105,12 @@ Example config `~/.config/bing-rewards/config.json`
     "load-delay": 1.5,
     "search-delay": 2,
     "search-url": "https://www.bing.com/search?FORM=CHROMN&q=",
-    "desktop-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37",
-    "mobile-agent": "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041",
+    "desktop-agent": "Mozilla/5.0 ... <snip>",
+    "mobile-agent": "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) ... <snip>",
     "browser-path": "C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
 }
 ```
-Delay timings are in seconds
+Delay timings are in seconds.
 
 ## User agents
 
@@ -127,11 +118,11 @@ If interested, the following user agents are passed to Chrome using the `--user-
 These are clearly defined at the top of `bing-rewards.py`.
 
 Edge Browser on Windows 10 desktop:
-> Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37
+> Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edge/126.0.0.0
 
-Mobile Edge Browser on Windows 10 phone:
-> Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36 Edge/18.19041
-***
+Mobile Edge Browser on Pixel 6 phone:
+>  Mozilla/5.0 (Linux; Android 14; Pixel 6 Build/AP2A.240605.024) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36 Edge/121.0.2277.138
+
 
 ## Words:
 The [keywords](https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
@@ -140,23 +131,18 @@ https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-pytho
 This script provided the original inspiration but has since been complelty rewritten and expanded.
 The original author was contacted for the original source of keywords, but declined to respond
 
-## Development
+## Development & Contribution
 
-This project uses [Poetry](https://python-poetry.org) for dependency management and packaging.
-
-The easiest way to install python apps is with [pipx](https://pypa.github.io/pipx/)
+This project uses [`hatch`](https://hatch.pypa.io/latest/) as the build backend for dependency management and packaging.
 
 ```
-# Install pipx
-pip install pipx
-# Install poetry
-pipx install poetry
+pipx install hatch
 ```
 
-Then, fork the repo, clone and install the dependencies with `poetry install --with=dev`.
+Then, fork the repo, clone and install the project and dependencies with `hatch env create`.
 
-Install the defined pre-commit hooks: `poetry run pre-commit install`
+Install the defined pre-commit hooks: `hatch run pre-commit install`
 
-Activate the virtualenv: `poetry shell`
+Launch bing-rewards in the editable dev environment: `hatch run bing-rewards --help`
 
-Feel free to open a PR with additional features or fixes
+Feel free to open a PR with additional features or fixes.

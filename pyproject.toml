@@ -1,61 +1,62 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling>=1.18", "hatch-vcs>=0.4"]
+
 [project]
 name = "bing-rewards"
 dynamic = ["version"]
+requires-python = ">=3.10"
 description = "Perform automated Bing Rewards searches"
 license = "MIT"
 readme = "README.md"
 authors = [
 	{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" },
 ]
-
 keywords = ["automation", "bing", "search", "pynput", "points", "xbox"]
 classifiers = [
-	"Programming Language :: Python :: 3 :: Only",
 	"License :: OSI Approved :: MIT License",
+	"Topic :: Utilities",
 	"Operating System :: OS Independent",
 	"Operating System :: Microsoft :: Windows",
 	"Operating System :: POSIX :: Linux",
 	"Intended Audience :: End Users/Desktop",
-	"Topic :: Utilities",
+	"Programming Language :: Python :: 3 :: Only",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
 ]
-requires-python = ">= 3.10"
+urls.Homepage = "https://github.com/jack-mil/bing-rewards/README.md"
+urls.Repository = "https://github.com/jack-mil/bing-rewards"
+urls.Issues = "https://github.com/jack-mil/bing-rewards/issues"
+
 dependencies = ["pynput~=1.7"]
+optional-dependencies.dev = ["ruff", "pre-commit"]
+# Install an executable entrypoint
+scripts.bing-rewards = "bing_rewards:main"
 
-[project.urls]
-Homepage = "https://github.com/jack-mil/bing-rewards/README.md"
-Repository = "https://github.com/jack-mil/bing-rewards"
-Issues = "https://github.com/jack-mil/bing-rewards/issues"
+[tool.hatch]
+# include dev deps in default hatch env
+envs.default.features = ["dev"]
+# get the version from git history
+version.source = "vcs"
+version.fallback-version = "vX.X.X+unknown"
+# don't include the +g<commit-hash> in dev versions (to allow test PyPI upload)
+version.raw-options.local_scheme = 'no-local-version'
 
-[project.optional-dependencies]
-dev = ["ruff", "pre-commit"]
-
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.hatch.version]
-source = "vcs"
-fallback-version = "UNKNOWN"
-raw-options = {local_scheme = 'no-local-version'}
-
-[tool.hatch.build.targets.sdist]
-exclude = [
-	".github/"
+[tool.ruff]
+line-length = 101
+format.quote-style = "single"
+lint.extend-select = [
+	"A",	# https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+	"B",	# https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+	"E",	# https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+	"F",	# https://docs.astral.sh/ruff/rules/#pyflakes-f
+	"I",	# https://docs.astral.sh/ruff/rules/#isort-i
+	"W",	# https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+	"UP",	# https://docs.astral.sh/ruff/rules/#pyupgrade-up
+	"PERF",	# https://docs.astral.sh/ruff/rules/#perflint-perf
+	"PL",	# https://docs.astral.sh/ruff/rules/#pylint-pl
+	"RSE",	# https://docs.astral.sh/ruff/rules/#flake8-raise-rse
+	"RUF",	# https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+	"TCH",	# https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
 ]
-
-[project.scripts]
-bing-rewards = "bing_rewards:main"
-
-
-# Tooling config
-# -------------
-
-[tool.ruff.format]
-quote-style = "single"
-
-[tool.ruff.lint]
-select = ["C", "E", "F", "W", "B"]
-# E203: whitespace before ':'; ignored due to `black` format
-# E501: Line too long; Disable in preference of Bugbear B509 (can't be too long, give or take)
-# W503: Line break before binary operator; conform to PEP8 as of 2016
-ignore = ["E203", "E501", "E226"]
