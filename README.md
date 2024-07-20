@@ -100,17 +100,18 @@ where precise delay modifications can be made. If updates make changes to the de
 Example config `~/.config/bing-rewards/config.json`
 ```json
 {
-    "desktop-count": 30,
-    "mobile-count": 20,
-    "load-delay": 1.5,
-    "search-delay": 2,
-    "search-url": "https://www.bing.com/search?FORM=CHROMN&q=",
-    "desktop-agent": "Mozilla/5.0 ... <snip>",
-    "mobile-agent": "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) ... <snip>",
-    "browser-path": "C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+    "desktop_count": 30,
+    "mobile_count": 20,
+    "load_delay": 1.5,
+    "search_delay": 2,
+    "search_url": "https://www.bing.com/search?FORM=CHROMN&q=",
+    "desktop_agent": "Mozilla/5.0 ... <snip>",
+    "mobile_agent": "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1) ... <snip>",
+    "browser_path": "C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
 }
 ```
-Delay timings are in seconds.
+Delay timings are in seconds.  
+Note: the format has slightly changed in version >= 3.0, so delete and regenerate accordingly.
 
 ## User agents
 
