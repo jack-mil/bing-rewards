@@ -12,7 +12,6 @@ Examples
 Config file: {CONFIG}
 CLI arguments always override the config file.
 Delay timings are in seconds.
-
 """
 
 import os
@@ -37,17 +36,13 @@ from pynput import keyboard
 from pynput.keyboard import Key
 
 
-def browser_cmd(exe: Path | None, agent: str, profile: str | None = None) -> list[str]:
+def browser_cmd(exe: Path, agent: str, profile: str | None = None) -> list[str]:
     """Generate command to open Google Chrome with user-agent `agent`."""
-    if exe is not None:
-        browser = str(exe)
-    else:
-        browser = 'chrome'
-    cmd = [browser, '--new-window', f'--user-agent="{agent}"']
+    cmd = [str(exe), '--new-window', f'--user-agent="{agent}"']
     # Switch to non default profile if supplied with valid string
     # NO CHECKING IS DONE if the profile exists
     if profile is not None:
-        cmd.extend(['--profile-directory=' + profile])
+        cmd.extend([f'--profile-directory={profile}'])
     return cmd
 
 
@@ -72,37 +67,59 @@ def word_generator() -> Generator[str]:
                 yield line.strip()
 
 
-def search(count, words_gen: Generator, agent, args, config):
-    """Perform the actual searches in a browser.
+def open_browser(args, config, agent: str) -> subprocess.Popen:
+    """Try to open a browser, and exit if the command cannot be found.
 
-    Open a Chrome window with specified `agent` string, complete `count`
-    searches from list `words`, finally terminate Chrome process on completion.
+    Returns the subprocess.Popen object to handle the browser process.
     """
+
+    cmd = browser_cmd(args.exe or config.get('browser-path'), agent, args.profile)
     try:
-        # Open Chrome as a subprocess
+        # Open browser as a subprocess
         # Only if a new window should be opened
-        if not args.no_window and not args.dryrun:
-            cmd = browser_cmd(
-                args.exe or config.get('browser-path'), agent, args.profile
+        if os.name == 'posix':
+            chrome = subprocess.Popen(
+                cmd,
+                stderr=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                preexec_fn=os.setsid,
             )
-            if os.name == 'posix':
-                chrome = subprocess.Popen(
-                    cmd,
-                    stderr=subprocess.DEVNULL,
-                    stdout=subprocess.DEVNULL,
-                    preexec_fn=os.setsid,
-                )
-            else:
-                chrome = subprocess.Popen(cmd)
-            print(f'Opening browser with pid {chrome.pid}')
+        else:
+            chrome = subprocess.Popen(cmd)
     except FileNotFoundError as e:
         print('Unexpected error:', e)
         print(
-            'ERROR: Chrome could not be found on system PATH\n'
-            'Make sure it is installed and added to PATH,'
-            'or use the --exe flag to give an absolute path'
+            f'Command "{cmd[0]}" could not be found.\n'
+            'Make sure it is available on PATH, '
+            'or use the --exe flag to give an absolute path.'
         )
         sys.exit(1)
+
+    print(f'Opening browser with pid {chrome.pid}')
+    return chrome
+
+
+def close_browser(chrome):
+    """Close the browser process if it needs to be closed."""
+    if chrome is None:
+        return
+    # Close the Chrome window
+    print(f'Closing browser [{chrome.pid}]')
+    if os.name == 'posix':
+        os.killpg(chrome.pid, signal.SIGTERM)
+    else:
+        chrome.kill()
+
+
+def search(count, words_gen: Generator, agent: str, args, config):
+    """Perform the actual searches in a browser.
+
+    Open a chromium browser window with specified `agent` string, complete `count`
+    searches from list `words`, finally terminate browser process on completion.
+    """
+    chrome = None
+    if not args.no_window and not args.dryrun:
+        chrome = open_browser(args, config, agent)
 
     # Wait for Chrome to load
     time.sleep(args.load_delay or config.get('load-delay'))
@@ -149,12 +166,7 @@ def search(count, words_gen: Generator, agent, args, config):
     if args.no_exit:
         return
 
-    if not args.no_window and not args.dryrun:
-        # Close the Chrome window
-        if os.name == 'posix':
-            os.killpg(chrome.pid, signal.SIGTERM)
-        else:
-            chrome.kill()
+    close_browser(chrome)
 
 
 def main():
@@ -171,30 +183,18 @@ def main():
 
     def desktop():
         # Complete search with desktop settings
-        count = args.count or config.get('desktop-count')
+        count = config.get('desktop-count') if args.count is None else args.count
         print(f'Doing {count} desktop searches')
 
-        search(
-            count,
-            words_gen,
-            config.get('desktop-agent'),
-            args,
-            config,
-        )
+        search(count, words_gen, config.get('desktop-agent'), args, config)
         print('Desktop Search complete!\n')
 
     def mobile():
         # Complete search with mobile settings
-        count = args.count or config.get('mobile-count')
+        count = config.get('mobile-count') if args.count is None else args.count
         print(f'Doing {count} mobile searches')
 
-        search(
-            count,
-            words_gen,
-            config.get('mobile-agent'),
-            args,
-            config,
-        )
+        search(count, words_gen, config.get('mobile-agent'), args, config)
         print('Mobile Search complete!\n')
 
     def both():
@@ -218,9 +218,8 @@ def main():
 
     try:
         # Listen for keyboard events and exit if ESC pressed
-        with keyboard.Events() as events:
-            # Only listen while search thread is alive
-            while search_thread.is_alive():
+        while search_thread.is_alive():
+            with keyboard.Events() as events:
                 event = events.get(timeout=0.5)  # block for 0.5 seconds
                 # Exit if ESC key pressed
                 if event and event.key == Key.esc:

@@ -6,7 +6,12 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from importlib import metadata
 from pathlib import Path
 
-__version__ = metadata.version('bing-rewards')
+import bing_rewards
+
+try:
+    __version = metadata.version('bing_rewards')
+except metadata.PackageNotFoundError:
+    __version = 'X.X.X+local'
 
 # Number of searches to make
 DESKTOP_COUNT = 33
@@ -47,69 +52,19 @@ SETTINGS = {
 }
 
 
-def valid_file(path: str) -> Path:
-    """Check that a string is a file and exists handler for the --exe= flag."""
-    exe = Path(path)
-    if exe.is_file:
-        return exe
-    raise FileNotFoundError(path)
-
-
-def pick_file_location() -> Path:
-    r"""Check these locations in order for config.json.
-
-    - %APPDATA%\bing-rewards\
-    - $XDG_CONFIG_HOME/bing-rewards/
-    - $HOME/.config/bing-rewards/
-    """
-    # Config file in .config or APPDATA on Windows
-    config_home = Path(
-        os.environ.get('APPDATA')
-        or os.environ.get('XDG_CONFIG_HOME')
-        or Path(os.environ['HOME'], '.config'),
-        'bing-rewards',
-    )
-
-    return config_home.joinpath('config.json')
-
-
-def read_config() -> dict:
-    """Read a configuration file if it exists, otherwise write (and return) default settings."""
-    config_file: Path = pick_file_location()
-
-    if not config_file.is_file():
-        # Make directories and default config if it doesn't exist
-        print(f'Generating config at {config_file}')
-        config_file.parent.mkdir(parents=True, exist_ok=True)
-        with config_file.open('x') as f:
-            json.dump(SETTINGS, f, indent=4)
-        return SETTINGS
-
-    # Otherwise, try to read the config from a file
-    config = SETTINGS.copy()
-    with config_file.open() as f:
-        try:
-            config = json.load(f)
-        except json.decoder.JSONDecodeError as e:
-            print(e)
-            print('Config JSON format error. Reverting to default.')
-    # return new dict with values from config taking priority
-    return SETTINGS | config
-
-
 def parse_args():
     """Parse all command line arguments and return Namespace."""
     p = ArgumentParser(
-        description=__doc__.format(
+        description=bing_rewards.__doc__.format(
             DESKTOP_COUNT=DESKTOP_COUNT,
             MOBILE_COUNT=MOBILE_COUNT,
-            VERSION=__version__,
+            VERSION=__version,
             CONFIG=pick_file_location(),
         ),
         epilog='* Repository and issues: https://github.com/jack-mil/bing-search',
         formatter_class=RawDescriptionHelpFormatter,
     )
-    p.add_argument('--version', action='version', version=f'%(progs)s v{__version__}')
+    p.add_argument('--version', action='version', version=f'%(prog)s v{__version}')
     p.add_argument(
         '-c',
         '--count',
@@ -185,4 +140,56 @@ def parse_args():
         help='Triggers windows IME to switch to english by pressing SHIFT',
         action='store_true',
     )
-    return p.parse_args()
+    args = p.parse_args()
+    print(args)
+    return args
+
+
+def valid_file(path: str) -> Path:
+    """Check that a string is a file and exists handler for the --exe= flag."""
+    exe = Path(path)
+    if exe.is_file:
+        return exe
+    raise FileNotFoundError(path)
+
+
+def pick_file_location() -> Path:
+    r"""Check these locations in order for config.json.
+
+    - %APPDATA%\bing-rewards\
+    - $XDG_CONFIG_HOME/bing-rewards/
+    - $HOME/.config/bing-rewards/
+    """
+    # Config file in .config or APPDATA on Windows
+    config_home = Path(
+        os.environ.get('APPDATA')
+        or os.environ.get('XDG_CONFIG_HOME')
+        or Path(os.environ['HOME'], '.config'),
+        'bing-rewards',
+    )
+
+    return config_home.joinpath('config.json')
+
+
+def read_config() -> dict:
+    """Read a configuration file if it exists, otherwise write (and return) default settings."""
+    config_file: Path = pick_file_location()
+
+    if not config_file.is_file():
+        # Make directories and default config if it doesn't exist
+        print(f'Generating config at {config_file}')
+        config_file.parent.mkdir(parents=True, exist_ok=True)
+        with config_file.open('x') as f:
+            json.dump(SETTINGS, f, indent=4)
+        return SETTINGS
+
+    # Otherwise, try to read the config from a file
+    config = SETTINGS.copy()
+    with config_file.open() as f:
+        try:
+            config = json.load(f)
+        except json.decoder.JSONDecodeError as e:
+            print(e)
+            print('Config JSON format error. Reverting to default.')
+    # return new dict with values from config taking priority
+    return SETTINGS | config
