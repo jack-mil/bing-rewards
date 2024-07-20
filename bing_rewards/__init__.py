@@ -14,6 +14,8 @@ CLI arguments always override the config file.
 Delay timings are in seconds.
 """
 
+from __future__ import annotations
+
 import os
 import random
 import subprocess
@@ -21,29 +23,24 @@ import sys
 import threading
 import time
 import webbrowser
-from collections.abc import Generator
 from importlib import resources
 from io import SEEK_END, SEEK_SET
-from pathlib import Path
 from urllib.parse import quote_plus
 
-import bing_rewards.options as options
+import bing_rewards.options as opt
 
 if os.name == 'posix':
     import signal
 
+from typing import TYPE_CHECKING
+
 from pynput import keyboard
 from pynput.keyboard import Key
 
-
-def browser_cmd(exe: Path, agent: str, profile: str | None = None) -> list[str]:
-    """Generate command to open Google Chrome with user-agent `agent`."""
-    cmd = [str(exe), '--new-window', f'--user-agent="{agent}"']
-    # Switch to non default profile if supplied with valid string
-    # NO CHECKING IS DONE if the profile exists
-    if profile is not None:
-        cmd.extend([f'--profile-directory={profile}'])
-    return cmd
+if TYPE_CHECKING:
+    from argparse import Namespace
+    from collections.abc import Generator
+    from pathlib import Path
 
 
 def word_generator() -> Generator[str]:
@@ -67,13 +64,23 @@ def word_generator() -> Generator[str]:
                 yield line.strip()
 
 
-def open_browser(args, config, agent: str) -> subprocess.Popen:
+def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
+    """Generate command to open Google Chrome with user-agent `agent`."""
+    cmd = [str(exe), '--new-window', f'--user-agent="{agent}"']
+    # Switch to non default profile if supplied with valid string
+    # NO CHECKING IS DONE if the profile exists
+    if profile:
+        cmd.extend([f'--profile-directory={profile}'])
+    return cmd
+
+
+def open_browser(options: Namespace, agent: str) -> subprocess.Popen:
     """Try to open a browser, and exit if the command cannot be found.
 
     Returns the subprocess.Popen object to handle the browser process.
     """
 
-    cmd = browser_cmd(args.exe or config.get('browser-path'), agent, args.profile)
+    cmd = browser_cmd(options.browser_path, agent, options.profile)
     try:
         # Open browser as a subprocess
         # Only if a new window should be opened
@@ -99,7 +106,7 @@ def open_browser(args, config, agent: str) -> subprocess.Popen:
     return chrome
 
 
-def close_browser(chrome):
+def close_browser(chrome: subprocess.Popen | None):
     """Close the browser process if it needs to be closed."""
     if chrome is None:
         return
@@ -111,44 +118,44 @@ def close_browser(chrome):
         chrome.kill()
 
 
-def search(count, words_gen: Generator, agent: str, args, config):
+def search(count: int, words_gen: Generator, agent: str, options: Namespace):
     """Perform the actual searches in a browser.
 
     Open a chromium browser window with specified `agent` string, complete `count`
     searches from list `words`, finally terminate browser process on completion.
     """
     chrome = None
-    if not args.no_window and not args.dryrun:
-        chrome = open_browser(args, config, agent)
+    if not options.no_window and not options.dryrun:
+        chrome = open_browser(options, agent)
 
     # Wait for Chrome to load
-    time.sleep(args.load_delay or config.get('load-delay'))
+    time.sleep(options.load_delay)
 
     # keyboard controller from pynput
     key_controller = keyboard.Controller()
 
     # Ctrl + E to open address bar with the default search engine
     # Alt + D focuses address bar without using search engine
-    key_combo = (Key.ctrl, 'e') if args.bing else (Key.alt, 'd')
+    key_mod, key = (Key.ctrl, 'e') if options.bing else (Key.alt, 'd')
 
     for i in range(count):
         # Get a random query from set of words
         query = next(words_gen)
 
-        if args.bing:
+        if options.bing:
             # If the --bing flag is set, type the query to the address bar directly
             search_url = query
         else:
             # Concatenate url with correct url escape characters
-            search_url = config.get('search-url') + quote_plus(query)
+            search_url = options.search_url + quote_plus(query)
 
         # Use pynput to trigger keyboard events and type search queries
-        if not args.dryrun:
-            with key_controller.pressed(key_combo[0]):
-                key_controller.press(key_combo[1])
-                key_controller.release(key_combo[1])
+        if not options.dryrun:
+            with key_controller.pressed(key_mod):
+                key_controller.press(key)
+                key_controller.release(key)
 
-            if args.ime:
+            if options.ime:
                 # Incase users use a Windows IME, change the language to English
                 # Issue #35
                 key_controller.tap(Key.shift)
@@ -160,10 +167,10 @@ def search(count, words_gen: Generator, agent: str, args, config):
 
         print(f'Search {i+1}: {query}')
         # Delay to let page load
-        time.sleep(args.search_delay or config.get('search-delay'))
+        time.sleep(options.search_delay)
 
     # Skip killing the window if exit flag set
-    if args.no_exit:
+    if options.no_exit:
         return
 
     close_browser(chrome)
@@ -176,25 +183,24 @@ def main():
     and executes search function in separate thread.
     Setup listener callback for ESC key.
     """
-    config = options.read_config()
-    args = options.parse_args()
+    options = opt.get_options()
 
     words_gen = word_generator()
 
     def desktop():
         # Complete search with desktop settings
-        count = config.get('desktop-count') if args.count is None else args.count
+        count = options.count if 'count' in options else options.desktop_count
         print(f'Doing {count} desktop searches')
 
-        search(count, words_gen, config.get('desktop-agent'), args, config)
+        search(count, words_gen, options.desktop_agent, options)
         print('Desktop Search complete!\n')
 
     def mobile():
         # Complete search with mobile settings
-        count = config.get('mobile-count') if args.count is None else args.count
+        count = options.count if 'count' in options else options.mobile_count
         print(f'Doing {count} mobile searches')
 
-        search(count, words_gen, config.get('mobile-agent'), args, config)
+        search(count, words_gen, options.mobile_agent, options)
         print('Mobile Search complete!\n')
 
     def both():
@@ -202,9 +208,9 @@ def main():
         mobile()
 
     # Execute main method in a separate thread
-    if args.desktop:
+    if options.desktop:
         target = desktop
-    elif args.mobile:
+    elif options.mobile:
         target = mobile
     else:
         # If neither mode is specified, complete both modes
@@ -229,7 +235,7 @@ def main():
         print('CTRL-C pressed, terminating')
 
     # Open rewards dashboard
-    if args.open_rewards and not args.dryrun:
+    if options.open_rewards and not options.dryrun:
         webbrowser.open_new('https://account.microsoft.com/rewards')
 
 

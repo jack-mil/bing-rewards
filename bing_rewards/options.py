@@ -1,8 +1,11 @@
 """Defaults and helper functions related to getting user config and command line arguments."""
 
+from __future__ import annotations
+
+import dataclasses
 import json
 import os
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from importlib import metadata
 from pathlib import Path
 
@@ -39,27 +42,30 @@ DESKTOP_AGENT = (
     'AppleWebKit/537.36 (KHTML, like Gecko) '
     'Chrome/126.0.0.0 Safari/537.36 Edge/126.0.0.0'
 )
-# Default Settings dict
-SETTINGS = {
-    'desktop-count': DESKTOP_COUNT,
-    'mobile-count': MOBILE_COUNT,
-    'load-delay': LOAD_DELAY,
-    'search-delay': SEARCH_DELAY,
-    'search-url': URL,
-    'desktop-agent': DESKTOP_AGENT,
-    'mobile-agent': MOBILE_AGENT,
-    'browser-path': 'chrome',
-}
 
 
-def parse_args():
+@dataclasses.dataclass()
+class Config:
+    """Default settings file config and types."""
+
+    desktop_count: int = DESKTOP_COUNT
+    mobile_count: int = MOBILE_COUNT
+    load_delay: float = LOAD_DELAY
+    search_delay: float = SEARCH_DELAY
+    search_url: str = URL
+    desktop_agent: str = DESKTOP_AGENT
+    mobile_agent: str = MOBILE_AGENT
+    browser_path: str = 'chrome'
+
+
+def parse_args() -> Namespace:
     """Parse all command line arguments and return Namespace."""
     p = ArgumentParser(
         description=bing_rewards.__doc__.format(
             DESKTOP_COUNT=DESKTOP_COUNT,
             MOBILE_COUNT=MOBILE_COUNT,
             VERSION=__version,
-            CONFIG=pick_file_location(),
+            CONFIG=config_location(),
         ),
         epilog='* Repository and issues: https://github.com/jack-mil/bing-search',
         formatter_class=RawDescriptionHelpFormatter,
@@ -75,6 +81,7 @@ def parse_args():
         '--exe',
         help='The full path of the Chrome compatible browser executable',
         type=valid_file,
+        dest='browser_path',
     )
     p.add_argument(
         '-b',
@@ -134,6 +141,7 @@ def parse_args():
         '--profile',
         help='Sets the chrome profile for launch',
         type=str,
+        default='',
     )
     p.add_argument(
         '--ime',
@@ -141,7 +149,6 @@ def parse_args():
         action='store_true',
     )
     args = p.parse_args()
-    print(args)
     return args
 
 
@@ -153,7 +160,7 @@ def valid_file(path: str) -> Path:
     raise FileNotFoundError(path)
 
 
-def pick_file_location() -> Path:
+def config_location() -> Path:
     r"""Check these locations in order for config.json.
 
     - %APPDATA%\bing-rewards\
@@ -171,25 +178,36 @@ def pick_file_location() -> Path:
     return config_home.joinpath('config.json')
 
 
-def read_config() -> dict:
+def read_config() -> Config:
     """Read a configuration file if it exists, otherwise write (and return) default settings."""
-    config_file: Path = pick_file_location()
+    config_file: Path = config_location()
 
     if not config_file.is_file():
         # Make directories and default config if it doesn't exist
         print(f'Generating config at {config_file}')
         config_file.parent.mkdir(parents=True, exist_ok=True)
+        default_options = Config()
         with config_file.open('x') as f:
-            json.dump(SETTINGS, f, indent=4)
-        return SETTINGS
+            json.dump(dataclasses.asdict(default_options), f, indent=4)
+        return default_options
 
     # Otherwise, try to read the config from a file
-    config = SETTINGS.copy()
+    config = {}
     with config_file.open() as f:
         try:
             config = json.load(f)
         except json.decoder.JSONDecodeError as e:
             print(e)
             print('Config JSON format error. Reverting to default.')
-    # return new dict with values from config taking priority
-    return SETTINGS | config
+    # return dataclass with values from config taking priority
+    return Config(**config)
+
+
+def get_options() -> Namespace:
+    """Combine the defaults, config file options, and command line arguments into one Namespace."""
+    file_config = read_config()
+    args = parse_args()
+    args.__dict__ = vars(file_config) | {
+        k: v for k, v in vars(args).items() if v is not None
+    }
+    return args
