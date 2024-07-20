@@ -1,7 +1,5 @@
 """Defaults and helper functions related to getting user config and command line arguments."""
 
-from __future__ import annotations
-
 import dataclasses
 import json
 import os
@@ -207,7 +205,5 @@ def get_options() -> Namespace:
     """Combine the defaults, config file options, and command line arguments into one Namespace."""
     file_config = read_config()
     args = parse_args()
-    args.__dict__ = vars(file_config) | {
-        k: v for k, v in vars(args).items() if v is not None
-    }
+    args.__dict__ = vars(file_config) | {k: v for k, v in vars(args).items() if v is not None}
     return args
