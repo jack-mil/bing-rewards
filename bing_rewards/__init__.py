@@ -50,7 +50,7 @@ def word_generator() -> Generator[str]:
     Starts reading from a random position in the file.
     If end of file is reached, close and restart.
     """
-    word_data = resources.files().joinpath('data', 'keywords.txt')
+    word_data = resources.files('bing_rewards').joinpath('data', 'keywords.txt')
     while True:
         with (
             resources.as_file(word_data) as p,
