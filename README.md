@@ -84,7 +84,7 @@ Options supplied at execution time override any config.
 | `-d`, `--desktop`       | Only use desktop user agent                                                           |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                          |
 | `-n`, `--dryrun`        | Do everything but type the search query                                               |
-| `--bing`                | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
+| `-b`, `--bing`          | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
 | `--open-rewards`        | Open the rewards page at the end of the run                                           |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                    |
 | `--load-delay`          | Override the time given to Chrome to load in seconds                                  |
