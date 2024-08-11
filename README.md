@@ -84,7 +84,7 @@ Options supplied at execution time override any config.
 | `-d`, `--desktop`       | Only use desktop user agent                                                           |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                          |
 | `-n`, `--dryrun`        | Do everything but type the search query                                               |
-| `--bing`                | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
+| `-b`, `--bing`          | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
 | `--open-rewards`        | Open the rewards page at the end of the run                                           |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                    |
 | `--load-delay`          | Override the time given to Chrome to load in seconds                                  |
@@ -126,8 +126,8 @@ Mobile Edge Browser on Pixel 6 phone:
 
 
 ## Words:
-The [keywords](https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
-https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/.
+The [keywords](https://web.archive.org/web/20220523083250/https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
+[https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/](https://web.archive.org/web/20220331033847/https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/).
 
 This script provided the original inspiration but has since been complelty rewritten and expanded.
 The original author was contacted for the original source of keywords, but declined to respond

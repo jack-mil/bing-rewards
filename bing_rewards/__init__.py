@@ -6,8 +6,8 @@ followed by {MOBILE_COUNT} mobile searches by default.
 
 Examples
 --------
-    $ bing-search -nmc30
-    $ bing-search --new --count=50 --mobile --dryrun
+    $ bing-search -dc30
+    $ bing-search --count=50 --mobile --dryrun
 
 Config file: {CONFIG}
 CLI arguments always override the config file.
