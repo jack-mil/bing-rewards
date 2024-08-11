@@ -129,7 +129,7 @@ Mobile Edge Browser on Pixel 6 phone:
 The [keywords](https://web.archive.org/web/20220523083250/https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
 [https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/](https://web.archive.org/web/20220331033847/https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/).
 
-This script provided the original inspiration but has since been complelty rewritten and expanded.
+This script provided the original inspiration but has since been completely rewritten and expanded.
 The original author was contacted for the original source of keywords, but declined to respond
 
 ## Development & Contribution
