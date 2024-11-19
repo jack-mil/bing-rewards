@@ -44,11 +44,19 @@ from pynput.keyboard import Key
 import bing_rewards.options as app_options
 
 
-def word_generator() -> Generator[str]:
+def word_generator() -> Generator[str, None, None]:
     """Infinitely generate terms from the word file.
 
     Starts reading from a random position in the file.
     If end of file is reached, close and restart.
+    Handles file operations safely and ensures uniform random distribution.
+
+    Yields:
+        str: A random keyword from the file, stripped of whitespace.
+
+    Raises:
+        FileNotFoundError: If the keywords file cannot be found.
+        IOError: If there are issues reading the file.
     """
     word_data = resources.files('bing_rewards').joinpath('data', 'keywords.txt')
     while True:
