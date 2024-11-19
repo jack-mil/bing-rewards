@@ -52,17 +52,42 @@ def word_generator() -> Generator[str]:
     """
     word_data = resources.files('bing_rewards').joinpath('data', 'keywords.txt')
     while True:
-        with (
-            resources.as_file(word_data) as p,
-            p.open(mode='r', encoding='utf-8') as fh,
-        ):
-            fh.seek(0, SEEK_END)
-            size = fh.tell()  # Get the filesize of the Keywords file
-            # Start at a random position in the stream
-            fh.seek(random.randint(0, (size * 3 // 4)), SEEK_SET)
-            for line in fh:
-                # Use the built in file handler generator
-                yield line.strip()
+        try:
+            with (
+                resources.as_file(word_data) as p,
+                p.open(mode='r', encoding='utf-8') as fh,
+            ):
+                # Get the filesize of the Keywords file
+                fh.seek(0, SEEK_END)
+                size = fh.tell()
+
+                if size == 0:
+                    raise ValueError("Keywords file is empty")
+
+                # Start at a random position in the stream
+                fh.seek(random.randint(0, size - 1), SEEK_SET)
+
+                # Read and discard partial line to ensure we start at a clean line boundary
+                fh.readline()
+
+                # Read lines until EOF
+                for line in fh:
+                    line = line.strip()
+                    if line:  # Skip empty lines
+                        yield line
+
+                # If we hit EOF, seek back to start and continue until we've yielded enough words
+                fh.seek(0)
+                for line in fh:
+                    line = line.strip()
+                    if line:
+                        yield line
+        except (FileNotFoundError, IOError) as e:
+            print(f"Error accessing keywords file: {e}")
+            raise
+        except Exception as e:
+            print(f"Unexpected error in word generation: {e}")
+            raise
 
 
 def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
