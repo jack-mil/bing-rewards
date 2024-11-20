@@ -232,7 +232,7 @@ def main():
 
     for profile in profiles:
         # Start the searching in separate thread
-        search_thread = threading.Thread(target=lambda: target_func(profile), daemon=True)
+        search_thread = threading.Thread(target=lambda p=profile: target_func(p), daemon=True)
         search_thread.start()
 
         print('Press ESC to quit searching')
