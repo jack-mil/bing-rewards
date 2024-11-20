@@ -65,6 +65,10 @@ Complete mobile and desktop daily points using specified chrome profile "Profile
 
 `$ bing-rewards --profile "Profile 1"`
 
+Run searches sequentially across multiple Chrome profiles
+
+`$ bing-rewards --profile "Default" "Profile 1" "Profile 2"`
+
 Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Linux (Ubuntu + Arch), however it should work on Mac OS as well.
 
 ⚠️Known Issue: No other instance of chrome.exe can be open when the script runs. Chrome prevents different user agents in each window. The script will run, but Chrome will not appear as Edge
@@ -91,7 +95,7 @@ Options supplied at execution time override any config.
 | `--search-delay`        | Override the time between searches in seconds                                         |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested)   |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                    |
-| `--profile "Profile N"` | Launches chrome using the specified profile. Otherwise use default.                   |
+| `--profile`             | Run searches using specified Chrome profile(s). Multiple profiles can be specified to run sequentially |
 | `--ime`                 | Triggers Windows IME to switch to English input by pressing "shift"                   |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
