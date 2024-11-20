@@ -55,17 +55,17 @@ def word_generator() -> Generator[str, None, None]:
         str: A random keyword from the file, stripped of whitespace.
 
     Raises:
-        FileNotFoundError: If the keywords file cannot be found.
-        IOError: If there are issues reading the file.
+        OSError: If there are issues accessing or reading the file.
     """
     word_data = resources.files('bing_rewards').joinpath('data', 'keywords.txt')
-    while True:
-        try:
+
+    try:
+        while True:
             with (
                 resources.as_file(word_data) as p,
                 p.open(mode='r', encoding='utf-8') as fh,
             ):
-                # Get the filesize of the Keywords file
+                # Get the file size of the Keywords file
                 fh.seek(0, SEEK_END)
                 size = fh.tell()
 
@@ -79,23 +79,23 @@ def word_generator() -> Generator[str, None, None]:
                 fh.readline()
 
                 # Read lines until EOF
-                for line in fh:
-                    line = line.strip()
-                    if line:  # Skip empty lines
-                        yield line
+                for raw_line in fh:
+                    stripped_line = raw_line.strip()
+                    if stripped_line:  # Skip empty lines
+                        yield stripped_line
 
                 # If we hit EOF, seek back to start and continue until we've yielded enough words
                 fh.seek(0)
-                for line in fh:
-                    line = line.strip()
-                    if line:
-                        yield line
-        except (FileNotFoundError, IOError) as e:
-            print(f"Error accessing keywords file: {e}")
-            raise
-        except Exception as e:
-            print(f"Unexpected error in word generation: {e}")
-            raise
+                for raw_line in fh:
+                    stripped_line = raw_line.strip()
+                    if stripped_line:
+                        yield stripped_line
+    except OSError as e:
+        print(f"Error accessing keywords file: {e}")
+        raise
+    except Exception as e:
+        print(f"Unexpected error in word generation: {e}")
+        raise
 
 
 def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
