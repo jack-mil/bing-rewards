@@ -137,9 +137,10 @@ def parse_args() -> Namespace:
     )
     p.add_argument(
         '--profile',
-        help='Sets the chrome profile for launch',
+        help='Sets one or more chrome profiles to run sequentially (space separated)',
         type=str,
-        default='',
+        nargs='*',
+        default=[],
     )
     p.add_argument(
         '--ime',
