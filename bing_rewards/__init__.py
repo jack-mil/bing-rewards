@@ -206,7 +206,7 @@ def main():
     def mobile(profile=''):
         # Complete search with mobile settings
         count = options.count if 'count' in options else options.mobile_count
-        profile_msg = f" using profile '{profile}'" if profile else ""
+        profile_msg = f" using profile '{profile}'" if profile else ''
         print(f'Doing {count} mobile searches{profile_msg}')
 
         temp_options = options
