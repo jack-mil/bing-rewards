@@ -70,7 +70,7 @@ def word_generator() -> Generator[str, None, None]:
                 size = fh.tell()
 
                 if size == 0:
-                    raise ValueError("Keywords file is empty")
+                    raise ValueError('Keywords file is empty')
 
                 # Start at a random position in the stream
                 fh.seek(random.randint(0, size - 1), SEEK_SET)
@@ -91,10 +91,10 @@ def word_generator() -> Generator[str, None, None]:
                     if stripped_line:
                         yield stripped_line
     except OSError as e:
-        print(f"Error accessing keywords file: {e}")
+        print(f'Error accessing keywords file: {e}')
         raise
     except Exception as e:
-        print(f"Unexpected error in word generation: {e}")
+        print(f'Unexpected error in word generation: {e}')
         raise
 
 
