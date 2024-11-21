@@ -195,7 +195,7 @@ def main():
     def desktop(profile=''):
         # Complete search with desktop settings
         count = options.count if 'count' in options else options.desktop_count
-        profile_msg = f" using profile '{profile}'" if profile else ""
+        profile_msg = f" using profile '{profile}'" if profile else ''
         print(f'Doing {count} desktop searches{profile_msg}')
 
         temp_options = options
