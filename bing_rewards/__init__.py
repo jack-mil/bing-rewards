@@ -85,6 +85,8 @@ def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
     # NO CHECKING IS DONE if the profile exists
     if profile:
         cmd.extend([f'--profile-directory={profile}'])
+    if os.environ.get("XDG_SESSION_TYPE", "").lower() == "wayland":
+        cmd.append("--ozone-platform=x11")
     return cmd
 
 
