@@ -85,8 +85,8 @@ def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
     # NO CHECKING IS DONE if the profile exists
     if profile:
         cmd.extend([f'--profile-directory={profile}'])
-    if os.environ.get("XDG_SESSION_TYPE", "").lower() == "wayland":
-        cmd.append("--ozone-platform=x11")
+    if os.environ.get('XDG_SESSION_TYPE', '').lower() == 'wayland':
+        cmd.append('--ozone-platform=x11')
     return cmd
 
 
@@ -173,7 +173,7 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
             # This is very fast and hopefully reliable
             key_controller.type(search_url + '\n')
 
-        print(f'Search {i+1}: {query}')
+        print(f'Search {i + 1}: {query}')
         # Delay to let page load
         time.sleep(options.search_delay)
 
