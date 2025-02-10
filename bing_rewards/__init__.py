@@ -225,55 +225,65 @@ def main():
     Setup listener callback for ESC key.
     """
     options = app_options.get_options()
-
     words_gen = word_generator()
 
-    def desktop():
+    def desktop(profile=''):
         # Complete search with desktop settings
         count = options.count if 'count' in options else options.desktop_count
-        print(f'Doing {count} desktop searches')
+        print(f'Doing {count} desktop searches using "{profile}"')
 
-        search(count, words_gen, options.desktop_agent, options)
+        temp_options = options
+        temp_options.profile = profile
+        search(count, words_gen, options.desktop_agent, temp_options)
         print('Desktop Search complete!\n')
 
-    def mobile():
+    def mobile(profile=''):
         # Complete search with mobile settings
         count = options.count if 'count' in options else options.mobile_count
-        print(f'Doing {count} mobile searches')
+        print(f'Doing {count} mobile searches using "{profile}"')
 
-        search(count, words_gen, options.mobile_agent, options)
+        temp_options = options
+        temp_options.profile = profile
+        search(count, words_gen, options.mobile_agent, temp_options)
         print('Mobile Search complete!\n')
 
-    def both():
-        desktop()
-        mobile()
+    def both(profile=''):
+        desktop(profile)
+        mobile(profile)
 
     # Execute main method in a separate thread
     if options.desktop:
-        target = desktop
+        target_func = desktop
     elif options.mobile:
-        target = mobile
+        target_func = mobile
     else:
         # If neither mode is specified, complete both modes
-        target = both
+        target_func = both
 
-    # Start the searching in separate thread
-    search_thread = threading.Thread(target=target, daemon=True)
-    search_thread.start()
+    # Run for each specified profile (defaults to ['Default'])
+    for profile in options.profile:
+        # Start the searching in separate thread
+        search_thread = threading.Thread(target=target_func, args=(profile,), daemon=True)
+        search_thread.start()
 
-    print('Press ESC to quit searching')
+        print('Press ESC to quit searching')
 
-    try:
-        # Listen for keyboard events and exit if ESC pressed
-        while search_thread.is_alive():
-            with keyboard.Events() as events:
-                event = events.get(timeout=0.5)  # block for 0.5 seconds
-                # Exit if ESC key pressed
-                if event and event.key == Key.esc:
-                    print('ESC pressed, terminating')
-                    break
-    except KeyboardInterrupt:
-        print('CTRL-C pressed, terminating')
+        try:
+            # Listen for keyboard events and exit if ESC pressed
+            while search_thread.is_alive():
+                with keyboard.Events() as events:
+                    event = events.get(timeout=0.5)  # block for 0.5 seconds
+                    # Exit if ESC key pressed
+                    if event and event.key == Key.esc:
+                        print('ESC pressed, terminating')
+                        return  # Exit the entire function if ESC is pressed
+
+        except KeyboardInterrupt:
+            print('CTRL-C pressed, terminating')
+            return  # Exit the entire function if CTRL-C is pressed
+
+        # Wait for the current profile's searches to complete
+        search_thread.join()
 
     # Open rewards dashboard
     if options.open_rewards and not options.dryrun:
