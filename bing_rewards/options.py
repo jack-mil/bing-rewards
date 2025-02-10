@@ -139,8 +139,8 @@ def parse_args() -> Namespace:
         '--profile',
         help='Sets one or more chrome profiles to run sequentially (space separated)',
         type=str,
-        nargs='*',
-        default=[],
+        nargs='+',
+        default=['Default'],
     )
     p.add_argument(
         '--ime',

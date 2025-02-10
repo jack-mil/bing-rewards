@@ -171,7 +171,7 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
             # This is very fast and hopefully reliable
             key_controller.type(search_url + '\n')
 
-        print(f'Search {i+1}: {query}')
+        print(f'Search {i + 1}: {query}')
         # Delay to let page load
         time.sleep(options.search_delay)
 
@@ -227,12 +227,10 @@ def main():
         # If neither mode is specified, complete both modes
         target_func = both
 
-    # If no profiles specified, run once with default (empty) profile
-    profiles = options.profile if options.profile else ['']
-
-    for profile in profiles:
+    # Run for each specified profile (defaults to ['Default'])
+    for profile in options.profile:
         # Start the searching in separate thread
-        search_thread = threading.Thread(target=lambda p=profile: target_func(p), daemon=True)
+        search_thread = threading.Thread(target=target_func, args=(profile,), daemon=True)
         search_thread.start()
 
         print('Press ESC to quit searching')
