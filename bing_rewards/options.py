@@ -44,7 +44,7 @@ DESKTOP_AGENT = (
 
 @dataclasses.dataclass()
 class Config:
-    """Default settings file config and types."""
+    """Default settings for file config and types."""
 
     desktop_count: int = DESKTOP_COUNT
     mobile_count: int = MOBILE_COUNT
@@ -137,9 +137,10 @@ def parse_args() -> Namespace:
     )
     p.add_argument(
         '--profile',
-        help='Sets the chrome profile for launch',
+        help='Sets one or more chrome profiles to run sequentially (space separated)',
         type=str,
-        default='',
+        nargs='+',
+        default=['Default'],
     )
     p.add_argument(
         '--ime',
@@ -205,5 +206,7 @@ def get_options() -> Namespace:
     """Combine the defaults, config file options, and command line arguments into one Namespace."""
     file_config = read_config()
     args = parse_args()
-    args.__dict__ = vars(file_config) | {k: v for k, v in vars(args).items() if v is not None}
+    args.__dict__ = dataclasses.asdict(file_config) | {
+        k: v for k, v in vars(args).items() if v is not None
+    }
     return args

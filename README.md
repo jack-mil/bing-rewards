@@ -22,10 +22,16 @@ Please submit an issue or pull-request if you have an idea for a feature
 * Enter random search queries into your browser a la Auto Hotkey.
 * Use a mobile user agent to get mobile points (`--mobile`)
 * Configurable number of searches with `--count=`
-* Install as self-contained python application with minimal dependecies (`pynput`)
+* Install as self-contained python application with minimal dependencies (`pynput`)
 * Fine tune delay and set browser executable with [config](#configuration) at `$XDG_CONFIG_HOME` or `%APPDATA%` on Windows
+* Not intended as a automated or headless service. Simply assists with what would regularly be a manual task.
+
+## ⚠️**Here Be Dragons**
+This was originally created in a different age, when Bing & MS was much simpler and less bloated with AI ~~slop~~ tools. Users have reported a wide variety of success on whether this method works at all with the new systems. See some of the pinned or closed issues for reports from others that may improve success. I maintain the *code* in a working state as an excersie in Python packaging, but do *not* personally use the utility, and **cannot guarantee this method will even generate points anymore**! 
 
 ## **Installation**
+Bing-rewards is a Python CLI utility application distributed on PyPI. You can install it however you prefer to manage Python applications on your system. I recommend `pipx`.
+
 ### With [`pipx`](https://pipx.pypa.io/stable/) or `pip`
 ```bash
 pipx install bing-rewards
@@ -33,7 +39,7 @@ pipx install bing-rewards
 Will make the executable `bing-rewards` available on your PATH.
 Look below or try the `--help` flag to see detailed usage.
 
-**Recommended**: Use a virtual environment or [`pipx`](https://pypa.github.io/pipx/) to avoid poluting your global package path with executable apps. See: [pipx](https://pypa.github.io/pipx/)
+**Recommended**: Use a virtual environment or [`pipx`](https://pypa.github.io/pipx/) to avoid polluting your global package path with executable apps. See: [pipx](https://pypa.github.io/pipx/)
 
 ### From releases
 Download the latest release wheel and install with pip locally.
@@ -42,8 +48,8 @@ Download the latest release wheel and install with pip locally.
 
 - At least Python 3.10
 
-- [pynput](https://github.com/moses-palmer/pynput) (installed automatically). Used to control keypresses and type Bing search URLS.
-WARNING: This script *will* take control away from the keyboard while running. **Pynput** performs key presses. i.e., it does not operate headless or in the background.
+- [pynput](https://github.com/moses-palmer/pynput) (installed with package). Used to control keypresses and type Bing search URLS.
+⚠️: Bing-Rewards *will* take control away from the keyboard while running. **Pynput** performs key presses. i.e., it does not operate headless or in the background.
 
 - `chrome` must be discoverable on the system PATH. [Download Google Chrome](https://www.google.com/intl/en/chrome/).
 If your chromium based browser has a different name use the `--exe` flag with an absolute path to the browser executable to use (e.g. `--exe=$(which brave-browser)`). Also see the `"browser-path"` key in the [config](#configuration) file.
@@ -65,11 +71,13 @@ Complete mobile and desktop daily points using specified chrome profile "Profile
 
 `$ bing-rewards --profile "Profile 1"`
 
+Run searches sequentially across multiple Chrome profiles
+
+`$ bing-rewards --profile "Default" "Profile 1" "Profile 2"`
+
 Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Linux (Ubuntu + Arch), however it should work on Mac OS as well.
 
 ⚠️Known Issue: No other instance of chrome.exe can be open when the script runs. Chrome prevents different user agents in each window. The script will run, but Chrome will not appear as Edge
-
-⚠️Bing has gotten more and more complex with the introduction of the AI tools. Disable as much as you can to make pages load faster. See PR #39 for some modifications you can make to the default search query url parameters that may improve success.
 
 
 ## **Options**
@@ -84,14 +92,14 @@ Options supplied at execution time override any config.
 | `-d`, `--desktop`       | Only use desktop user agent                                                           |
 | `-m`, `--mobile`        | Only use a mobile user agent                                                          |
 | `-n`, `--dryrun`        | Do everything but type the search query                                               |
-| `--bing`                | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
+| `-b`, `--bing`          | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
 | `--open-rewards`        | Open the rewards page at the end of the run                                           |
 | `-X`, `--no-exit`       | Do not close the browser after completing a search                                    |
 | `--load-delay`          | Override the time given to Chrome to load in seconds                                  |
 | `--search-delay`        | Override the time between searches in seconds                                         |
 | `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested)   |
 | `--nowindow`            | Don't open a new Chrome window, just type the keys                                    |
-| `--profile "Profile N"` | Launches chrome using the specified profile. Otherwise use default.                   |
+| `--profile`             | Run searches using specified Chrome profile(s). Multiple profiles can be specified to run sequentially |
 | `--ime`                 | Triggers Windows IME to switch to English input by pressing "shift"                   |
 
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
@@ -126,10 +134,10 @@ Mobile Edge Browser on Pixel 6 phone:
 
 
 ## Words:
-The [keywords](https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
-https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/.
+The [keywords](https://web.archive.org/web/20220523083250/https://www.myhelpfulguides.com/keywords.txt) included in this repo where taken from this site
+[https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/](https://web.archive.org/web/20220331033847/https://www.myhelpfulguides.com/2018/07/19/bing-rewards-auto-searcher-with-python-3/).
 
-This script provided the original inspiration but has since been complelty rewritten and expanded.
+This script provided the original inspiration but has since been completely rewritten and expanded.
 The original author was contacted for the original source of keywords, but declined to respond
 
 ## Development & Contribution

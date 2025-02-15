@@ -6,8 +6,8 @@ followed by {MOBILE_COUNT} mobile searches by default.
 
 Examples
 --------
-    $ bing-search -nmc30
-    $ bing-search --new --count=50 --mobile --dryrun
+    $ bing-search -dc30
+    $ bing-search --count=50 --mobile --dryrun
 
 Config file: {CONFIG}
 CLI arguments always override the config file.
@@ -44,25 +44,58 @@ from pynput.keyboard import Key
 import bing_rewards.options as app_options
 
 
-def word_generator() -> Generator[str]:
+def word_generator() -> Generator[str, None, None]:
     """Infinitely generate terms from the word file.
 
     Starts reading from a random position in the file.
     If end of file is reached, close and restart.
+    Handles file operations safely and ensures uniform random distribution.
+
+    Yields:
+        str: A random keyword from the file, stripped of whitespace.
+
+    Raises:
+        OSError: If there are issues accessing or reading the file.
     """
     word_data = resources.files('bing_rewards').joinpath('data', 'keywords.txt')
-    while True:
-        with (
-            resources.as_file(word_data) as p,
-            p.open(mode='r', encoding='utf-8') as fh,
-        ):
-            fh.seek(0, SEEK_END)
-            size = fh.tell()  # Get the filesize of the Keywords file
-            # Start at a random position in the stream
-            fh.seek(random.randint(0, (size * 3 // 4)), SEEK_SET)
-            for line in fh:
-                # Use the built in file handler generator
-                yield line.strip()
+
+    try:
+        while True:
+            with (
+                resources.as_file(word_data) as p,
+                p.open(mode='r', encoding='utf-8') as fh,
+            ):
+                # Get the file size of the Keywords file
+                fh.seek(0, SEEK_END)
+                size = fh.tell()
+
+                if size == 0:
+                    raise ValueError('Keywords file is empty')
+
+                # Start at a random position in the stream
+                fh.seek(random.randint(0, size - 1), SEEK_SET)
+
+                # Read and discard partial line to ensure we start at a clean line boundary
+                fh.readline()
+
+                # Read lines until EOF
+                for raw_line in fh:
+                    stripped_line = raw_line.strip()
+                    if stripped_line:  # Skip empty lines
+                        yield stripped_line
+
+                # If we hit EOF, seek back to start and continue until we've yielded enough words
+                fh.seek(0)
+                for raw_line in fh:
+                    stripped_line = raw_line.strip()
+                    if stripped_line:
+                        yield stripped_line
+    except OSError as e:
+        print(f'Error accessing keywords file: {e}')
+        raise
+    except Exception as e:
+        print(f'Unexpected error in word generation: {e}')
+        raise
 
 
 def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
@@ -85,6 +118,8 @@ def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
     # NO CHECKING IS DONE if the profile exists
     if profile:
         cmd.extend([f'--profile-directory={profile}'])
+    if os.environ.get('XDG_SESSION_TYPE', '').lower() == 'wayland':
+        cmd.append('--ozone-platform=x11')
     return cmd
 
 
@@ -171,7 +206,7 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
             # This is very fast and hopefully reliable
             key_controller.type(search_url + '\n')
 
-        print(f'Search {i+1}: {query}')
+        print(f'Search {i + 1}: {query}')
         # Delay to let page load
         time.sleep(options.search_delay)
 
@@ -190,55 +225,65 @@ def main():
     Setup listener callback for ESC key.
     """
     options = app_options.get_options()
-
     words_gen = word_generator()
 
-    def desktop():
+    def desktop(profile=''):
         # Complete search with desktop settings
         count = options.count if 'count' in options else options.desktop_count
-        print(f'Doing {count} desktop searches')
+        print(f'Doing {count} desktop searches using "{profile}"')
 
-        search(count, words_gen, options.desktop_agent, options)
+        temp_options = options
+        temp_options.profile = profile
+        search(count, words_gen, options.desktop_agent, temp_options)
         print('Desktop Search complete!\n')
 
-    def mobile():
+    def mobile(profile=''):
         # Complete search with mobile settings
         count = options.count if 'count' in options else options.mobile_count
-        print(f'Doing {count} mobile searches')
+        print(f'Doing {count} mobile searches using "{profile}"')
 
-        search(count, words_gen, options.mobile_agent, options)
+        temp_options = options
+        temp_options.profile = profile
+        search(count, words_gen, options.mobile_agent, temp_options)
         print('Mobile Search complete!\n')
 
-    def both():
-        desktop()
-        mobile()
+    def both(profile=''):
+        desktop(profile)
+        mobile(profile)
 
     # Execute main method in a separate thread
     if options.desktop:
-        target = desktop
+        target_func = desktop
     elif options.mobile:
-        target = mobile
+        target_func = mobile
     else:
         # If neither mode is specified, complete both modes
-        target = both
+        target_func = both
 
-    # Start the searching in separate thread
-    search_thread = threading.Thread(target=target, daemon=True)
-    search_thread.start()
+    # Run for each specified profile (defaults to ['Default'])
+    for profile in options.profile:
+        # Start the searching in separate thread
+        search_thread = threading.Thread(target=target_func, args=(profile,), daemon=True)
+        search_thread.start()
 
-    print('Press ESC to quit searching')
+        print('Press ESC to quit searching')
 
-    try:
-        # Listen for keyboard events and exit if ESC pressed
-        while search_thread.is_alive():
-            with keyboard.Events() as events:
-                event = events.get(timeout=0.5)  # block for 0.5 seconds
-                # Exit if ESC key pressed
-                if event and event.key == Key.esc:
-                    print('ESC pressed, terminating')
-                    break
-    except KeyboardInterrupt:
-        print('CTRL-C pressed, terminating')
+        try:
+            # Listen for keyboard events and exit if ESC pressed
+            while search_thread.is_alive():
+                with keyboard.Events() as events:
+                    event = events.get(timeout=0.5)  # block for 0.5 seconds
+                    # Exit if ESC key pressed
+                    if event and event.key == Key.esc:
+                        print('ESC pressed, terminating')
+                        return  # Exit the entire function if ESC is pressed
+
+        except KeyboardInterrupt:
+            print('CTRL-C pressed, terminating')
+            return  # Exit the entire function if CTRL-C is pressed
+
+        # Wait for the current profile's searches to complete
+        search_thread.join()
 
     # Open rewards dashboard
     if options.open_rewards and not options.dryrun:
