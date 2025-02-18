@@ -159,7 +159,9 @@ def close_browser(chrome: subprocess.Popen | None):
     if os.name == 'posix':
         os.killpg(chrome.pid, signal.SIGTERM)
     else:
-        chrome.kill()
+        subprocess.run(
+            ['taskkill', '/F', '/T', '/PID', str(chrome.pid)], capture_output=True, check=False
+        )
 
 
 def search(count: int, words_gen: Generator, agent: str, options: Namespace):
