@@ -8,6 +8,7 @@ import dataclasses
 import json
 import os
 import random
+from argparse import ArgumentTypeError
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from importlib import metadata
 from pathlib import Path
@@ -123,7 +124,8 @@ def parse_args() -> Namespace:
     p.add_argument(
         '--search-delay-range',
         help='Specify the range for random search delay in the format "min,max" (e.g., 10,60)',
-        type=str,
+        metavar='MIN,MAX',
+        type=valid_range,
     )
     p.add_argument(
         '-n',
@@ -162,6 +164,17 @@ def parse_args() -> Namespace:
     args = p.parse_args()
     return args
 
+def valid_range(value: str) -> tuple[int, int]:
+    """Check that a string is a valid range for the --search-delay-range flag."""
+    try:
+        min_delay, max_delay = map(int, value.split(','))
+        if min_delay > max_delay:
+            raise ArgumentTypeError("Minimum delay cannot be greater than maximum delay.")
+        if min_delay == max_delay:
+            raise ArgumentTypeError("Minimum and maximum delay cannot be equal.")
+        return min_delay, max_delay
+    except ValueError:
+        raise ArgumentTypeError("Invalid format for --search-delay-range. Use 'min,max' format.")
 
 def valid_file(path: str) -> Path:
     """Check that a string is a file and exists handler for the --exe= flag."""
@@ -218,12 +231,13 @@ def get_options() -> Namespace:
     """Combine the defaults, config file options, and command line arguments into one Namespace."""
     file_config = read_config()
     args = parse_args()
-    if args.search_delay_range:
-        try:
-            min_delay, max_delay = map(int, args.search_delay_range.split(','))
-            args.search_delay = random.randint(min_delay, max_delay)
-        except ValueError:
-            raise ValueError("Invalid format for --search-delay-range. Use 'min,max' format.")
+
+    # Process search delay range if provided
+    if hasattr(args, 'search_delay_range') and args.search_delay_range:
+        min_delay, max_delay = args.search_delay_range
+        args.search_delay_min = min_delay
+        args.search_delay_max = max_delay
+        args.search_delay = random.randint(min_delay, max_delay)
 
     args.__dict__ = dataclasses.asdict(file_config) | {
         k: v for k, v in vars(args).items() if v is not None
