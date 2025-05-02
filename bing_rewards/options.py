@@ -7,6 +7,7 @@
 import dataclasses
 import json
 import os
+import random
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from importlib import metadata
 from pathlib import Path
@@ -54,6 +55,8 @@ class Config:
     mobile_count: int = MOBILE_COUNT
     load_delay: float = LOAD_DELAY
     search_delay: float = SEARCH_DELAY
+    search_delay_min: int = 10
+    search_delay_max: int = 60
     search_url: str = URL
     desktop_agent: str = DESKTOP_AGENT
     mobile_agent: str = MOBILE_AGENT
@@ -116,6 +119,11 @@ def parse_args() -> Namespace:
         '--search-delay',
         help='Override the time between searches in seconds',
         type=int,
+    )
+    p.add_argument(
+        '--search-delay-range',
+        help='Specify the range for random search delay in the format "min,max" (e.g., 10,60)',
+        type=str,
     )
     p.add_argument(
         '-n',
@@ -210,6 +218,13 @@ def get_options() -> Namespace:
     """Combine the defaults, config file options, and command line arguments into one Namespace."""
     file_config = read_config()
     args = parse_args()
+    if args.search_delay_range:
+        try:
+            min_delay, max_delay = map(int, args.search_delay_range.split(','))
+            args.search_delay = random.randint(min_delay, max_delay)
+        except ValueError:
+            raise ValueError("Invalid format for --search-delay-range. Use 'min,max' format.")
+
     args.__dict__ = dataclasses.asdict(file_config) | {
         k: v for k, v in vars(args).items() if v is not None
     }
