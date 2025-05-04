@@ -1,63 +1,65 @@
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling>=1.18", "hatch-vcs>=0.4"]
+  requires      = ["hatchling", "hatch-vcs"]
+  build-backend = "hatchling.build"
 
 [project]
-name = "bing-rewards"
-dynamic = ["version"]
-requires-python = ">=3.10"
-description = "Perform automated Bing Rewards searches"
-license = "MIT"
-readme = "README.md"
-authors = [
-	{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" },
-]
-keywords = ["automation", "bing", "search", "pynput", "points", "xbox"]
-classifiers = [
-	"License :: OSI Approved :: MIT License",
-	"Topic :: Utilities",
-	"Operating System :: OS Independent",
-	"Operating System :: Microsoft :: Windows",
-	"Operating System :: POSIX :: Linux",
-	"Intended Audience :: End Users/Desktop",
-	"Programming Language :: Python :: 3 :: Only",
-	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11",
-	"Programming Language :: Python :: 3.12",
-	"Programming Language :: Python :: 3.13",
-]
-urls.Homepage = "https://github.com/jack-mil/bing-rewards/README.md"
-urls.Repository = "https://github.com/jack-mil/bing-rewards"
-urls.Issues = "https://github.com/jack-mil/bing-rewards/issues"
+  name = "bing-rewards"
+  dynamic = ["version"]
+  requires-python = ">=3.10"
+  description = "Perform automated Bing Rewards searches"
+  license = "MIT"
+  readme = "README.md"
+  authors = [{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" }]
+  keywords = ["automation", "bing", "search", "pynput"]
+  classifiers = [
+    "Topic :: Utilities",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+  ]
+  dependencies = ["pynput~=1.8"]
 
-dependencies = ["pynput~=1.7"]
-optional-dependencies.dev = ["ruff", "pre-commit"]
-# Install an executable entrypoint
-scripts.bing-rewards = "bing_rewards:main"
+  [project.urls]
+    Source    = "https://github.com/jack-mil/bing-rewards"
+    Issues    = "https://github.com/jack-mil/bing-rewards/issues"
+    Changelog = "https://github.com/jack-mil/bing-rewards/CHANGELOG.md"
 
-[tool.hatch]
-# include dev deps in default hatch env
-envs.default.features = ["dev"]
-# get the version from git history
-version.source = "vcs"
-version.fallback-version = "vX.X.X+unknown"
-# don't include the +g<commit-hash> in dev versions (to allow test PyPI upload)
-version.raw-options.local_scheme = 'no-local-version'
+  # Install an executable entrypoint
+  [project.scripts]
+    bing-rewards = "bing_rewards:main"
+
+[dependency-groups]
+  # dev dependencies picked up automatically by uv
+  dev = ["pre-commit-uv>=4.1.4", "ruff>=0.11.8"]
+
+[tool.hatch.version]
+  fallback-version = "vX.X.X+unknown"
+  # get the version from git history
+  source                     = "vcs"
+  raw-options.version_scheme = "no-guess-dev"
+  # don't include the +g<commit-hash> in dev versions (to allow test PyPI upload)
+  raw-options.local_scheme = 'no-local-version'
 
 [tool.ruff]
-line-length = 101
-format.quote-style = "single"
-lint.extend-select = [
-	"A",	# https://docs.astral.sh/ruff/rules/#flake8-builtins-a
-	"B",	# https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
-	"E",	# https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
-	"F",	# https://docs.astral.sh/ruff/rules/#pyflakes-f
-	"I",	# https://docs.astral.sh/ruff/rules/#isort-i
-	"W",	# https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
-	"UP",	# https://docs.astral.sh/ruff/rules/#pyupgrade-up
-	"PERF",	# https://docs.astral.sh/ruff/rules/#perflint-perf
-	"PL",	# https://docs.astral.sh/ruff/rules/#pylint-pl
-	"RSE",	# https://docs.astral.sh/ruff/rules/#flake8-raise-rse
-	"RUF",	# https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-	"TCH",	# https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
-]
+  line-length = 101
+  format.quote-style = "single"
+  lint.extend-select = [
+    "A",    # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+    "B",    # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "E",    # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "F",    # https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "I",    # https://docs.astral.sh/ruff/rules/#isort-i
+    "W",    # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "UP",   # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
+    "PL",   # https://docs.astral.sh/ruff/rules/#pylint-pl
+    "RSE",  # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
+    "RUF",  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "TCH",  # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
+  ]

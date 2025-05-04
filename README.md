@@ -27,7 +27,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 * Not intended as a automated or headless service. Simply assists with what would regularly be a manual task.
 
 ## ⚠️**Here Be Dragons**
-This was originally created in a different age, when Bing & MS was much simpler and less bloated with AI ~~slop~~ tools. Users have reported a wide variety of success on whether this method works at all with the new systems. See some of the pinned or closed issues for reports from others that may improve success. I maintain the *code* in a working state as an excersie in Python packaging, but do *not* personally use the utility, and **cannot guarantee this method will even generate points anymore**! 
+This was originally created in a different age, when Bing & MS was much simpler and less bloated with AI ~~slop~~ tools. Users have reported a wide variety of success on whether this method works at all with the new systems. See some of the pinned or closed issues for reports from others that may improve success. I maintain the *code* in a working state as an excersie in Python packaging, but do *not* personally use the utility, and **cannot guarantee this method will even generate points anymore**!
 
 ## **Installation**
 Bing-rewards is a Python CLI utility application distributed on PyPI. You can install it however you prefer to manage Python applications on your system. I recommend `pipx`.
@@ -118,7 +118,7 @@ Example config `~/.config/bing-rewards/config.json`
     "browser_path": "C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
 }
 ```
-Delay timings are in seconds.  
+Delay timings are in seconds.
 Note: the format has slightly changed in version >= 3.0, so delete and regenerate accordingly.
 
 ## User agents
@@ -142,16 +142,14 @@ The original author was contacted for the original source of keywords, but decli
 
 ## Development & Contribution
 
-This project uses [`hatch`](https://hatch.pypa.io/latest/) as the build backend for dependency management and packaging.
+This project is managed by the [`uv`](https://docs.astral.sh/uv) toolchain.
+Ensure you have `uv` installed on your system. This is probably available in your package manager,
+or can be installed with `pip` or `pipx`
 
-```
-pipx install hatch
-```
+Then, fork the repository on Github and clone to your machine. The first invocation of any `uv` command will install the `bing-rewards` package in editable mode, with the dev dependencies (`ruff` and `pre-commit`) automatically.
 
-Then, fork the repo, clone and install the project and dependencies with `hatch env create`.
+Install the defined pre-commit hooks: `uv run pre-commit install --install-hooks`
 
-Install the defined pre-commit hooks: `hatch run pre-commit install`
+Launch bing-rewards in the editable dev environment: `uv run bing-rewards --help`
 
-Launch bing-rewards in the editable dev environment: `hatch run bing-rewards --help`
-
-Feel free to open a PR with additional features or fixes.
+Feel free to open a PR against the `master` branch with additional features or fixes!
