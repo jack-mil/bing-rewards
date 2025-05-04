@@ -49,6 +49,7 @@
 [tool.ruff]
   line-length = 101
   format.quote-style = "single"
+  # probably too many rules, but I like to see what they do, and can always disable later
   lint.extend-select = [
     "A",    # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
     "B",    # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
@@ -56,10 +57,14 @@
     "F",    # https://docs.astral.sh/ruff/rules/#pyflakes-f
     "I",    # https://docs.astral.sh/ruff/rules/#isort-i
     "W",    # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "N",    # https://docs.astral.sh/ruff/rules/#pep8-naming-n
+    "PTH",  # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+    "SIM",  # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "ARG",  # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
     "UP",   # https://docs.astral.sh/ruff/rules/#pyupgrade-up
     "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
     "PL",   # https://docs.astral.sh/ruff/rules/#pylint-pl
     "RSE",  # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
     "RUF",  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-    "TCH",  # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
+    "TC",   # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
   ]

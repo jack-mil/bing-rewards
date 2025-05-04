@@ -183,12 +183,9 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
         # Get a random query from set of words
         query = next(words_gen)
 
-        if options.bing:
-            # If the --bing flag is set, type the query to the address bar directly
-            search_url = query
-        else:
-            # Concatenate url with correct url escape characters
-            search_url = options.search_url + quote_plus(query)
+        # If user's default search engine is Bing, type the query to the address bar directly
+        # Otherwise, form the bing.com search url
+        search_url = query if options.bing else options.search_url + quote_plus(query)
 
         # Use pynput to trigger keyboard events and type search queries
         if not options.dryrun:
