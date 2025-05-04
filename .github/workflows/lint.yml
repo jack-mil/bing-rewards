@@ -1,14 +1,12 @@
 name: Lint
 
 on:
-  push:
-    branches: [master, develop]
-    paths:
-      - 'bing_rewards/**.py'
   pull_request:
-    branches: develop
+    branches: master
     paths:
-      - 'bing_rewards/**.py'
+      - '**.py'
+      - pyproject.toml
+      - uv.lock
   workflow_dispatch:
 
 jobs:
@@ -18,20 +16,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
-    - name: Set up Python >= 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: '>=3.10'
-        cache: pip
+    # runs `check` using with github output format automatically
+    - name: Run ruff linting
+      uses: astral-sh/ruff-action@v3
 
-    - name: Install ruff
-      run: pip install ruff
-
-    - name: Run ruff lint
-      run: ruff check --output-format=github .
-
+    # also check formatting
     - name: Run ruff format
-      run: ruff format --check .
+      run: ruff format --check --diff

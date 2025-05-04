@@ -20,8 +20,8 @@ requires-dist = [{ name = "pynput", specifier = "~=1.8" }]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "pre-commit-uv", specifier = ">=4.1.4" },
-    { name = "ruff", specifier = ">=0.11.8" },
+    { name = "pre-commit-uv", specifier = "~=4.1" },
+    { name = "ruff", specifier = "~=0.11" },
 ]
 
 [[package]]
