@@ -4,15 +4,18 @@ on:
       - master
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+
 
 name: release-please
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      # see: https://github.com/googleapis/release-please-action/issues/1105
+      issues: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
     steps:

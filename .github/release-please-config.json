@@ -7,7 +7,7 @@
       "draft": false,
       "include-v-in-tag": true,
       "prerelease": false,
-      "pull-request-header": "",
+      "pull-request-header": "Auto-generated Release",
       "release-type": "python"
     }
   },
