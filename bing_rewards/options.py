@@ -7,7 +7,6 @@
 import dataclasses
 import json
 import os
-import random
 from argparse import ArgumentTypeError
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from importlib import metadata
@@ -173,8 +172,8 @@ def valid_range(value: str) -> tuple[int, int]:
         if min_delay == max_delay:
             raise ArgumentTypeError("Minimum and maximum delay cannot be equal.")
         return min_delay, max_delay
-    except ValueError:
-        raise ArgumentTypeError("Invalid format for --search-delay-range. Use 'min,max' format.")
+    except ValueError as err:
+        raise ArgumentTypeError("Invalid format for --search-delay-range. Use 'min,max' format.") from err
 
 def valid_file(path: str) -> Path:
     """Check that a string is a file and exists handler for the --exe= flag."""
