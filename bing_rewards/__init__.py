@@ -209,7 +209,11 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
 
         print(f'Search {i + 1}: {query}')
         # Delay to let page load
-        time.sleep(options.search_delay)
+        if hasattr(options, "search_delay_min") and hasattr(options, "search_delay_max"):
+            delay = random.randint(options.search_delay_min, options.search_delay_max)
+        else:
+            delay = options.search_delay
+        time.sleep(delay)
 
     # Skip killing the window if exit flag set
     if options.no_exit:

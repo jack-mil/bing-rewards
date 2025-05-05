@@ -237,7 +237,6 @@ def get_options() -> Namespace:
         min_delay, max_delay = args.search_delay_range
         args.search_delay_min = min_delay
         args.search_delay_max = max_delay
-        args.search_delay = random.randint(min_delay, max_delay)
 
     args.__dict__ = dataclasses.asdict(file_config) | {
         k: v for k, v in vars(args).items() if v is not None
