@@ -211,7 +211,7 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
 
         # Delay to let page load
         match options.search_delay:
-            case float(x) | [float(x)]:
+            case int(x) | float(x) | [float(x)]:
                 delay = x
             case [float(min_s), float(max_s)]:
                 delay = random.uniform(min_s, max_s)
