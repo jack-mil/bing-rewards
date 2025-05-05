@@ -24,9 +24,10 @@ MOBILE_COUNT = 23
 
 # Time to allow Chrome to load in seconds
 LOAD_DELAY = 1.5
+
 # Time between searches in seconds
-# Searches does not count if they are done earlier than ~6 seconds
-SEARCH_DELAY = 6
+# Searches may not be counted if done too quickly
+SEARCH_DELAY = 6.0
 
 # Bing Search base url, with new form= parameter (code differs per browser?)
 URL = 'https://www.bing.com/search?form=QBRE&q='
@@ -53,9 +54,7 @@ class Config:
     desktop_count: int = DESKTOP_COUNT
     mobile_count: int = MOBILE_COUNT
     load_delay: float = LOAD_DELAY
-    search_delay: float = SEARCH_DELAY
-    search_delay_min: int = 10
-    search_delay_max: int = 60
+    search_delay: float | tuple[float, float] = SEARCH_DELAY
     search_url: str = URL
     desktop_agent: str = DESKTOP_AGENT
     mobile_agent: str = MOBILE_AGENT
@@ -112,17 +111,16 @@ def parse_args() -> Namespace:
     p.add_argument(
         '--load-delay',
         help='Override the time given to Chrome to load in seconds',
+        metavar='SEC',
         type=int,
     )
     p.add_argument(
         '--search-delay',
-        help='Override the time between searches in seconds',
-        type=int,
-    )
-    p.add_argument(
-        '--search-delay-range',
-        help='Specify the range for random search delay in the format "min,max" (e.g., 10,60)',
-        metavar='MIN,MAX',
+        help=(
+            'Override the time between searches in seconds.\t'
+            'Can be a single value, or comma separated range (e.g. 10,45)'
+        ),
+        metavar='MIN[,MAX]',
         type=valid_range,
     )
     p.add_argument(
@@ -163,19 +161,23 @@ def parse_args() -> Namespace:
     return args
 
 
-def valid_range(value: str) -> tuple[int, int]:
-    """Check that a string is a valid range for the --search-delay-range flag."""
-    try:
-        min_delay, max_delay = map(int, value.split(','))
-        if min_delay > max_delay:
-            raise ArgumentTypeError('Minimum delay cannot be greater than maximum delay.')
-        if min_delay == max_delay:
-            raise ArgumentTypeError('Minimum and maximum delay cannot be equal.')
-        return min_delay, max_delay
-    except ValueError as err:
-        raise ArgumentTypeError(
-            "Invalid format for --search-delay-range. Use 'min,max' format."
-        ) from err
+def valid_range(value: str) -> float | tuple[float, float]:
+    """
+    Check that a string is a valid format for the --search-delay flag.
+    A valid format looks like:
+    --search-delay 10,45
+    --search-delay 20
+    """
+    match value.split(','):
+        case [sec] if sec.isdecimal():
+            return float(sec)
+        case [min, max] if min.isdecimal() and max.isdecimal():
+            min_s, max_s = float(min), float(max)
+            if max_s <= min_s:
+                raise ArgumentTypeError('Max delay should be greater than min.')
+            return min_s, max_s
+        case _:
+            raise ArgumentTypeError('Invalid format. Use numeric value or range.')
 
 
 def valid_file(path: str) -> Path:
@@ -214,7 +216,7 @@ def read_config() -> Config:
         config_file.parent.mkdir(parents=True, exist_ok=True)
         default_options = Config()
         with config_file.open('x') as f:
-            json.dump(dataclasses.asdict(default_options), f, indent=4)
+            json.dump(dataclasses.asdict(default_options), f, indent=2)
         return default_options
 
     # Otherwise, try to read the config from a file
@@ -234,12 +236,8 @@ def get_options() -> Namespace:
     file_config = read_config()
     args = parse_args()
 
-    # Process search delay range if provided
-    if hasattr(args, 'search_delay_range') and args.search_delay_range:
-        min_delay, max_delay = args.search_delay_range
-        args.search_delay_min = min_delay
-        args.search_delay_max = max_delay
-
+    # Merge command line args with config file.
+    # Args take precedence and overwrite file.
     args.__dict__ = dataclasses.asdict(file_config) | {
         k: v for k, v in vars(args).items() if v is not None
     }

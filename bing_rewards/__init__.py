@@ -208,11 +208,17 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
             key_controller.type(search_url + '\n')
 
         print(f'Search {i + 1}: {query}')
+
         # Delay to let page load
-        if hasattr(options, 'search_delay_min') and hasattr(options, 'search_delay_max'):
-            delay = random.randint(options.search_delay_min, options.search_delay_max)
-        else:
-            delay = options.search_delay
+        match options.search_delay:
+            case float(x) | [float(x)]:
+                delay = x
+            case [float(min_s), float(max_s)]:
+                delay = random.uniform(min_s, max_s)
+            case other:
+                # catastrophic failure
+                raise ValueError(f'Invalid configuration format: "search_delay": {other!r}')
+
         time.sleep(delay)
 
     # Skip killing the window if exit flag set
