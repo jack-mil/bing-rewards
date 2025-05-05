@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 jack-mil
+#
+# SPDX-License-Identifier: MIT
+
 """Bing Rewards v{VERSION}.
 
 Automatically perform Bing searches for Rewards Points!

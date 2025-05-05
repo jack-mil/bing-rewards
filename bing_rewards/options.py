@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 jack-mil
+#
+# SPDX-License-Identifier: MIT
+
 """Defaults and helper functions related to getting user config and command line arguments."""
 
 import dataclasses
