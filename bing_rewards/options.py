@@ -7,8 +7,7 @@
 import dataclasses
 import json
 import os
-from argparse import ArgumentTypeError
-from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, ArgumentTypeError, Namespace, RawDescriptionHelpFormatter
 from importlib import metadata
 from pathlib import Path
 
@@ -163,17 +162,21 @@ def parse_args() -> Namespace:
     args = p.parse_args()
     return args
 
+
 def valid_range(value: str) -> tuple[int, int]:
     """Check that a string is a valid range for the --search-delay-range flag."""
     try:
         min_delay, max_delay = map(int, value.split(','))
         if min_delay > max_delay:
-            raise ArgumentTypeError("Minimum delay cannot be greater than maximum delay.")
+            raise ArgumentTypeError('Minimum delay cannot be greater than maximum delay.')
         if min_delay == max_delay:
-            raise ArgumentTypeError("Minimum and maximum delay cannot be equal.")
+            raise ArgumentTypeError('Minimum and maximum delay cannot be equal.')
         return min_delay, max_delay
     except ValueError as err:
-        raise ArgumentTypeError("Invalid format for --search-delay-range. Use 'min,max' format.") from err
+        raise ArgumentTypeError(
+            "Invalid format for --search-delay-range. Use 'min,max' format."
+        ) from err
+
 
 def valid_file(path: str) -> Path:
     """Check that a string is a file and exists handler for the --exe= flag."""
