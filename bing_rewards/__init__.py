@@ -213,7 +213,7 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
         match options.search_delay:
             case int(x) | float(x) | [float(x)]:
                 delay = x
-            case [float(min_s), float(max_s)]:
+            case [float(min_s), float(max_s)] | [int(min_s), int(max_s)]:
                 delay = random.uniform(min_s, max_s)
             case other:
                 # catastrophic failure
