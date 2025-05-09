@@ -99,22 +99,22 @@ Launches Chrome as a subprocess with special flags. Tested on Windows 10 and Lin
 Running with no options will complete mobile and desktop daily search quota.
 The following options are available to change the default behavior.
 Options supplied at execution time override any config.
-| Flag                    | Option                                                                                |
-| ----------------------- | --------------------------------------------------------------------------------------|
-| `-h`, `--help`          | Display help and exit                                                                 |
-| `-c`, `--count=N`       | Override the number of searches to complete                                           |
-| `-d`, `--desktop`       | Only use desktop user agent                                                           |
-| `-m`, `--mobile`        | Only use a mobile user agent                                                          |
-| `-n`, `--dryrun`        | Do everything but type the search query                                               |
-| `-b`, `--bing`          | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL |
-| `--open-rewards`        | Open the rewards page at the end of the run                                           |
-| `-X`, `--no-exit`       | Do not close the browser after completing a search                                    |
-| `--load-delay`          | Override the time given to Chrome to load in seconds                                  |
-| `--search-delay`        | Override the time between searches in seconds                                         |
-| `--exe EXE`             | The full path of the Chrome compatible browser executable (Brave and Chrome tested)   |
-| `--nowindow`            | Don't open a new Chrome window, just type the keys                                    |
-| `--profile`             | Run searches using specified Chrome profile(s). Multiple profiles can be specified to run sequentially |
-| `--ime`                 | Triggers Windows IME to switch to English input by pressing "shift"                   |
+| Flag                       | Option                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `-h`, `--help`             | Display help and exit                                                                                  |
+| `-c`, `--count=N`          | Override the number of searches to complete                                                            |
+| `-b`, `--bing`             | Use this flag if Bing is already your default search engine. Bypasses constructing a bing.com URL      |
+| `-d`, `--desktop`          | Only use desktop user agent                                                                            |
+| `-m`, `--mobile`           | Only use a mobile user agent                                                                           |
+| `-n`, `--dryrun`           | Do everything but type the search query                                                                |
+| `--exe PATH`               | The full path of the Chrome compatible browser executable (Brave and Chrome tested)                    |
+| `--load-delay SEC`         | Override the time given to Chrome to load in seconds                                                   |
+| `--search-delay MIN[,MAX]` | Set the time between individual searches, in seconds. Can specify a range to get random delays         |
+| `--open-rewards`           | Open the rewards page at the end of the run                                                            |
+| `--nowindow`               | Don't open a new Chrome window, just type the keys                                                     |
+| `-X`, `--no-exit`          | Do not close the browser after completing a search                                                     |
+| `--profile`                | Run searches using specified Chrome profile(s). Multiple profiles can be specified to run sequentially |
+| `--ime`                    | Triggers Windows IME to switch to English input by pressing "shift"                                    |
 
 ## Config
 A config file is also generated in $XDG_CONFIG_HOME or %APPDATA% on Windows
