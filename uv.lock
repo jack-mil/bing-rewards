@@ -4,6 +4,7 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "bing-rewards"
+version = "3.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "pynput" },

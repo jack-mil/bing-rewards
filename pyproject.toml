@@ -1,10 +1,10 @@
 [build-system]
-  requires      = ["hatchling", "hatch-vcs"]
+  requires      = ["hatchling"]
   build-backend = "hatchling.build"
 
 [project]
   name = "bing-rewards"
-  dynamic = ["version"]
+  version = "3.1.0"
   requires-python = ">=3.10"
   description = "Perform automated Bing Rewards searches"
   license = "MIT"
@@ -37,14 +37,6 @@
 [dependency-groups]
   # dev dependencies picked up automatically by uv
   dev = ["pre-commit-uv~=4.1", "ruff~=0.11"]
-
-[tool.hatch.version]
-  fallback-version = "vX.X.X+unknown"
-  # get the version from git history
-  source                     = "vcs"
-  raw-options.version_scheme = "no-guess-dev"
-  # don't include the +g<commit-hash> in dev versions (to allow test PyPI upload)
-  raw-options.local_scheme = 'no-local-version'
 
 [tool.ruff]
   line-length = 101

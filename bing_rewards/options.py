@@ -16,7 +16,7 @@ import bing_rewards
 try:
     __version = metadata.version('bing_rewards')
 except metadata.PackageNotFoundError:
-    __version = 'X.X.X+local'
+    __version = 'unknown+local'
 
 # Number of searches to make
 DESKTOP_COUNT = 33
