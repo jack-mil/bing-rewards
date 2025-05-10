@@ -151,15 +151,40 @@ def open_browser(cmd: list[str]) -> subprocess.Popen:
 
 
 def close_browser(chrome: subprocess.Popen | None):
-    """Close the browser process if it needs to be closed."""
+    """Close the browser process if it exists and is still running.
+
+    Args:
+        chrome: The subprocess.Popen object representing the browser process, or None.
+    """
     if chrome is None:
         return
-    # Close the Chrome window
+
+    if chrome.poll() is not None:  # Check if the process has already terminated
+        print(f'Browser [{chrome.pid}] has already terminated.')
+        return
+
     print(f'Closing browser [{chrome.pid}]')
-    if os.name == 'posix':
-        os.killpg(chrome.pid, signal.SIGTERM)
-    else:
-        chrome.kill()
+    try:
+        if os.name == 'posix':
+            os.killpg(chrome.pid, signal.SIGTERM)
+            # Optionally wait for process termination to avoid zombies
+            chrome.wait(timeout=5)  # Wait for up to 5 seconds
+        else:
+            subprocess.run(
+                ['taskkill', '/F', '/T', '/PID', str(chrome.pid)],
+                capture_output=True,
+                check=True,  # raise exception if taskkill fails
+                timeout=5,
+            )
+    except ProcessLookupError:
+        print(f'Browser process [{chrome.pid}] not found (already closed).')
+    except subprocess.CalledProcessError as e:
+        print(f'Error closing browser [{chrome.pid}]: {e}')
+        print(f'Stderr: {e.stderr.decode()}')
+    except subprocess.TimeoutExpired:
+        print(f'Timeout while closing browser [{chrome.pid}].')
+    except Exception as e:
+        print(f'Unexpected error while closing browser [{chrome.pid}]: {e}')
 
 
 def search(count: int, words_gen: Generator, agent: str, options: Namespace):
