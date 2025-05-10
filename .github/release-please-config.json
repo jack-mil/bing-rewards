@@ -8,7 +8,14 @@
       "include-v-in-tag": true,
       "prerelease": false,
       "pull-request-header": "Auto-generated Release",
-      "release-type": "python"
+      "release-type": "python",
+      "extra-files": [
+          {
+            "type": "toml",
+            "path": "uv.lock",
+            "jsonpath": "$.package[?(@.name.value=='bing-rewards')].version"
+          }
+        ]
     }
   },
   "changelog-sections": [
