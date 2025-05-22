@@ -193,10 +193,11 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
     Open a chromium browser window with specified `agent` string, complete `count`
     searches from list `words`, finally terminate browser process on completion.
     """
-    cmd = browser_cmd(options.browser_path, agent, options.profile)
     chrome = None
-    if not options.no_window and not options.dryrun:
-        chrome = open_browser(cmd)
+    if not options.no_window:
+        cmd = browser_cmd(options.browser_path, agent, options.profile)
+        if not options.dryrun:
+            chrome = open_browser(cmd)
 
     # Wait for Chrome to load
     time.sleep(options.load_delay)
