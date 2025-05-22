@@ -4,7 +4,7 @@
 
 [project]
   name = "bing-rewards"
-  version = "3.1.0"
+  version = "3.2.0"
   requires-python = ">=3.10"
   description = "Perform automated Bing Rewards searches"
   license = "MIT"
