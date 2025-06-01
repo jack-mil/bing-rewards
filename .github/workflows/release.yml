@@ -48,7 +48,7 @@ jobs:
         with:
           enable-cache: true
       # unique dev version for every upload
-      - run: uv version $(uvx dunamai from git --no-metadata --bump)
+      - run: uv version --no-sync $(uvx dunamai from git --no-metadata --bump)
       - run: uv build
       - run: uv publish --publish-url https://test.pypi.org/legacy/ --check-url https://test.pypi.org/simple/
 
