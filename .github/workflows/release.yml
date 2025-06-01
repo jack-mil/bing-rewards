@@ -39,6 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: release-please--branches--master
       - uses: actions/setup-python@v5
         with:
@@ -46,6 +47,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+      # unique dev version for every upload
+      - run: uv version $(uvx dunamai from git --no-metadata --bump)
       - run: uv build
       - run: uv publish --publish-url https://test.pypi.org/legacy/ --check-url https://test.pypi.org/simple/
 
