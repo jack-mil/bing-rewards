@@ -231,7 +231,12 @@ def search(count: int, words_gen: Generator, agent: str, options: Namespace):
 
             # Type the url into the address bar
             # This is very fast and hopefully reliable
-            key_controller.type(search_url + '\n')
+            for char in search_url + '\n':
+                key_controller.press(char)
+                key_controller.release(char)
+                time.sleep(0.03)  # 30ms delay between keystrokes
+            key_controller.press(Key.enter)
+            key_controller.release(Key.enter)
 
         print(f'Search {i + 1}: {query}')
 
