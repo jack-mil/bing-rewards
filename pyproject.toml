@@ -1,6 +1,6 @@
 [project]
   name = "bing-rewards"
-  version = "3.2.0"
+  version = "3.2.1"
   requires-python = ">=3.10"
   description = "Perform automated Bing Rewards searches"
   readme = "README.md"
