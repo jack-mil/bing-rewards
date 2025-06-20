@@ -1,14 +1,11 @@
-[build-system]
-  requires      = ["hatchling"]
-  build-backend = "hatchling.build"
-
 [project]
   name = "bing-rewards"
   version = "3.2.0"
   requires-python = ">=3.10"
   description = "Perform automated Bing Rewards searches"
-  license = "MIT"
   readme = "README.md"
+  license = "MIT"
+  license-files = ["LICENSE"]
   authors = [{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" }]
   keywords = ["automation", "bing", "search", "pynput"]
   classifiers = [
@@ -22,7 +19,6 @@
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "License :: OSI Approved :: MIT License",
   ]
   dependencies = ["pynput~=1.8"]
 
@@ -35,9 +31,19 @@
   [project.scripts]
     bing-rewards = "bing_rewards:main"
 
+[build-system]
+  requires      = ["hatchling"]
+  build-backend = "hatchling.build"
+
 [dependency-groups]
   # dev dependencies picked up automatically by uv
-  dev = ["pre-commit-uv~=4.1", "ruff~=0.11"]
+  dev = ["pre-commit-uv", "ruff"]
+
+[tool.hatch.build.targets.sdist]
+  exclude = [
+    "/.vscode",
+    "/.github"
+  ]
 
 [tool.ruff]
   line-length = 101
