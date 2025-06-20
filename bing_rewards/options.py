@@ -7,6 +7,7 @@
 import dataclasses
 import json
 import os
+import sys
 from argparse import ArgumentParser, ArgumentTypeError, Namespace, RawDescriptionHelpFormatter
 from importlib import metadata
 from pathlib import Path
@@ -72,7 +73,13 @@ def parse_args() -> Namespace:
         ),
         epilog='* Repository and issues: https://github.com/jack-mil/bing-search',
         formatter_class=RawDescriptionHelpFormatter,
+        prog=Path(sys.argv[0]).name,
     )
+
+    if sys.version_info >= (3, 14):
+        p.suggest_on_error = True  # pyright: ignore[reportUnreachable]
+        p.color = True
+
     p.add_argument('--version', action='version', version=f'%(prog)s v{__version}')
     p.add_argument(
         '-c',
