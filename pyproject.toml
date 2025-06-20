@@ -25,7 +25,7 @@
   [project.urls]
     Source    = "https://github.com/jack-mil/bing-rewards"
     Issues    = "https://github.com/jack-mil/bing-rewards/issues"
-    Changelog = "https://github.com/jack-mil/bing-rewards/CHANGELOG.md"
+    Changelog = "https://github.com/jack-mil/bing-rewards/blob/master/CHANGELOG.md"
 
   # Install an executable entrypoint
   [project.scripts]
