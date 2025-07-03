@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.3.0](https://github.com/jack-mil/bing-rewards/compare/v3.2.1...v3.3.0) (2025-07-03)
+
+
+### Features
+
+* enable color argparse help on python &gt;= 3.14 ([98ad897](https://github.com/jack-mil/bing-rewards/commit/98ad897e4d3121d0fe1b3fb306f453de68a2afdf))
+
+
+### Bug Fixes
+
+* absolute path to script in help output on python &gt;= 3.14 ([98ad897](https://github.com/jack-mil/bing-rewards/commit/98ad897e4d3121d0fe1b3fb306f453de68a2afdf))
+
+
+### Build System
+
+* switch to the new uv_build backend for wheels and sdist ([35b6bd7](https://github.com/jack-mil/bing-rewards/commit/35b6bd7905acd5f81b6a8fe5a62e225279d2ee82))
+
 ## [3.2.1](https://github.com/jack-mil/bing-rewards/compare/v3.2.0...v3.2.1) (2025-06-20)
 
 
