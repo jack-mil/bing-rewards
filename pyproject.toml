@@ -32,18 +32,17 @@
     bing-rewards = "bing_rewards:main"
 
 [build-system]
-  requires      = ["hatchling"]
-  build-backend = "hatchling.build"
+  requires = ["uv_build>=0.7.19,<0.8.0"]
+  build-backend = "uv_build"
+
+[tool.uv.build-backend]
+  module-name = "bing_rewards"
+  module-root = "."
+  source-include = ["CHANGELOG.md"]
 
 [dependency-groups]
   # dev dependencies picked up automatically by uv
   dev = ["pre-commit-uv", "ruff"]
-
-[tool.hatch.build.targets.sdist]
-  exclude = [
-    "/.vscode",
-    "/.github"
-  ]
 
 [tool.ruff]
   line-length = 101
