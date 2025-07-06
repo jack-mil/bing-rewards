@@ -8,7 +8,13 @@ import dataclasses
 import json
 import os
 import sys
-from argparse import ArgumentParser, ArgumentTypeError, Namespace, RawDescriptionHelpFormatter
+from argparse import (
+    ArgumentParser,
+    ArgumentTypeError,
+    BooleanOptionalAction,
+    Namespace,
+    RawDescriptionHelpFormatter,
+)
 from importlib import metadata
 from pathlib import Path
 
@@ -60,6 +66,11 @@ class Config:
     desktop_agent: str = DESKTOP_AGENT
     mobile_agent: str = MOBILE_AGENT
     browser_path: str = 'chrome'
+    bing: bool = False  # True means Bing is default search engine
+    open_rewards: bool = False
+    window: bool = True
+    exit: bool = True
+    ime: bool = False
 
 
 def parse_args() -> Namespace:
@@ -91,7 +102,8 @@ def parse_args() -> Namespace:
         '-b',
         '--bing',
         help='Add this flag if your default search engine is Bing',
-        action='store_true',
+        action=BooleanOptionalAction,
+        default=None,
     )
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
@@ -139,18 +151,27 @@ def parse_args() -> Namespace:
     p.add_argument(
         '--open-rewards',
         help='Open the rewards page at the end of the run',
-        action='store_true',
+        action=BooleanOptionalAction,
+        default=None,
     )
     p.add_argument(
-        '--no-window',
-        help="Don't open a new Chrome window (just press keys)",
-        action='store_true',
+        '--window',
+        help='Open a new Chrome window (default: True)',
+        action=BooleanOptionalAction,
+        default=None,
     )
     p.add_argument(
         '-X',
-        '--no-exit',
-        help="Don't close the browser window after searching",
-        action='store_true',
+        '--exit',
+        help='Close the browser window after searching (default: True)',
+        action=BooleanOptionalAction,
+        default=None,
+    )
+    p.add_argument(
+        '--ime',
+        help='Triggers windows IME to switch to english by pressing SHIFT',
+        action=BooleanOptionalAction,
+        default=None,
     )
     p.add_argument(
         '--profile',
@@ -158,11 +179,6 @@ def parse_args() -> Namespace:
         type=str,
         nargs='+',
         default=['Default'],
-    )
-    p.add_argument(
-        '--ime',
-        help='Triggers windows IME to switch to english by pressing SHIFT',
-        action='store_true',
     )
     args = p.parse_args()
     return args
@@ -243,9 +259,19 @@ def get_options() -> Namespace:
     file_config = read_config()
     args = parse_args()
 
-    # Merge command line args with config file.
-    # Args take precedence and overwrite file.
-    args.__dict__ = dataclasses.asdict(file_config) | {
-        k: v for k, v in vars(args).items() if v is not None
-    }
-    return args
+    # Start with config file values
+    merged_dict = dataclasses.asdict(file_config)
+
+    # Override config values with command line args if provided
+    for key, value in vars(args).items():
+        if value is not None:
+            merged_dict[key] = value
+    result = Namespace(**merged_dict)
+
+    # For configs without the new booleans
+    result.no_window = not result.window
+    result.no_exit = not result.exit
+    result.open_rewards = result.open_rewards
+    result.bing = result.bing
+
+    return result
