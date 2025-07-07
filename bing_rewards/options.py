@@ -271,7 +271,5 @@ def get_options() -> Namespace:
     # For configs without the new booleans
     result.no_window = not result.window
     result.no_exit = not result.exit
-    result.open_rewards = result.open_rewards
-    result.bing = result.bing
 
     return result
