@@ -268,7 +268,7 @@ def get_options() -> Namespace:
             merged_dict[key] = value
     result = Namespace(**merged_dict)
 
-    # For configs without the new booleans
+    # Ensure all boolean options are set
     result.no_window = not result.window
     result.no_exit = not result.exit
 
