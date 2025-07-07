@@ -71,6 +71,7 @@ class Config:
     window: bool = True
     exit: bool = True
     ime: bool = False
+    profile: list[str] = dataclasses.field(default_factory=lambda: ['Default'])
 
 
 def parse_args() -> Namespace:
@@ -178,7 +179,6 @@ def parse_args() -> Namespace:
         help='Sets one or more chrome profiles to run sequentially (space separated)',
         type=str,
         nargs='+',
-        default=['Default'],
     )
     args = p.parse_args()
     return args
