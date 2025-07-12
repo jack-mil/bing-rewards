@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/jack-mil/bing-rewards/compare/v3.2.0...v3.2.1) (2025-06-20)
+
+
+### Changes
+
+* removed some potentially objectionable random search terms ([#87](https://github.com/jack-mil/bing-rewards/issues/87)) ([2f08693](https://github.com/jack-mil/bing-rewards/commit/2f08693666c1b6d4ca5e5dcfa064c7a8d8278cb8))
+
 ## [3.2.0](https://github.com/jack-mil/bing-rewards/compare/v3.1.0...v3.2.0) (2025-06-01)
 
 

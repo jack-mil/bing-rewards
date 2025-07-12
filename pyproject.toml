@@ -1,14 +1,11 @@
-[build-system]
-  requires      = ["hatchling"]
-  build-backend = "hatchling.build"
-
 [project]
   name = "bing-rewards"
-  version = "3.2.0"
+  version = "3.2.1"
   requires-python = ">=3.10"
   description = "Perform automated Bing Rewards searches"
-  license = "MIT"
   readme = "README.md"
+  license = "MIT"
+  license-files = ["LICENSE"]
   authors = [{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" }]
   keywords = ["automation", "bing", "search", "pynput"]
   classifiers = [
@@ -22,22 +19,30 @@
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "License :: OSI Approved :: MIT License",
   ]
   dependencies = ["pynput~=1.8"]
 
   [project.urls]
     Source    = "https://github.com/jack-mil/bing-rewards"
     Issues    = "https://github.com/jack-mil/bing-rewards/issues"
-    Changelog = "https://github.com/jack-mil/bing-rewards/CHANGELOG.md"
+    Changelog = "https://github.com/jack-mil/bing-rewards/blob/master/CHANGELOG.md"
 
   # Install an executable entrypoint
   [project.scripts]
     bing-rewards = "bing_rewards:main"
 
+[build-system]
+  requires = ["uv_build>=0.7.19,<0.8.0"]
+  build-backend = "uv_build"
+
+[tool.uv.build-backend]
+  module-name = "bing_rewards"
+  module-root = "."
+  source-include = ["CHANGELOG.md"]
+
 [dependency-groups]
   # dev dependencies picked up automatically by uv
-  dev = ["pre-commit-uv~=4.1", "ruff~=0.11"]
+  dev = ["pre-commit-uv", "ruff"]
 
 [tool.ruff]
   line-length = 101
