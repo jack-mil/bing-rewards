@@ -29,7 +29,7 @@
 
   # Install an executable entrypoint
   [project.scripts]
-    bing-rewards = "bing_rewards:main"
+    bing-rewards = "bing_rewards.app:main"
 
 [build-system]
   requires = ["uv_build>=0.8.0,<0.9.0"]

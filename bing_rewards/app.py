@@ -2,24 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Bing Rewards v{VERSION}.
-
-Automatically perform Bing searches for Rewards Points!
-Executing 'bing-rewards' with no arguments does {DESKTOP_COUNT} desktop searches
-followed by {MOBILE_COUNT} mobile searches by default.
-
-Examples
---------
-    $ bing-search -dc30
-    $ bing-search --count=50 --mobile --dryrun
-
-Config file: {CONFIG}
-CLI arguments always override the config file.
-Delay timings are in seconds.
-"""
-
 from __future__ import annotations
 
+import io
 import os
 import random
 import shutil
@@ -29,14 +14,13 @@ import threading
 import time
 import webbrowser
 from importlib import resources
-from io import SEEK_END, SEEK_SET
 from pathlib import Path
 from typing import TYPE_CHECKING
 from urllib.parse import quote_plus
 
 if TYPE_CHECKING:
     from argparse import Namespace
-    from collections.abc import Generator
+    from collections.abc import Iterator
 
 if os.name == 'posix':
     import signal
@@ -45,10 +29,10 @@ if os.name == 'posix':
 from pynput import keyboard
 from pynput.keyboard import Key
 
-import bing_rewards.options as app_options
+from bing_rewards import options as app_options
 
 
-def word_generator() -> Generator[str, None, None]:
+def word_generator() -> Iterator[str]:
     """Infinitely generate terms from the word file.
 
     Starts reading from a random position in the file.
@@ -70,14 +54,14 @@ def word_generator() -> Generator[str, None, None]:
                 p.open(mode='r', encoding='utf-8') as fh,
             ):
                 # Get the file size of the Keywords file
-                fh.seek(0, SEEK_END)
+                fh.seek(0, io.SEEK_END)
                 size = fh.tell()
 
                 if size == 0:
                     raise ValueError('Keywords file is empty')
 
                 # Start at a random position in the stream
-                fh.seek(random.randint(0, size - 1), SEEK_SET)
+                fh.seek(random.randint(0, size - 1), io.SEEK_SET)
 
                 # Read and discard partial line to ensure we start at a clean line boundary
                 fh.readline()
@@ -187,7 +171,7 @@ def close_browser(chrome: subprocess.Popen | None):
         print(f'Unexpected error while closing browser [{chrome.pid}]: {e}')
 
 
-def search(count: int, words_gen: Generator, agent: str, options: Namespace):
+def search(count: int, words_gen: Iterator[str], agent: str, options: Namespace):
     """Perform the actual searches in a browser.
 
     Open a chromium browser window with specified `agent` string, complete `count`
@@ -328,8 +312,3 @@ def main():
     # Open rewards dashboard
     if options.open_rewards and not options.dryrun:
         webbrowser.open_new('https://account.microsoft.com/rewards')
-
-
-# Execute only if run as a command line script
-if __name__ == '__main__':
-    main()
