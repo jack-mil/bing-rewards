@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.3.0](https://github.com/jack-mil/bing-rewards/compare/v3.2.1...v3.3.0) (2025-07-17)
+
+
+### Features
+
+* add a very slight delay between keystrokes for more reliable text input ([#86](https://github.com/jack-mil/bing-rewards/issues/86)) ([b3cd58d](https://github.com/jack-mil/bing-rewards/commit/b3cd58d58aa50084b7baace10120e494af0772dc))
+* add cli arguments to override options from config file (e.g. --no-window) ([#94](https://github.com/jack-mil/bing-rewards/issues/94)) ([08874ff](https://github.com/jack-mil/bing-rewards/commit/08874ff708ab99af83ff3f4278767cecf4418f59))
+* enable color argparse help on python &gt;= 3.14 ([98ad897](https://github.com/jack-mil/bing-rewards/commit/98ad897e4d3121d0fe1b3fb306f453de68a2afdf))
+* more configuration can be set in the config file ([#94](https://github.com/jack-mil/bing-rewards/issues/94)) ([08874ff](https://github.com/jack-mil/bing-rewards/commit/08874ff708ab99af83ff3f4278767cecf4418f59))
+
+
+### Bug Fixes
+
+* absolute path to script in help output on python &gt;= 3.14 ([98ad897](https://github.com/jack-mil/bing-rewards/commit/98ad897e4d3121d0fe1b3fb306f453de68a2afdf))
+
+
+### Build System
+
+* switch to the new uv_build backend for wheels and sdist ([35b6bd7](https://github.com/jack-mil/bing-rewards/commit/35b6bd7905acd5f81b6a8fe5a62e225279d2ee82))
+
 ## [3.2.1](https://github.com/jack-mil/bing-rewards/compare/v3.2.0...v3.2.1) (2025-06-20)
 
 
