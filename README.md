@@ -30,7 +30,7 @@ Please submit an issue or pull-request if you have an idea for a feature
 * Not intended as an automated or headless service. Simply assists with what would regularly be a manual task.
 
 
-> [!Warning] Here Be Dragons
+> [!Important]
 > This was originally created in a different age, when Bing & MS was much simpler and less bloated with AI ~~slop~~ tools. Users have reported a wide variety of success on whether this method works at all with the new systems. See some of the pinned or closed issues for reports from others that may improve success. I maintain the *code* in a working state as an excersie in Python packaging, but do *not* personally use the utility, and **cannot guarantee this method will even generate points anymore**!
 
 ## Installation
@@ -70,6 +70,10 @@ Clone the repo and install locally. See: [Developing](#development--contribution
 - To earn points from searching, you *must* also have logged into [bing.com](https://www.bing.com) with your Microsoft account at least once, to save cookies.
 
 ## Usage
+
+> [!Tip]
+> Press <kbd>ESC</kbd> to exit early and regain control
+
 Complete mobile and desktop daily points
 
 `$ bing-rewards`
