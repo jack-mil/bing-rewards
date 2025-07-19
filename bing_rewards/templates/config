@@ -1,83 +1,103 @@
-# Bing Rewards Configuration File
-# This file contains command-line options in a simple one-flag-per-line format.
-# Lines starting with # are comments and will be ignored.
-# Empty lines are also ignored.
-# Each line should contain a single command-line flag and its value.
-#
-# Examples:
-# --count 50
-# --bing
-# --load-delay 2.0
-# --search-delay 5,10
-# --exe /usr/bin/google-chrome
-# --profile "Profile 1" "Profile 2"
-#
-# Boolean flags can be enabled by including them, or disabled with --no-FLAG:
-# --window      # Enable opening new window (default)
-# --no-window   # Disable opening new window
-#
-# Uncomment and modify the options below as needed:
+## Bing Rewards Configuration File
+## ===========================================
+## This file controls the behavior of the Bing Rewards automation script.
+## Each line is either a command-line flag, a value, or a description.
+##
+## SYNTAX:
+##   - Lines starting with '##' are descriptions and usage notes.
+##   - Lines starting with '#' are comments and ignored by the program.
+##   - Lines starting with '!' are **required or highly recommended** options (uncomment to activate).
+##   - All other lines are actual configuration flags (uncomment to use).
+##
+## HOW TO USE:
+##   - Uncomment (remove '#') the options you want to enable or customize.
+##   - Only one flag per line.
+##   - For multi-value flags, separate values with spaces.
+##   - Boolean flags can be enabled by including them, or disabled with --no-FLAG.
+##   - If unsure, leave lines commented to use defaults.
+##
+## GROUPS:
+##   ! = Required/critical for most users
+##   ## = Description/instructions
+##   # = Comment (ignored)
+##
+## ===========================================
+## REQUIRED/IMPORTANT OPTIONS
+## ===========================================
 
-# Number of searches to perform (overrides desktop/mobile defaults)
-# Format: --count desktop_count,mobile_count
-# Default: 33 desktop searches, 23 mobile searches
+## ! Set the number of searches to perform (overrides desktop/mobile defaults)
+## ! Format: --count desktop_count,mobile_count OR --count single_value
+## ! Default: --count 33,23   (33 desktop, 23 mobile)
+## ! Example: --count 50      (50 desktop & mobile)
 # --count 33,23
-# --count 50  # Sets both to 50 searches
+# --count 50
 
-# Set if Bing is your default search engine
-# Default: false (assumes Google or other search engine is default)
-# --bing
-# --no-bing
-
-# Time to wait for Chrome to load (seconds)
-# Default: 1.5 seconds
-# --load-delay 2.0
-
-# Time between searches (seconds). Can be single value or min,max range
-# Default: 6.0 seconds
-# --search-delay 6.0
-# --search-delay 5,10
-
-# Path to Chrome-compatible browser executable
-# Default: "chrome" (found via PATH)
+## ! Set the Chrome-compatible browser executable path if not using default
+## ! Default: --exe chrome
+## ! Example: --exe "C:\Program Files\Google\Chrome\Application\chrome.exe"
 # --exe /usr/bin/google-chrome
 # --exe brave
-# --exe /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-# --exe "C:\Program Files\Google\Chrome\Application\chrome.exe"
 
-# Open rewards page after completion
-# Default: false
-# --open-rewards
-# --no-open-rewards
-
-# Open browser in new window
-# Default: true
-# --window
-# --no-window
-
-# Close browser window after searching
-# Default: true
-# --exit
-# --no-exit
-
-# Trigger Windows IME language switch (Windows only)
-# Default: false
-# --ime
-# --no-ime
-
-# Chrome profiles to use (space-separated)
-# Default: "Default"
+## ! Set Chrome profiles to use (space-separated, quoted if needed)
+## ! Default: --profile "Default"
+## ! Example: --profile "Profile 1" "Profile 2"
 # --profile Default
 # --profile "Profile 1" "Profile 2"
 
-# Run mode (uncomment one)
+## ===========================================
+## SEARCH ENGINE & BEHAVIOR OPTIONS
+## ===========================================
+
+## ## Set if Bing is your default search engine (affects search method)
+# --bing
+# --no-bing
+
+## ## Time to wait for Chrome to load (seconds)
+# --load-delay 2.0
+
+## ## Time between searches (seconds). Can be single value or min,max range
+# --search-delay 6.0
+# --search-delay 5,10
+
+## ## Open browser in new window (default: true)
+# --window
+# --no-window
+
+## ## Close browser window after searching (default: true)
+# --exit
+# --no-exit
+
+## ## Open rewards page after completion
+# --open-rewards
+# --no-open-rewards
+
+## ## Trigger Windows IME language switch (Windows only)
+# --ime
+# --no-ime
+
+## ## Run mode (choose one, or leave both commented for both modes)
 # --desktop     # Desktop searches only
 # --mobile      # Mobile searches only
-# (default: both desktop and mobile)
 
-# Other options
-# --dryrun      # Test mode - don't actually search
+## ## Test mode - don't actually search (dry run)
+# --dryrun
 
-# Advanced search URL customization
-# Default: https://www.bing.com/search?form=QBRE&q=
+## ===========================================
+## ADVANCED OPTIONS
+## ===========================================
+
+## ## Advanced search URL customization (rarely needed)
 # --search-url "https://www.bing.com/search?form=QBRE&q="
+
+## ## User agent strings for mobile and desktop browsers
+## ## Only change if you know what you're doing!
+# --mobile-agent "Mozilla/5.0 (Linux; Android 14; Pixel 6 Build/AP2A.240605.024) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36 Edge/121.0.2277.138"
+# --desktop-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edge/126.0.0.0"
+
+## ===========================================
+## NOTES
+## ===========================================
+## - If you leave all lines commented, defaults will be used.
+## - For most users, only --count, --exe, and --profile need to be set.
+## - Boolean flags (--bing, --window, --exit, etc.) are enabled by default unless --no-FLAG is used.
+## ===========================================
