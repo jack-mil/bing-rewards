@@ -238,7 +238,7 @@ def generate_config_template(args: Namespace) -> None:
     # Determine output path to use if specified or default
     output_path = Path(args.output) if args.output else config_location()
 
-    # Check if file exists and force flag
+    # Check if file exists and has force flag
     if output_path.exists() and not args.force:
         print(f'Config file already exists at {output_path}')
         print('Use --force to overwrite, or --output to specify a different location')
@@ -384,17 +384,17 @@ def read_cli_config_file() -> Namespace:
 
 def get_options() -> Namespace:
     """Combine the defaults, config file options, and command line arguments into one Namespace."""
-    # 1 defaults
+    # 1st - defaults
     default_config = Config()
     merged_dict = dataclasses.asdict(default_config)
 
-    # 2 config file
+    # 2nd - config file
     file_config = read_cli_config_file()
     for key, value in vars(file_config).items():
         if value is not None:
             merged_dict[key] = value
 
-    # 3 command line arguments
+    # 3rd - command line arguments
     args = parse_args()
     for key, value in vars(args).items():
         if value is not None:
