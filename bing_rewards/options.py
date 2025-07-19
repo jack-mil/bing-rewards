@@ -117,8 +117,8 @@ def create_parser() -> ArgumentParser:
         '-c',
         '--count',
         help='Override the number of searches to perform. '
-             'Format: desktop_count,mobile_count or single value for both. '
-             'Examples: --count 50 (both), --count 40,25 (desktop,mobile)',
+        'Format: desktop_count,mobile_count or single value for both. '
+        'Examples: --count 50 (both), --count 40,25 (desktop,mobile)',
         type=valid_count,
     )
     p.add_argument(
@@ -273,10 +273,7 @@ def valid_count(value: str) -> int | tuple[int, int]:
     match value.split(','):
         case [count] if count.isdecimal():
             return int(count)
-        case [desktop_count, mobile_count] if (
-            desktop_count.isdecimal()
-            and mobile_count.isdecimal()
-        ):
+        case [desktop_count, mobile_count] if desktop_count.isdecimal() and mobile_count.isdecimal():
             return int(desktop_count), int(mobile_count)
         case _:
             raise ArgumentTypeError('Invalid format. Use single number or desktop,mobile counts.')
@@ -293,8 +290,7 @@ def valid_range(value: str) -> float | tuple[float, float]:
         case [sec] if sec.replace('.', '').isdecimal():
             return float(sec)
         case [min_val, max_val] if (
-            min_val.replace('.', '').isdecimal()
-            and max_val.replace('.', '').isdecimal()
+            min_val.replace('.', '').isdecimal() and max_val.replace('.', '').isdecimal()
         ):
             min_s, max_s = float(min_val), float(max_val)
             if max_s <= min_s:
