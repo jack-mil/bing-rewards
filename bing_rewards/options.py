@@ -5,8 +5,8 @@
 """Defaults and helper functions related to getting user config and command line arguments."""
 
 import dataclasses
-import json
 import os
+import shlex
 import sys
 from argparse import (
     ArgumentParser,
@@ -15,7 +15,7 @@ from argparse import (
     Namespace,
     RawDescriptionHelpFormatter,
 )
-from importlib import metadata
+from importlib import metadata, resources
 from pathlib import Path
 
 import bing_rewards
@@ -74,8 +74,8 @@ class Config:
     profile: list[str] = dataclasses.field(default_factory=lambda: ['Default'])
 
 
-def parse_args() -> Namespace:
-    """Parse all command line arguments and return Namespace."""
+def create_parser() -> ArgumentParser:
+    """Create and return the main argument parser."""
     p = ArgumentParser(
         description=bing_rewards.__doc__.format(
             DESKTOP_COUNT=DESKTOP_COUNT,
@@ -93,11 +93,33 @@ def parse_args() -> Namespace:
         p.color = True
 
     p.add_argument('--version', action='version', version=f'%(prog)s v{__version}')
+
+    # Config generation options
+    p.add_argument(
+        '--init-config',
+        help='Generate a template configuration file and exit',
+        action='store_true',
+    )
+    p.add_argument(
+        '--output',
+        help='Output location for generated config (default: write to config file location)',
+        type=str,
+        metavar='FILE',
+    )
+    p.add_argument(
+        '--force',
+        help='Overwrite existing config file when using --init-config',
+        action='store_true',
+    )
+
+    # Search options
     p.add_argument(
         '-c',
         '--count',
-        help='Override the number of searches to perform',
-        type=int,
+        help='Override the number of searches to perform. '
+             'Format: desktop_count,mobile_count or single value for both. '
+             'Examples: --count 50 (both), --count 40,25 (desktop,mobile)',
+        type=valid_count,
     )
     p.add_argument(
         '-b',
@@ -106,6 +128,7 @@ def parse_args() -> Namespace:
         action=BooleanOptionalAction,
         default=None,
     )
+
     # Mutually exclusive options. Only one can be present
     group = p.add_mutually_exclusive_group()
     group.add_argument(
@@ -180,8 +203,83 @@ def parse_args() -> Namespace:
         type=str,
         nargs='+',
     )
-    args = p.parse_args()
+    p.add_argument(
+        '--search-url',
+        help='Override the Bing search URL base',
+        type=str,
+        metavar='URL',
+    )
+
+    return p
+
+
+def parse_args() -> Namespace:
+    """Parse all command line arguments and return Namespace."""
+    parser = create_parser()
+    args = parser.parse_args()
+
+    # Handle config generation first
+    if args.init_config:
+        generate_config_template(args)
+        sys.exit(0)
+
     return args
+
+
+def generate_config_template(args: Namespace) -> None:
+    """Generate a configuration template file with all available options."""
+    config_content = generate_config_content()
+
+    # Output to stdout
+    if args.output == '-' or (args.output is None and sys.stdout.isatty() is False):
+        print(config_content)
+        return
+
+    # Determine output path to use if specified or default
+    output_path = Path(args.output) if args.output else config_location()
+
+    # Check if file exists and force flag
+    if output_path.exists() and not args.force:
+        print(f'Config file already exists at {output_path}')
+        print('Use --force to overwrite, or --output to specify a different location')
+        sys.exit(1)
+
+    # Create parent directories if needed
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        with output_path.open('w') as f:
+            f.write(config_content)
+        print(f'Generated config template at {output_path}')
+    except OSError as e:
+        print(f'Error writing config file: {e}')
+        sys.exit(1)
+
+
+def generate_config_content() -> str:
+    """Read and return the content from the configuration template file."""
+    template_file = resources.files('bing_rewards').joinpath('templates', 'config')
+    with template_file.open('r', encoding='utf-8') as f:
+        return f.read()
+
+
+def valid_count(value: str) -> int | tuple[int, int]:
+    """
+    Check that a string is a valid format for the --count flag.
+    A valid format looks like:
+    --count 50,25
+    --count 50
+    """
+    match value.split(','):
+        case [count] if count.isdecimal():
+            return int(count)
+        case [desktop_count, mobile_count] if (
+            desktop_count.isdecimal()
+            and mobile_count.isdecimal()
+        ):
+            return int(desktop_count), int(mobile_count)
+        case _:
+            raise ArgumentTypeError('Invalid format. Use single number or desktop,mobile counts.')
 
 
 def valid_range(value: str) -> float | tuple[float, float]:
@@ -192,10 +290,13 @@ def valid_range(value: str) -> float | tuple[float, float]:
     --search-delay 20
     """
     match value.split(','):
-        case [sec] if sec.isdecimal():
+        case [sec] if sec.replace('.', '').isdecimal():
             return float(sec)
-        case [min, max] if min.isdecimal() and max.isdecimal():
-            min_s, max_s = float(min), float(max)
+        case [min_val, max_val] if (
+            min_val.replace('.', '').isdecimal()
+            and max_val.replace('.', '').isdecimal()
+        ):
+            min_s, max_s = float(min_val), float(max_val)
             if max_s <= min_s:
                 raise ArgumentTypeError('Max delay should be greater than min.')
             return min_s, max_s
@@ -212,7 +313,7 @@ def valid_file(path: str) -> Path:
 
 
 def config_location() -> Path:
-    r"""Check these locations in order for config.json.
+    r"""Check these locations in order for config.
 
     - %APPDATA%\bing-rewards\
     - $XDG_CONFIG_HOME/bing-rewards/
@@ -226,46 +327,89 @@ def config_location() -> Path:
         'bing-rewards',
     )
 
-    return config_home.joinpath('config.json')
+    return config_home.joinpath('config')
 
 
-def read_config() -> Config:
-    """Read a configuration file if it exists, otherwise write (and return) default settings."""
-    config_file: Path = config_location()
+def read_cli_config_file() -> Namespace:
+    """
+    Read a plaintext configuration file and parse it as CLI arguments.
+
+    Returns:
+        Namespace with configuration options, or empty Namespace if no config file.
+    """
+    config_file = config_location()
 
     if not config_file.is_file():
-        # Make directories and default config if it doesn't exist
-        print(f'Generating config at {config_file}')
-        config_file.parent.mkdir(parents=True, exist_ok=True)
-        default_options = Config()
-        with config_file.open('x') as f:
-            json.dump(dataclasses.asdict(default_options), f, indent=2)
-        return default_options
+        return Namespace()
 
-    # Otherwise, try to read the config from a file
-    config = {}
-    with config_file.open() as f:
+    try:
+        with config_file.open('r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except OSError as e:
+        print(f'Error reading config file {config_file}: {e}')
+        return Namespace()
+
+    # Parse lines and extract CLI arguments
+    config_args = []
+    for line_num, line in enumerate(lines, 1):
+        line = line.strip()
+
+        # Skip empty lines and comments
+        if not line or line.startswith('#'):
+            continue
+
         try:
-            config = json.load(f)
-        except json.decoder.JSONDecodeError as e:
-            print(e)
-            print('Config JSON format error. Reverting to default.')
-    # return dataclass with values from config taking priority
-    return Config(**config)
+            # Use shlex to properly parse quotes
+            args = shlex.split(line)
+            config_args.extend(args)
+        except ValueError as e:
+            print(f'Error parsing config file line {line_num}: "{line}"')
+            print(f'Parse error: {e}')
+            sys.exit(1)
+
+    if not config_args:
+        return Namespace()
+
+    # Parse the collected arguments using our argument parser
+    parser = create_parser()
+    try:
+        # Parse config file args, but don't exit on error
+        config_namespace = parser.parse_args(config_args)
+        return config_namespace
+    except SystemExit:
+        print(f'Error: Invalid configuration in {config_file}')
+        print(f'Config arguments: {" ".join(config_args)}')
+        sys.exit(1)
 
 
 def get_options() -> Namespace:
     """Combine the defaults, config file options, and command line arguments into one Namespace."""
-    file_config = read_config()
+    # 1 defaults
+    default_config = Config()
+    merged_dict = dataclasses.asdict(default_config)
+
+    # 2 config file
+    file_config = read_cli_config_file()
+    for key, value in vars(file_config).items():
+        if value is not None:
+            merged_dict[key] = value
+
+    # 3 command line arguments
     args = parse_args()
-
-    # Start with config file values
-    merged_dict = dataclasses.asdict(file_config)
-
-    # Override config values with command line args if provided
     for key, value in vars(args).items():
         if value is not None:
             merged_dict[key] = value
+
+    # Handle new --count format (desktop,mobile or single value)
+    if hasattr(args, 'count') and args.count is not None:
+        if isinstance(args.count, tuple):
+            # Format: --count 40,25 (desktop,mobile)
+            merged_dict['desktop_count'], merged_dict['mobile_count'] = args.count
+        else:
+            # Format: --count 50 (both)
+            merged_dict['desktop_count'] = args.count
+            merged_dict['mobile_count'] = args.count
+
     result = Namespace(**merged_dict)
 
     # Ensure all boolean options are set
