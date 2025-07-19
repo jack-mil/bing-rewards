@@ -352,18 +352,18 @@ def read_cli_config_file() -> Namespace:
     # Parse lines and extract CLI arguments
     config_args = []
     for line_num, line in enumerate(lines, 1):
-        line = line.strip()
+        stripped_line = line.strip()
 
         # Skip empty lines and comments
-        if not line or line.startswith('#'):
+        if not stripped_line or stripped_line.startswith('#'):
             continue
 
         try:
             # Use shlex to properly parse quotes
-            args = shlex.split(line)
+            args = shlex.split(stripped_line)
             config_args.extend(args)
         except ValueError as e:
-            print(f'Error parsing config file line {line_num}: "{line}"')
+            print(f'Error parsing config file line {line_num}: "{stripped_line}"')
             print(f'Parse error: {e}')
             sys.exit(1)
 
