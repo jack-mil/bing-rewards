@@ -132,7 +132,7 @@ def parse_args() -> Namespace:
         '--load-delay',
         help='Override the time given to Chrome to load in seconds',
         metavar='SEC',
-        type=int,
+        type=float,
     )
     p.add_argument(
         '--search-delay',
