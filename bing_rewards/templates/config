@@ -1,0 +1,83 @@
+# Bing Rewards Configuration File
+# This file contains command-line options in a simple one-flag-per-line format.
+# Lines starting with # are comments and will be ignored.
+# Empty lines are also ignored.
+# Each line should contain a single command-line flag and its value.
+#
+# Examples:
+# --count 50
+# --bing
+# --load-delay 2.0
+# --search-delay 5,10
+# --exe /usr/bin/google-chrome
+# --profile "Profile 1" "Profile 2"
+#
+# Boolean flags can be enabled by including them, or disabled with --no-FLAG:
+# --window      # Enable opening new window (default)
+# --no-window   # Disable opening new window
+#
+# Uncomment and modify the options below as needed:
+
+# Number of searches to perform (overrides desktop/mobile defaults)
+# Format: --count desktop_count,mobile_count
+# Default: 33 desktop searches, 23 mobile searches
+# --count 33,23
+# --count 50  # Sets both to 50 searches
+
+# Set if Bing is your default search engine
+# Default: false (assumes Google or other search engine is default)
+# --bing
+# --no-bing
+
+# Time to wait for Chrome to load (seconds)
+# Default: 1.5 seconds
+# --load-delay 2.0
+
+# Time between searches (seconds). Can be single value or min,max range
+# Default: 6.0 seconds
+# --search-delay 6.0
+# --search-delay 5,10
+
+# Path to Chrome-compatible browser executable
+# Default: "chrome" (found via PATH)
+# --exe /usr/bin/google-chrome
+# --exe brave
+# --exe /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+# --exe "C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+# Open rewards page after completion
+# Default: false
+# --open-rewards
+# --no-open-rewards
+
+# Open browser in new window
+# Default: true
+# --window
+# --no-window
+
+# Close browser window after searching
+# Default: true
+# --exit
+# --no-exit
+
+# Trigger Windows IME language switch (Windows only)
+# Default: false
+# --ime
+# --no-ime
+
+# Chrome profiles to use (space-separated)
+# Default: "Default"
+# --profile Default
+# --profile "Profile 1" "Profile 2"
+
+# Run mode (uncomment one)
+# --desktop     # Desktop searches only
+# --mobile      # Mobile searches only
+# (default: both desktop and mobile)
+
+# Other options
+# --dryrun      # Test mode - don't actually search
+
+# Advanced search URL customization
+# Default: https://www.bing.com/search?form=QBRE&q=
+# --search-url "https://www.bing.com/search?form=QBRE&q="
