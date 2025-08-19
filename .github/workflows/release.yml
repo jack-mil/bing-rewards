@@ -37,7 +37,7 @@ jobs:
       id-token: write # IMPORTANT: mandatory for trusted publishing
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
@@ -64,7 +64,7 @@ jobs:
       id-token: write # IMPORTANT: mandatory for trusted publishing
 
     steps:
-      - uses: actions/checkout@v4 # will checkout release commit on master
+      - uses: actions/checkout@v5 # will checkout release commit on master
       - uses: actions/setup-python@v5
         with:
             python-version-file: 'pyproject.toml'
