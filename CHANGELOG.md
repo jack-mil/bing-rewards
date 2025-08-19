@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.1](https://github.com/jack-mil/bing-rewards/compare/v3.3.0...v3.3.1) (2025-08-19)
+
+
+### Build System
+
+* **deps:** bump actions/checkout from 4 to 5 ([#99](https://github.com/jack-mil/bing-rewards/issues/99)) ([4bec9b5](https://github.com/jack-mil/bing-rewards/commit/4bec9b5346cb81c9955d2790f1420ad479c7f27a))
+
 ## [3.3.0](https://github.com/jack-mil/bing-rewards/compare/v3.2.1...v3.3.0) (2025-07-17)
 
 
