@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
             python-version-file: 'pyproject.toml'
       - uses: astral-sh/setup-uv@v6
@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5 # will checkout release commit on master
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
             python-version-file: 'pyproject.toml'
       - uses: astral-sh/setup-uv@v6
