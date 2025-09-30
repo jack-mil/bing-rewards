@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.3.1](https://github.com/jack-mil/bing-rewards/compare/v3.3.0...v3.3.1) (2025-09-30)
+
+
+### Build System
+
+* **deps:** bump actions/checkout from 4 to 5 ([#99](https://github.com/jack-mil/bing-rewards/issues/99)) ([4bec9b5](https://github.com/jack-mil/bing-rewards/commit/4bec9b5346cb81c9955d2790f1420ad479c7f27a))
+* **deps:** Update development dependencies in uv.lock ([a3b4861](https://github.com/jack-mil/bing-rewards/commit/a3b4861a386c2ce96402cf98bf07663c24e967ce))
+
+
+### Continuous Integration
+
+* bump actions/setup-python from 5 to 6 ([#101](https://github.com/jack-mil/bing-rewards/issues/101)) ([222efe8](https://github.com/jack-mil/bing-rewards/commit/222efe8a1577a475e2926b9a68418b7d1a6fe679))
+
 ## [3.3.0](https://github.com/jack-mil/bing-rewards/compare/v3.2.1...v3.3.0) (2025-07-17)
 
 
