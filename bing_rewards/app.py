@@ -253,7 +253,7 @@ def main():
 
     def desktop(profile=''):
         # Complete search with desktop settings
-        count = options.count if 'count' in options else options.desktop_count
+        count = options.desktop_count
         print(f'Doing {count} desktop searches using "{profile}"')
 
         temp_options = options
@@ -263,7 +263,7 @@ def main():
 
     def mobile(profile=''):
         # Complete search with mobile settings
-        count = options.count if 'count' in options else options.mobile_count
+        count = options.mobile_count
         print(f'Doing {count} mobile searches using "{profile}"')
 
         temp_options = options
