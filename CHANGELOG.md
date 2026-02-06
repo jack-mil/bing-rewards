@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.3.1](https://github.com/jack-mil/bing-rewards/compare/v3.3.0...v3.3.1) (2026-02-06)
+
+
+### Build System
+
+* **deps:** bump actions/checkout from 4 to 5 ([#99](https://github.com/jack-mil/bing-rewards/issues/99)) ([4bec9b5](https://github.com/jack-mil/bing-rewards/commit/4bec9b5346cb81c9955d2790f1420ad479c7f27a))
+* **deps:** bump allowed version of uv_build and python (3.15) ([9a760f0](https://github.com/jack-mil/bing-rewards/commit/9a760f0520de13d4a16bc329eb37b6467ee9c7bd))
+* **deps:** bump astral-sh/setup-uv from 6 to 7 ([34b1340](https://github.com/jack-mil/bing-rewards/commit/34b1340e73d8c3591e0da6a5d4d1104ab39b4955))
+* **deps:** Update development dependencies in uv.lock ([a3b4861](https://github.com/jack-mil/bing-rewards/commit/a3b4861a386c2ce96402cf98bf07663c24e967ce))
+* pin uv_build to version 0.9 ([40a7d6b](https://github.com/jack-mil/bing-rewards/commit/40a7d6b371421cbcc4d79408502765e6c455c84c))
+
+
+### Continuous Integration
+
+* bump actions/setup-python from 5 to 6 ([#101](https://github.com/jack-mil/bing-rewards/issues/101)) ([222efe8](https://github.com/jack-mil/bing-rewards/commit/222efe8a1577a475e2926b9a68418b7d1a6fe679))
+* Update workflow actions ([81067c6](https://github.com/jack-mil/bing-rewards/commit/81067c6923c8e1d48f1c479b0ef158c9e3351461))
+
 ## [3.3.0](https://github.com/jack-mil/bing-rewards/compare/v3.2.1...v3.3.0) (2025-07-17)
 
 
