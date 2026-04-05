@@ -44,6 +44,7 @@ def word_generator() -> Iterator[str]:
 
     Raises:
         OSError: If there are issues accessing or reading the file.
+
     """
     word_data = resources.files('bing_rewards').joinpath('data', 'keywords.txt')
 
@@ -58,7 +59,8 @@ def word_generator() -> Iterator[str]:
                 size = fh.tell()
 
                 if size == 0:
-                    raise ValueError('Keywords file is empty')
+                    msg = 'Keywords file is empty'
+                    raise ValueError(msg)
 
                 # Start at a random position in the stream
                 fh.seek(random.randint(0, size - 1), io.SEEK_SET)
@@ -97,7 +99,7 @@ def browser_cmd(exe: Path, agent: str, profile: str = '') -> list[str]:
         print(
             f'Command "{exe}" could not be found.\n'
             'Make sure it is available on PATH, '
-            'or use the --exe flag to give an absolute path.'
+            'or use the --exe flag to give an absolute path.',
         )
         sys.exit(1)
 
@@ -121,7 +123,7 @@ def open_browser(cmd: list[str]) -> subprocess.Popen:
         # Only if a new window should be opened
         if os.name == 'posix':
             chrome = subprocess.Popen(
-                cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, start_new_session=True
+                cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, start_new_session=True,
             )
         else:
             chrome = subprocess.Popen(cmd)
@@ -139,6 +141,7 @@ def close_browser(chrome: subprocess.Popen | None):
 
     Args:
         chrome: The subprocess.Popen object representing the browser process, or None.
+
     """
     if chrome is None:
         return
@@ -230,7 +233,8 @@ def search(count: int, words_gen: Iterator[str], agent: str, options: Namespace)
                 delay = random.uniform(min_s, max_s)
             case other:
                 # catastrophic failure
-                raise ValueError(f'Invalid configuration format: "search_delay": {other!r}')
+                msg = f'Invalid configuration format: "search_delay": {other!r}'
+                raise ValueError(msg)
 
         time.sleep(delay)
 

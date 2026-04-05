@@ -16,6 +16,7 @@ Examples
 Config file: {CONFIG}
 CLI arguments always override the config file.
 Delay timings are in seconds.
+
 """
 
 # This package does not export any programmatic API

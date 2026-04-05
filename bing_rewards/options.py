@@ -180,16 +180,14 @@ def parse_args() -> Namespace:
         type=str,
         nargs='+',
     )
-    args = p.parse_args()
-    return args
+    return p.parse_args()
 
 
 def valid_range(value: str) -> float | tuple[float, float]:
-    """
-    Check that a string is a valid format for the --search-delay flag.
+    """Check that a string is a valid format for the --search-delay flag.
     A valid format looks like:
     --search-delay 10,45
-    --search-delay 20
+    --search-delay 20.
     """
     match value.split(','):
         case [sec] if sec.isdecimal():
@@ -197,10 +195,12 @@ def valid_range(value: str) -> float | tuple[float, float]:
         case [min, max] if min.isdecimal() and max.isdecimal():
             min_s, max_s = float(min), float(max)
             if max_s <= min_s:
-                raise ArgumentTypeError('Max delay should be greater than min.')
+                msg = 'Max delay should be greater than min.'
+                raise ArgumentTypeError(msg)
             return min_s, max_s
         case _:
-            raise ArgumentTypeError('Invalid format. Use numeric value or range.')
+            msg = 'Invalid format. Use numeric value or range.'
+            raise ArgumentTypeError(msg)
 
 
 def valid_file(path: str) -> Path:
