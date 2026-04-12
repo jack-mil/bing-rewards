@@ -6,7 +6,9 @@
   readme = "README.md"
   license = "MIT"
   license-files = ["LICENSE"]
-  authors = [{ name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" }]
+  authors = [
+    { name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" },
+  ]
   keywords = ["automation", "bing", "search", "pynput"]
   classifiers = [
     "Topic :: Utilities",
@@ -23,8 +25,8 @@
   dependencies = ["pynput~=1.8"]
 
   [project.urls]
-    Source    = "https://github.com/jack-mil/bing-rewards"
-    Issues    = "https://github.com/jack-mil/bing-rewards/issues"
+    Source = "https://github.com/jack-mil/bing-rewards"
+    Issues = "https://github.com/jack-mil/bing-rewards/issues"
     Changelog = "https://github.com/jack-mil/bing-rewards/blob/master/CHANGELOG.md"
 
   # Install an executable entrypoint
@@ -32,7 +34,7 @@
     bing-rewards = "bing_rewards.app:main"
 
 [build-system]
-  requires = ["uv_build>=0.9.0,<0.11.0"]
+  requires = ["uv_build>=0.9.0,<0.12.0"]
   build-backend = "uv_build"
 
 [tool.uv.build-backend]
