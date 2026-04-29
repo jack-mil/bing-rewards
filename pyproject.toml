@@ -7,7 +7,7 @@
   license = "MIT"
   license-files = ["LICENSE"]
   authors = [
-    { name = "jack-mil", email = "62065280+jack-mil@users.noreply.github.com" },
+    { name = "jack-mil" },
   ]
   keywords = ["automation", "bing", "search", "pynput"]
   classifiers = [

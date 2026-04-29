@@ -1,5 +1,4 @@
-# SPDX-FileCopyrightText: 2020 jack-mil
-#
+# SPDX-FileCopyrightText: 2026 jack-mil
 # SPDX-License-Identifier: MIT
 
 from bing_rewards.app import main
