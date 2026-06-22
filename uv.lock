@@ -103,15 +103,15 @@ wheels = [
 
 [[package]]
 name = "pre-commit-uv"
-version = "4.2.1"
+version = "4.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pre-commit" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/78/da/dafb3c4d282e316082267ae0d0eec5a3f746bf7238f5c1f13a6a29f16356/pre_commit_uv-4.2.1.tar.gz", hash = "sha256:a67f320aa2479cebf1294defc1682a4b37b7d010fa2cf773b58036d6474dee1b", size = 7107, upload-time = "2026-02-18T04:59:54.232Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/94/3770b38b1643c3fc892ea7899f3671eb0f4d4fcbd33c1abe15641dfb1354/pre_commit_uv-4.2.2.tar.gz", hash = "sha256:8c94e1fb660ab3071fd32afb3bb4b43e1930612a8fec7cf03e9cfb7bffd5c5dc", size = 7447, upload-time = "2026-06-19T17:52:47.285Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/89/a5275bea3e80ae9c67d5209d658bb61fae2c0683cf4e35cce4084e00871a/pre_commit_uv-4.2.1-py3-none-any.whl", hash = "sha256:81207f923afdd5e1f1f2d19bae91f40fe825c7a81d789fff54cdb240e67d6374", size = 5688, upload-time = "2026-02-18T04:59:52.738Z" },
+    { url = "https://files.pythonhosted.org/packages/56/90/bccb5c4b82cebd20b0b1464f6f03c07388327ddf143cf47deea72153f918/pre_commit_uv-4.2.2-py3-none-any.whl", hash = "sha256:5f86c77d8b1631a09a6b7c261247b235d46f0d757429c5aff3b52a63bc20dc62", size = 6184, upload-time = "2026-06-19T17:52:46.199Z" },
 ]
 
 [[package]]
