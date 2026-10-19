@@ -37,10 +37,10 @@ jobs:
       id-token: write # IMPORTANT: mandatory for trusted publishing
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
             python-version-file: 'pyproject.toml'
       - uses: astral-sh/setup-uv@v7
@@ -64,8 +64,8 @@ jobs:
       id-token: write # IMPORTANT: mandatory for trusted publishing
 
     steps:
-      - uses: actions/checkout@v6 # will checkout release commit on master
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7 # will checkout release commit on master
+      - uses: actions/setup-python@v7
         with:
             python-version-file: 'pyproject.toml'
       - uses: astral-sh/setup-uv@v7

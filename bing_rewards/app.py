@@ -168,6 +168,7 @@ def close_browser(chrome: subprocess.Popen | None):
         print(f'Timeout while closing browser [{chrome.pid}].')
     except Exception as e:
         print(f'Unexpected error while closing browser [{chrome.pid}]: {e}')
+        raise
 
 
 def search(count: int, words_gen: Iterator[str], agent: str, options: Namespace):
